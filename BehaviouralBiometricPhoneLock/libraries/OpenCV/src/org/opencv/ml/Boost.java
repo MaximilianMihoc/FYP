@@ -8,6 +8,7 @@ package org.opencv.ml;
 
 // C++: class Boost
 //javadoc: Boost
+@SuppressWarnings("ALL")
 public class Boost extends DTrees {
 
     protected Boost(long addr) { super(addr); }

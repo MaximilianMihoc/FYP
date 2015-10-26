@@ -9,6 +9,7 @@ import org.opencv.core.TermCriteria;
 
 // C++: class LogisticRegression
 //javadoc: LogisticRegression
+@SuppressWarnings("ALL")
 public class LogisticRegression extends StatModel {
 
     protected LogisticRegression(long addr) { super(addr); }

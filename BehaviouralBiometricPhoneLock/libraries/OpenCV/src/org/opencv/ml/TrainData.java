@@ -8,6 +8,7 @@ import org.opencv.core.Mat;
 
 // C++: class TrainData
 //javadoc: TrainData
+@SuppressWarnings("ALL")
 public class TrainData {
 
     protected final long nativeObj;

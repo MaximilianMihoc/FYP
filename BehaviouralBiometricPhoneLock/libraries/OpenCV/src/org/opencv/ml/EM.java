@@ -9,6 +9,7 @@ import org.opencv.core.TermCriteria;
 
 // C++: class EM
 //javadoc: EM
+@SuppressWarnings("ALL")
 public class EM extends StatModel {
 
     protected EM(long addr) { super(addr); }

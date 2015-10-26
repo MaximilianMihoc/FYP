@@ -9,6 +9,7 @@ import org.opencv.core.TermCriteria;
 
 // C++: class RTrees
 //javadoc: RTrees
+@SuppressWarnings("ALL")
 public class RTrees extends DTrees {
 
     protected RTrees(long addr) { super(addr); }

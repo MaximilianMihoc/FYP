@@ -8,6 +8,7 @@ import org.opencv.core.Mat;
 
 // C++: class KNearest
 //javadoc: KNearest
+@SuppressWarnings("ALL")
 public class KNearest extends StatModel {
 
     protected KNearest(long addr) { super(addr); }

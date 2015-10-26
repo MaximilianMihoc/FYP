@@ -9,6 +9,7 @@ import org.opencv.core.TermCriteria;
 
 // C++: class ANN_MLP
 //javadoc: ANN_MLP
+@SuppressWarnings("ALL")
 public class ANN_MLP extends StatModel {
 
     protected ANN_MLP(long addr) { super(addr); }

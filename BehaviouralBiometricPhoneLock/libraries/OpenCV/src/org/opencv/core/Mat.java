@@ -2,6 +2,7 @@ package org.opencv.core;
 
 // C++: class Mat
 //javadoc: Mat
+@SuppressWarnings("ALL")
 public class Mat {
 
     public final long nativeObj;
