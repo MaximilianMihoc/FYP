@@ -2,10 +2,21 @@ package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.opencv.android.OpenCVLoader;
+
 public class MainActivity extends AppCompatActivity {
+
+    static {
+        if(!OpenCVLoader.initDebug()){
+            Log.i("OpenCV", "OpenCV initialization failed");
+        } else {
+            Log.i("OpenCV", "OpenCV initialization successful");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
