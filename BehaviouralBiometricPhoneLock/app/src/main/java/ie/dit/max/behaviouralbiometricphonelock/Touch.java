@@ -28,7 +28,10 @@ public class Touch
         this.points.add(p);
     }
 
-
+    public void clearPoints()
+    {
+        points.clear();
+    }
 
     public double getDuration()
     {

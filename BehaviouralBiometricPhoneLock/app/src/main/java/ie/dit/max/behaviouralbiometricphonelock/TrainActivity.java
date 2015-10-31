@@ -3,6 +3,7 @@ package ie.dit.max.behaviouralbiometricphonelock;
 import android.app.Activity;
 import android.support.v4.view.GestureDetectorCompat;
 import android.os.Bundle;
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -42,32 +43,38 @@ public class TrainActivity extends Activity implements
     public boolean onTouchEvent(MotionEvent event)
     {
         this.mDetector.onTouchEvent(event);
+        Log.d(DEBUG_TAG, "onTouchEvent: " + event.toString());
 
-        int action = event.getAction();
+        int action = MotionEventCompat.getActionMasked(event);
         switch(action)
         {
             case (MotionEvent.ACTION_DOWN):
             {
                 Point newP = new Point(event.getX(), event.getY());
                 tap.setStartPoint(newP);
+
+                return true;
             }
             case (MotionEvent.ACTION_MOVE):
             {
                 Point newP = new Point(event.getX(), event.getY());
                 tap.addPoint(newP);
+
+                return true;
             }
             case (MotionEvent.ACTION_UP):
             {
                 Point newP = new Point(event.getX(), event.getY());
                 tap.setEndPoint(newP);
+                Log.d(DEBUG_TAG, "Tap: " + tap.toString());
+
+                tap.clearPoints();
+                return true;
             }
         }
 
-        Log.d(DEBUG_TAG, "onTouchEvent: " + event.toString());
         //Log.d(DEBUG_TAG, "Touch Count: " + event.getPointerCount());
         //Log.d(DEBUG_TAG, "Pressure: " + event.getPressure());
-
-        Log.d(DEBUG_TAG, "Tap: " + tap.toString());
 
         return super.onTouchEvent(event);
     }
