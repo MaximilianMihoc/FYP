@@ -13,6 +13,9 @@ import android.widget.EditText;
 
 import org.opencv.core.Point;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TrainActivity extends Activity implements
         GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener
@@ -22,6 +25,11 @@ public class TrainActivity extends Activity implements
     private GestureDetectorCompat mDetector;
 
     EditText textInstruction1;
+    Point startPoint, endPoint;
+    List<Point> points = new ArrayList<Point>();
+
+    boolean isScroll = false;
+    boolean isFling = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,43 +45,72 @@ public class TrainActivity extends Activity implements
         textInstruction1 = (EditText) findViewById(R.id.textInstruction1);
     }
 
-    Tap tap = new Tap();
-
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
         this.mDetector.onTouchEvent(event);
         Log.d(DEBUG_TAG, "onTouchEvent: " + event.toString());
 
+        double duration;
+
         int action = MotionEventCompat.getActionMasked(event);
         switch(action)
         {
             case (MotionEvent.ACTION_DOWN):
             {
-                Point newP = new Point(event.getX(), event.getY());
-                tap.setStartPoint(newP);
+                startPoint = new Point(event.getX(), event.getY());
 
                 return true;
             }
             case (MotionEvent.ACTION_MOVE):
             {
                 Point newP = new Point(event.getX(), event.getY());
-                tap.addPoint(newP);
+                points.add(newP);
 
                 return true;
             }
             case (MotionEvent.ACTION_UP):
             {
-                Point newP = new Point(event.getX(), event.getY());
-                tap.setEndPoint(newP);
+                endPoint = new Point(event.getX(), event.getY());
+                duration = event.getEventTime() - event.getDownTime();
 
-                //set duration for tap
-                double duration = event.getEventTime() - event.getDownTime();
-                tap.setDuration(duration);
+                if(isFling)
+                {
+                    //touch = fling
+                    Fling fling = new Fling();
+                    fling.setStartPoint(startPoint);
+                    fling.setEndPoint(endPoint);
+                    fling.setPoints(points);
+                    fling.setDuration(duration);
 
-                Log.d(DEBUG_TAG, "Tap: " + tap.toString());
+                    Log.d(DEBUG_TAG, "Fling: " + fling.toString());
+                }
+                else if(isScroll)
+                {
+                    //touch = scroll
+                    Scroll scroll = new Scroll();
+                    scroll.setStartPoint(startPoint);
+                    scroll.setEndPoint(endPoint);
+                    scroll.setPoints(points);
+                    scroll.setDuration(duration);
 
-                tap.clearPoints();
+                    Log.d(DEBUG_TAG, "Scroll: " + scroll.toString());
+                }
+                else
+                {
+                    //touch = tap
+                    Tap tap = new Tap();
+                    tap.setStartPoint(startPoint);
+                    tap.setEndPoint(endPoint);
+                    tap.setPoints(points);
+                    tap.setDuration(duration);
+
+                    Log.d(DEBUG_TAG, "Tap: " + tap.toString());
+                }
+
+                points.clear();
+                isFling = false;
+                isScroll = false;
                 return true;
             }
         }
@@ -128,6 +165,7 @@ public class TrainActivity extends Activity implements
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
     {
+        isScroll = true;
         Log.d(DEBUG_TAG, "onScroll: " + e1.toString() + " <-> " + e2.toString());
         return true;
     }
@@ -141,6 +179,7 @@ public class TrainActivity extends Activity implements
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
     {
+        isFling = true;
         Log.d(DEBUG_TAG, "onFling: " + e1.toString() + " <-> " + e2.toString());
         return true;
     }
