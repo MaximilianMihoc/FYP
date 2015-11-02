@@ -66,6 +66,11 @@ public class TrainActivity extends Activity implements
             {
                 Point newP = new Point(event.getX(), event.getY());
                 tap.setEndPoint(newP);
+
+                //set duration for tap
+                double duration = event.getEventTime() - event.getDownTime();
+                tap.setDuration(duration);
+
                 Log.d(DEBUG_TAG, "Tap: " + tap.toString());
 
                 tap.clearPoints();
