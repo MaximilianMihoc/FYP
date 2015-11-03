@@ -1,6 +1,11 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.app.Activity;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.os.Bundle;
 import android.support.v4.view.MotionEventCompat;
@@ -9,6 +14,7 @@ import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.widget.Button;
 import android.widget.EditText;
 
 import org.opencv.core.Point;
@@ -18,7 +24,8 @@ import java.util.List;
 
 public class TrainActivity extends Activity implements
         GestureDetector.OnGestureListener,
-        GestureDetector.OnDoubleTapListener
+        GestureDetector.OnDoubleTapListener,
+        SensorEventListener
 {
 
     private static final String DEBUG_TAG = "Gestures";
@@ -31,6 +38,12 @@ public class TrainActivity extends Activity implements
     boolean isScroll = false;
     boolean isFling = false;
 
+    private SensorManager senSensorManager;
+    private Sensor senAccelerometer;
+    private long lastUpdate = 0;
+    private float last_x, last_y, last_z;
+    private static final int SHAKE_THRESHOLD = 600;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -39,6 +52,10 @@ public class TrainActivity extends Activity implements
 
         mDetector = new GestureDetectorCompat(this, this);
         mDetector.setOnDoubleTapListener(this);
+
+        senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         //Point p;
 
@@ -49,6 +66,7 @@ public class TrainActivity extends Activity implements
     public boolean onTouchEvent(MotionEvent event)
     {
         this.mDetector.onTouchEvent(event);
+
         Log.d(DEBUG_TAG, "onTouchEvent: " + event.toString());
 
         double duration;
@@ -82,6 +100,7 @@ public class TrainActivity extends Activity implements
                     fling.setEndPoint(endPoint);
                     fling.setPoints(points);
                     fling.setDuration(duration);
+                    fling.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "Fling: " + fling.toString());
                 }
@@ -93,6 +112,7 @@ public class TrainActivity extends Activity implements
                     scroll.setEndPoint(endPoint);
                     scroll.setPoints(points);
                     scroll.setDuration(duration);
+                    scroll.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "Scroll: " + scroll.toString());
                 }
@@ -104,6 +124,7 @@ public class TrainActivity extends Activity implements
                     tap.setEndPoint(endPoint);
                     tap.setPoints(points);
                     tap.setDuration(duration);
+                    tap.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "Tap: " + tap.toString());
                 }
@@ -126,7 +147,7 @@ public class TrainActivity extends Activity implements
     {
         //This event does not give me much information
         //Log.d(DEBUG_TAG, "onDown: " + e.toString());
-        return false;
+        return true;
     }
 
 
@@ -207,5 +228,59 @@ public class TrainActivity extends Activity implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent)
+    {
+        Sensor mySensor = sensorEvent.sensor;
+
+        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER)
+        {
+            float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            float z = sensorEvent.values[2];
+
+            long curTime = System.currentTimeMillis();
+
+            if ((curTime - lastUpdate) > 1) {
+                long diffTime = (curTime - lastUpdate);
+                lastUpdate = curTime;
+
+                float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000;
+
+                if (speed > SHAKE_THRESHOLD)
+                {
+
+                }
+
+                last_x = x;
+                last_y = y;
+                last_z = z;
+            }
+
+            Log.i("Accelerometer", " x= " + x + " y= " + y + " z= " + z);
+
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy)
+    {
+
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        senSensorManager.unregisterListener(this);
     }
 }

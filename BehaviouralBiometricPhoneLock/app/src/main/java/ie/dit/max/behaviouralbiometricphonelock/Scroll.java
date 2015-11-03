@@ -18,6 +18,7 @@ public class Scroll extends Touch
                 ", points= " + points +
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
+                ", pressure= " + pressure +
                 '}';
     }
 }

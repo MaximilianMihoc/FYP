@@ -53,6 +53,7 @@ public class Tap extends Touch
                 ", points= " + points +
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
+                ", pressure= " + pressure +
                 ", fingerArea= " + getFingerArea() +
                 '}';
     }

@@ -14,6 +14,7 @@ public class Touch
     protected Point endPoint;
     protected List<Point> points;
     protected double duration;
+    protected double pressure;
 
     public Touch()
     {
@@ -71,5 +72,15 @@ public class Touch
     public void setPoints(List<Point> points)
     {
         this.points = points;
+    }
+
+    public double getPressure()
+    {
+        return pressure;
+    }
+
+    public void setPressure(double pressure)
+    {
+        this.pressure = pressure;
     }
 }

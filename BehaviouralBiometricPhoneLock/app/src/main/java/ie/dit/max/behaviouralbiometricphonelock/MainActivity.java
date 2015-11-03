@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.Button;
 
 import org.opencv.android.OpenCVLoader;
+import org.opencv.ml.Ml;
+import org.opencv.ml.SVM;
+import org.opencv.ml.TrainData;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -45,6 +48,9 @@ public class MainActivity extends AppCompatActivity
                 startActivity(trainIntent);
             }
         });
+
+        //SVM svm = TrainData.loadFromCSV();
+        //svm.
     }
 
     @Override
