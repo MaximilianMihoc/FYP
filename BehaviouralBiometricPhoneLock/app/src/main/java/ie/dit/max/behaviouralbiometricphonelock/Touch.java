@@ -2,17 +2,18 @@ package ie.dit.max.behaviouralbiometricphonelock;
 
 import org.opencv.core.Point;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Maximilian on 31/10/2015.
  */
-public class Touch
+public class Touch implements Serializable
 {
     protected Point startPoint;
     protected Point endPoint;
-    protected List<Point> points;
+    protected ArrayList<Point> points;
     protected double duration;
     protected double pressure;
 
@@ -69,7 +70,7 @@ public class Touch
         return points;
     }
 
-    public void setPoints(List<Point> points)
+    public void setPoints(ArrayList<Point> points)
     {
         this.points = points;
     }

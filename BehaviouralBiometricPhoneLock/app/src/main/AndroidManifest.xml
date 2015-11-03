@@ -20,6 +20,14 @@
             android:name=".TrainActivity"
             android:label="@string/title_activity_train" >
         </activity>
+        <activity
+            android:name=".MyViewGroupActivity"
+            android:label="@string/title_activity_my_view_group" >
+        </activity>
+        <activity
+            android:name=".TestActivity"
+            android:label="@string/title_activity_test" >
+        </activity>
     </application>
 
 </manifest>

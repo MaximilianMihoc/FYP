@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity
 
     //Declare global variables
     Button goToTrainButton;
+    Button goToViewGroupBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         goToTrainButton = (Button) findViewById(R.id.goToTrainButton);
+        goToViewGroupBtn = (Button) findViewById(R.id.myViewGroupBtn);
         goToTrainButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -49,8 +51,16 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //SVM svm = TrainData.loadFromCSV();
-        //svm.
+        goToViewGroupBtn = (Button) findViewById(R.id.myViewGroupBtn);
+        goToViewGroupBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent groupView = new Intent(MainActivity.this, MyViewGroupActivity.class);
+                startActivity(groupView);
+            }
+        });
     }
 
     @Override

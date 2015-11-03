@@ -2,6 +2,7 @@ package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,6 +15,7 @@ import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -33,7 +35,8 @@ public class TrainActivity extends Activity implements
 
     EditText textInstruction1;
     Point startPoint, endPoint;
-    List<Point> points = new ArrayList<Point>();
+    ArrayList<Point> points = new ArrayList<Point>();
+    ArrayList<Observation> observations;
 
     boolean isScroll = false;
     boolean isFling = false;
@@ -43,6 +46,8 @@ public class TrainActivity extends Activity implements
     private long lastUpdate = 0;
     private float last_x, last_y, last_z;
     private static final int SHAKE_THRESHOLD = 600;
+
+    Button goToTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,11 +60,29 @@ public class TrainActivity extends Activity implements
 
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        //senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         //Point p;
 
         textInstruction1 = (EditText) findViewById(R.id.textInstruction1);
+
+        observations = new ArrayList<>();
+
+        goToTest = (Button) findViewById(R.id.testActivityBtn);
+        goToTest.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent testActivityIntent = new Intent(TrainActivity.this, TestActivity.class);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("trainObservations", observations);
+                testActivityIntent.putExtras(bundle);
+
+                startActivity(testActivityIntent);
+            }
+        });
     }
 
     @Override
@@ -91,6 +114,7 @@ public class TrainActivity extends Activity implements
             {
                 endPoint = new Point(event.getX(), event.getY());
                 duration = event.getEventTime() - event.getDownTime();
+                Observation tempObs = new Observation();
 
                 if(isFling)
                 {
@@ -103,6 +127,7 @@ public class TrainActivity extends Activity implements
                     fling.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "Fling: " + fling.toString());
+                    tempObs.setGesture(fling);
                 }
                 else if(isScroll)
                 {
@@ -115,6 +140,8 @@ public class TrainActivity extends Activity implements
                     scroll.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "Scroll: " + scroll.toString());
+                    tempObs.setGesture(scroll);
+
                 }
                 else
                 {
@@ -127,7 +154,11 @@ public class TrainActivity extends Activity implements
                     tap.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "Tap: " + tap.toString());
+                    tempObs.setGesture(tap);
                 }
+
+                // add Observation to the List of training observations
+                observations.add(tempObs);
 
                 points.clear();
                 isFling = false;

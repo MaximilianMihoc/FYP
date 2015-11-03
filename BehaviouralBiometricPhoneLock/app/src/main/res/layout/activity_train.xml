@@ -19,4 +19,14 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="78dp" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Test Activity"
+        android:id="@+id/testActivityBtn"
+        android:layout_below="@+id/textInstruction1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="39dp"/>
+
 </RelativeLayout>
