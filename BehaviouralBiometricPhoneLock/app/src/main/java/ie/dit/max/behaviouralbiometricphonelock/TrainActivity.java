@@ -43,9 +43,17 @@ public class TrainActivity extends Activity implements
 
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
-    private long lastUpdate = 0;
-    private float last_x, last_y, last_z;
-    private static final int SHAKE_THRESHOLD = 600;
+    private Sensor senGyroscope;
+
+    //private long lastUpdate = 0;
+    //private float last_x, last_y, last_z;
+    //private static final int SHAKE_THRESHOLD = 600;
+
+    private float lastLinearAcceleration;
+    private float linearAcceleration;
+
+    private float lastAngularVelocity;
+    private float angularVelocity;
 
     Button goToTest;
 
@@ -58,9 +66,21 @@ public class TrainActivity extends Activity implements
         mDetector = new GestureDetectorCompat(this, this);
         mDetector.setOnDoubleTapListener(this);
 
+        linearAcceleration = 0.0f;
+        lastLinearAcceleration = 0.0f;
+
+        angularVelocity = 0.0f;
+        lastAngularVelocity = 0.0f;
+
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        //senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+        // Accelerometer declarations
+        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+
+        // Gyroscope declarations
+        senGyroscope = senSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        senSensorManager.registerListener(this, senGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
         //Point p;
 
@@ -156,6 +176,16 @@ public class TrainActivity extends Activity implements
                     Log.d(DEBUG_TAG, "Tap: " + tap.toString());
                     tempObs.setGesture(tap);
                 }
+
+                // add linear accelerations to the Observation
+                tempObs.setLinearAcceleration(linearAcceleration);
+                tempObs.setLastLinearAcceleration(lastLinearAcceleration);
+                Log.d(DEBUG_TAG, "Linear Accelerations on touch - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
+
+                // add angular velocity to the Observation on touch gesture
+                tempObs.setAngularVelocity(angularVelocity);
+                tempObs.setLastAngularVelocity(lastAngularVelocity);
+                Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
 
                 // add Observation to the List of training observations
                 observations.add(tempObs);
@@ -266,13 +296,37 @@ public class TrainActivity extends Activity implements
     {
         Sensor mySensor = sensorEvent.sensor;
 
-        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER)
+        if (mySensor.getType() == Sensor.TYPE_GYROSCOPE)
         {
             float x = sensorEvent.values[0];
             float y = sensorEvent.values[1];
             float z = sensorEvent.values[2];
 
-            long curTime = System.currentTimeMillis();
+            lastAngularVelocity = angularVelocity;
+            angularVelocity = (float) Math.sqrt((double) (x*x + y*y + z*z));
+
+            //Log.d(DEBUG_TAG, "Sensor - lastAngularVelocity: " + lastAngularVelocity + " angularVelocity: " + angularVelocity);
+
+            //Log.i("Gyroscope ", " x= " + x + " y= " + y + " z= " + z);
+        }
+
+        if (mySensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION)
+        {
+            //this sensor gives me the linear acceleration values for x, y, z.
+            // linear acceleration is the acceleration - earth gravity.
+
+            float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            float z = sensorEvent.values[2];
+
+            lastLinearAcceleration = linearAcceleration;
+            linearAcceleration = (float) Math.sqrt((double) (x*x + y*y + z*z));
+
+            //Log.d(DEBUG_TAG, "Sensor - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
+
+            //Log.i("Accelerometer", " x= " + x + " y= " + y + " z= " + z);
+
+            /*long curTime = System.currentTimeMillis();
 
             if ((curTime - lastUpdate) > 1) {
                 long diffTime = (curTime - lastUpdate);
@@ -288,10 +342,7 @@ public class TrainActivity extends Activity implements
                 last_x = x;
                 last_y = y;
                 last_z = z;
-            }
-
-            Log.i("Accelerometer", " x= " + x + " y= " + y + " z= " + z);
-
+            }*/
         }
     }
 
@@ -305,7 +356,9 @@ public class TrainActivity extends Activity implements
     protected void onResume()
     {
         super.onResume();
-        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        senSensorManager.registerListener(this, senGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
+
     }
 
     @Override

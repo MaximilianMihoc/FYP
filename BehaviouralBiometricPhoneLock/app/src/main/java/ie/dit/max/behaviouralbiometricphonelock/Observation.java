@@ -11,11 +11,17 @@ public class Observation implements Serializable
 {
     private ArrayList<Float> features;
     private Touch gesture;
+    private float linearAcceleration;
+    private float lastLinearAcceleration;
+    private float angularVelocity;
+    private float lastAngularVelocity;
 
     public Observation()
     {
         features = new ArrayList<Float>();
         gesture = new Touch();
+        linearAcceleration = 0.0f;
+        lastLinearAcceleration = 0.0f;
     }
 
     public Touch getGesture()
@@ -27,19 +33,6 @@ public class Observation implements Serializable
     {
         this.gesture = gesture;
     }
-/*public void addGesture(Touch t)
-    {
-        this.gestures.add(t);
-    }
-    public ArrayList<Touch> getGestures()
-    {
-        return gestures;
-    }
-
-    public void setGestures(ArrayList<Touch> gestures)
-    {
-        this.gestures = gestures;
-    }*/
 
     public List<Float> getFeatures()
     {
@@ -61,5 +54,43 @@ public class Observation implements Serializable
         this.features.add(feature);
     }
 
+    public float getLinearAcceleration()
+    {
+        return linearAcceleration;
+    }
 
+    public void setLinearAcceleration(float linearAcceleration)
+    {
+        this.linearAcceleration = linearAcceleration;
+    }
+
+    public float getLastLinearAcceleration()
+    {
+        return lastLinearAcceleration;
+    }
+
+    public void setLastLinearAcceleration(float lastLinearAcceleration)
+    {
+        this.lastLinearAcceleration = lastLinearAcceleration;
+    }
+
+    public float getAngularVelocity()
+    {
+        return angularVelocity;
+    }
+
+    public void setAngularVelocity(float angularVelocity)
+    {
+        this.angularVelocity = angularVelocity;
+    }
+
+    public float getLastAngularVelocity()
+    {
+        return lastAngularVelocity;
+    }
+
+    public void setLastAngularVelocity(float lastAngularVelocity)
+    {
+        this.lastAngularVelocity = lastAngularVelocity;
+    }
 }

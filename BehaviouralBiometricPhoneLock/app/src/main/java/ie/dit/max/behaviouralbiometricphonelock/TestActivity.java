@@ -72,7 +72,7 @@ public class TestActivity extends Activity implements
         Bundle bundle = getIntent().getExtras();
         trainObservations = (ArrayList<Observation>) bundle.getSerializable("trainObservations");
 
-        Mat trainMat = new Mat(trainObservations.size(), 6, CvType.CV_32FC1);
+        Mat trainMat = new Mat(trainObservations.size(), 8, CvType.CV_32FC1);
         Mat labelsMat = new Mat(trainObservations.size(), 1, CvType.CV_32S);
 
         for(int i = 0; i < trainObservations.size(); i++)
@@ -84,6 +84,10 @@ public class TestActivity extends Activity implements
             trainMat.put(i, 3, touchGesture.getEndPoint().y);
             trainMat.put(i, 4, touchGesture.getDuration());
             trainMat.put(i, 5, touchGesture.getPressure());
+
+            // linear accelerations are part of the observation
+            trainMat.put(i, 6, trainObservations.get(i).getLastLinearAcceleration());
+            trainMat.put(i, 7, trainObservations.get(i).getLinearAcceleration());
 
             // all labels are 1 in training scenario. I presume that the owner is performing in the training area.
             labelsMat.put(i, 0, 1);
@@ -172,7 +176,7 @@ public class TestActivity extends Activity implements
                 // add observation to testList to remember what observations we tested so far
                 testObservations.add(tempObs);
 
-                Mat testDataMat = new Mat(testObservations.size(), 6, CvType.CV_32FC1);
+                Mat testDataMat = new Mat(testObservations.size(), 8, CvType.CV_32FC1);
                 //write code to predict one Observation at a time. This can be later written in a separate function
                 for(int i = 0; i < testObservations.size(); i++)
                 {
@@ -183,6 +187,10 @@ public class TestActivity extends Activity implements
                     testDataMat.put(i, 3, touchGesture.getEndPoint().y);
                     testDataMat.put(i, 4, touchGesture.getDuration());
                     testDataMat.put(i, 5, touchGesture.getPressure());
+
+                    // get linear accelerations
+                    testDataMat.put(i, 6, testObservations.get(i).getLastLinearAcceleration());
+                    testDataMat.put(i, 7, testObservations.get(i).getLinearAcceleration());
 
                 }
                 // create the result Mat
