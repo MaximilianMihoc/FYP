@@ -23,6 +23,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
+import org.opencv.ml.StatModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,9 +92,9 @@ public class TestActivity extends Activity implements
 
         //initialise svm.
         svm =  SVM.create();
-        svm.setKernel(SVM.INTER);
+        svm.setKernel(SVM.RBF);
         svm.setType(SVM.ONE_CLASS);
-        svm.setC(10);
+        svm.setC(0.3);
         //svm.setP(1);
         //svm.setGamma(0.5);
         svm.setNu(0.5);
@@ -110,11 +111,18 @@ public class TestActivity extends Activity implements
         for(int i = 0; i < trainObservations.size(); i++)
         {
             Touch touchGesture = trainObservations.get(i).getGesture();
-            trainMat.put(i, 0, touchGesture.getStartPoint().x);
+            /*trainMat.put(i, 0, touchGesture.getStartPoint().x);
             trainMat.put(i, 1, touchGesture.getStartPoint().y);
             trainMat.put(i, 2, touchGesture.getEndPoint().x);
             trainMat.put(i, 3, touchGesture.getEndPoint().y);
-            trainMat.put(i, 4, touchGesture.getDuration());
+            trainMat.put(i, 4, touchGesture.getDuration());*/
+            // call scale data function
+            touchGesture.scaleData();
+            trainMat.put(i, 0, touchGesture.getScaledStartPoint().x);
+            trainMat.put(i, 1, touchGesture.getScaledStartPoint().y);
+            trainMat.put(i, 2, touchGesture.getScaledEndPoint().x);
+            trainMat.put(i, 3, touchGesture.getScaledEndPoint().y);
+            trainMat.put(i, 4, touchGesture.getScaledDuration());
             trainMat.put(i, 5, touchGesture.getPressure());
 
             // linear accelerations are part of the observation
@@ -227,11 +235,18 @@ public class TestActivity extends Activity implements
                 for(int i = 0; i < testObservations.size(); i++)
                 {
                     Touch touchGesture = testObservations.get(i).getGesture();
-                    testDataMat.put(i, 0, touchGesture.getStartPoint().x);
+                    /*testDataMat.put(i, 0, touchGesture.getStartPoint().x);
                     testDataMat.put(i, 1, touchGesture.getStartPoint().y);
                     testDataMat.put(i, 2, touchGesture.getEndPoint().x);
                     testDataMat.put(i, 3, touchGesture.getEndPoint().y);
-                    testDataMat.put(i, 4, touchGesture.getDuration());
+                    testDataMat.put(i, 4, touchGesture.getDuration());*/
+                    //call scale data function
+                    touchGesture.scaleData();
+                    testDataMat.put(i, 0, touchGesture.getScaledStartPoint().x);
+                    testDataMat.put(i, 1, touchGesture.getScaledStartPoint().y);
+                    testDataMat.put(i, 2, touchGesture.getScaledEndPoint().x);
+                    testDataMat.put(i, 3, touchGesture.getScaledEndPoint().y);
+                    testDataMat.put(i, 4, touchGesture.getScaledDuration());
                     testDataMat.put(i, 5, touchGesture.getPressure());
 
                     // get linear accelerations
@@ -247,12 +262,36 @@ public class TestActivity extends Activity implements
                 Mat resultMat = new Mat(testObservations.size(), 1, CvType.CV_32S);
 
                 svm.predict(testDataMat, resultMat, 0);
+                //svm.predict(testDataMat, resultMat, StatModel.RAW_OUTPUT);
 
                 String out = "";
                 for (int i = 0; i < resultMat.rows(); i++)
                 {
                     out += "\tpredicted" + i + ": " + (float)resultMat.get(i, 0)[0];
                 }
+
+                /*
+                * Printing things on console to help me understand the algorithm.
+                *
+                * */
+
+                Mat supportVectors = svm.getSupportVectors();
+                System.out.println("getSupportVectors:\n");
+                displayMatrix(supportVectors);
+                System.out.println("End get Support Vectors");
+
+
+                Mat alpha = new Mat(supportVectors.rows(), supportVectors.cols(), CvType.CV_32S);
+                double value = svm.getDecisionFunction(0, alpha, supportVectors);
+                System.out.println("Decision Function value: " + value);
+
+                System.out.println("Alpha Mat:\n");
+                displayMatrix(alpha);
+                System.out.println("End get AlphaMat");
+
+                System.out.println("Decision Fusion Support Vectors:\n");
+                displayMatrix(supportVectors);
+                System.out.println("End get Support Vectors");
 
                 outputdata.setText(out);
 
@@ -265,6 +304,20 @@ public class TestActivity extends Activity implements
 
         return super.onTouchEvent(event);
     }
+
+    //function to display Mat on console
+    public void displayMatrix(Mat matrix)
+    {
+        for(int i=0; i<matrix.rows(); i++)
+        {
+            for (int j = 0; j < matrix.cols(); j++)
+            {
+                System.out.print("\t" + (float)matrix.get(i, j)[0]);
+            }
+            System.out.println("\n");
+        }
+    }
+
 
     @Override
     public boolean onDown(MotionEvent e)

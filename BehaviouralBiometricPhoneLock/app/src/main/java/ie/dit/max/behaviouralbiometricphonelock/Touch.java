@@ -16,13 +16,57 @@ public class Touch implements Serializable
     protected ArrayList<Point> points;
     protected double duration;
     protected double pressure;
+    protected Point scaledStartPoint;
+    protected Point scaledEndPoint;
+    protected double scaledDuration;
 
     public Touch()
     {
         startPoint = new Point();
         endPoint = new Point();
+        scaledStartPoint = new Point();
+        scaledEndPoint = new Point();
         points = new ArrayList<Point>();
         duration = 0;
+        scaledDuration = 0;
+    }
+
+    public void scaleData()
+    {
+        // unit length for my vector is 1
+        //scale data for Start Vector
+        double magnitudeStartVector = Math.sqrt(this.startPoint.x * this.startPoint.x + this.startPoint.y * this.startPoint.y);
+        this.scaledStartPoint.x = this.startPoint.x / magnitudeStartVector;
+        this.scaledStartPoint.y = this.startPoint.y / magnitudeStartVector;
+
+        //scale data for end Vector
+        double magnitudeEndVector = Math.sqrt(this.endPoint.x * this.endPoint.x + this.endPoint.y * this.endPoint.y);
+        this.scaledEndPoint.x = this.endPoint.x / magnitudeEndVector;
+        this.scaledEndPoint.y = this.endPoint.y / magnitudeEndVector;
+
+        /*
+        * Scale duration and save it into scaledDuration variable
+        * To scale duration, transform it from milliseconds to seconds.
+        * Touch actions usually do not take more than a second and scaling this to seconds would
+        * keep data close to my other features data
+        * */
+        this.scaledDuration = this.duration / 1000;
+
+    }
+
+    public Point getScaledStartPoint()
+    {
+        return scaledStartPoint;
+    }
+
+    public Point getScaledEndPoint()
+    {
+        return scaledEndPoint;
+    }
+
+    public double getScaledDuration()
+    {
+        return scaledDuration;
     }
 
     public void addPoint(Point p)
