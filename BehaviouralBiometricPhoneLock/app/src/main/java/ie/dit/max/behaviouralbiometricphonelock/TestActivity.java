@@ -141,6 +141,10 @@ public class TestActivity extends Activity implements
         // Remember to populate Judgement objects after predictions.
         // train the system
 
+        System.out.println("Train Matrix is:\n");
+        displayMatrix(trainMat);
+
+
         boolean isTrained = svm.train(trainMat, Ml.ROW_SAMPLE, labelsMat);
 
     }
