@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class Tap extends Touch implements Serializable
 {
+    public static final int numberOfFeatures = 10;
     public Tap()
     {
         super();

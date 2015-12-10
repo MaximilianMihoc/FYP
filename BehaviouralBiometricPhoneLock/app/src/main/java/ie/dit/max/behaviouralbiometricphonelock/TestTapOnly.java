@@ -25,12 +25,10 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
-import org.opencv.ml.StatModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class TestActivity extends Activity implements
+public class TestTapOnly extends Activity implements
         GestureDetector.OnGestureListener,
         SensorEventListener
 {
@@ -131,19 +129,20 @@ public class TestActivity extends Activity implements
 
     public Mat buildTrainOrTestMatFromObservationList(ArrayList<Observation> listObservations)
     {
-        Mat tempMat = new Mat(listObservations.size(), Observation.numberOfFeatures, CvType.CV_32FC1);
+        Mat tempMat = new Mat(listObservations.size(), Tap.numberOfFeatures, CvType.CV_32FC1);
 
         for(int i = 0; i < listObservations.size(); i++)
         {
-            Touch touchGesture = listObservations.get(i).getGesture();
+            Tap tapInteraction = listObservations.get(i).getTap();
             int j = 0;
             // call scale data function
-            touchGesture.scaleData();
-            tempMat.put(i, j++, touchGesture.getScaledStartPoint().x);
-            tempMat.put(i, j++, touchGesture.getScaledStartPoint().y);
-            tempMat.put(i, j++, touchGesture.getScaledEndPoint().x);
-            tempMat.put(i, j++, touchGesture.getScaledEndPoint().y);
-            tempMat.put(i, j++, touchGesture.getScaledDuration());
+            tapInteraction.scaleData();
+            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
+            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);
+            tempMat.put(i, j++, tapInteraction.getScaledEndPoint().x);
+            tempMat.put(i, j++, tapInteraction.getScaledEndPoint().y);
+            tempMat.put(i, j++, tapInteraction.getScaledDuration());
+            tempMat.put(i, j++, tapInteraction.getFingerArea());
 
             // linear accelerations are part of the observation
             tempMat.put(i, j++, trainObservations.get(i).getLastLinearAcceleration());
@@ -151,7 +150,7 @@ public class TestActivity extends Activity implements
 
             // angular Velocity are part of the observation
             tempMat.put(i, j++, trainObservations.get(i).getLastAngularVelocity());
-            tempMat.put(i, j++, trainObservations.get(i).getAngularVelocity());
+            tempMat.put(i, j, trainObservations.get(i).getAngularVelocity());
         }
 
         return tempMat;
@@ -188,36 +187,8 @@ public class TestActivity extends Activity implements
                 duration = event.getEventTime() - event.getDownTime();
                 Observation tempObs = new Observation();
 
-                if(isFling)
+                if(!isFling && !isScroll)
                 {
-                    //touch = fling
-                    Fling fling = new Fling();
-                    fling.setStartPoint(startPoint);
-                    fling.setEndPoint(endPoint);
-                    fling.setPoints(points);
-                    fling.setDuration(duration);
-                    fling.setPressure(event.getPressure());
-
-                    Log.d(DEBUG_TAG, "Fling: " + fling.toString());
-                    tempObs.setGesture(fling);
-                }
-                else if(isScroll)
-                {
-                    //touch = scroll
-                    Scroll scroll = new Scroll();
-                    scroll.setStartPoint(startPoint);
-                    scroll.setEndPoint(endPoint);
-                    scroll.setPoints(points);
-                    scroll.setDuration(duration);
-                    scroll.setPressure(event.getPressure());
-
-                    Log.d(DEBUG_TAG, "Scroll: " + scroll.toString());
-                    tempObs.setGesture(scroll);
-
-                }
-                else
-                {
-                    //touch = tap
                     Tap tap = new Tap();
                     tap.setStartPoint(startPoint);
                     tap.setEndPoint(endPoint);
@@ -226,69 +197,46 @@ public class TestActivity extends Activity implements
                     tap.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "Tap: " + tap.toString());
-                    tempObs.setGesture(tap);
-                }
+                    tempObs.setTap(tap);
 
-                // add linear accelerations to the Observation
-                tempObs.setLinearAcceleration(linearAcceleration);
-                tempObs.setLastLinearAcceleration(lastLinearAcceleration);
-                Log.d(DEBUG_TAG, "Linear Accelerations on touch - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
+                    // add linear accelerations to the Observation
+                    tempObs.setLinearAcceleration(linearAcceleration);
+                    tempObs.setLastLinearAcceleration(lastLinearAcceleration);
+                    Log.d(DEBUG_TAG, "Linear Accelerations on touch - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
 
-                // add angular velocity to the Observation on touch gesture
-                tempObs.setAngularVelocity(angularVelocity);
-                tempObs.setLastAngularVelocity(lastAngularVelocity);
-                Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
+                    // add angular velocity to the Observation on touch gesture
+                    tempObs.setAngularVelocity(angularVelocity);
+                    tempObs.setLastAngularVelocity(lastAngularVelocity);
+                    Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
 
-                // add observation to testList to remember what observations we tested so far - not used anywhere else
-                testObservations.add(tempObs);
+                    // add observation to testList to remember what observations we tested so far - not used anywhere else
+                    testObservations.add(tempObs);
 
-                //create a list containing only one Obs which s used to create the test Mat
-                ArrayList<Observation> tempObsList = new ArrayList<Observation>();
-                tempObsList.add(tempObs);
+                    //create a list containing only one Obs which s used to create the test Mat
+                    ArrayList<Observation> tempObsList = new ArrayList<>();
+                    tempObsList.add(tempObs);
 
-                Mat testDataMat = buildTrainOrTestMatFromObservationList(tempObsList);
+                    Mat testDataMat = buildTrainOrTestMatFromObservationList(tempObsList);
 
-                // create the result Mat
-                Mat resultMat = new Mat(tempObsList.size(), 1, CvType.CV_32S);
+                    // create the result Mat
+                    Mat resultMat = new Mat(tempObsList.size(), 1, CvType.CV_32S);
 
-                svm.predict(testDataMat, resultMat, 0);
-                //svm.predict(testDataMat, resultMat, StatModel.RAW_OUTPUT);
+                    svm.predict(testDataMat, resultMat, 0);
+                    //svm.predict(testDataMat, resultMat, StatModel.RAW_OUTPUT);
 
 
-                for (int i = 0; i < resultMat.rows(); i++)
-                {
-                    if((float)resultMat.get(i, 0)[0] == 0.0f)
+                    for (int i = 0; i < resultMat.rows(); i++)
                     {
-                        progressBar.incrementProgressBy(progressVal);
+                        if((float)resultMat.get(i, 0)[0] == 0.0f)
+                        {
+                            progressBar.incrementProgressBy(progressVal);
+                        }
+
+                        out += "\tpredicted" + i + ": " + (float)resultMat.get(i, 0)[0];
                     }
 
-                    out += "\tpredicted" + i + ": " + (float)resultMat.get(i, 0)[0];
+                    outputdata.setText(out);
                 }
-
-                /*
-                * Printing things on console to help me understand the algorithm.
-                *
-                * */
-
-                Mat supportVectors = svm.getSupportVectors();
-                System.out.println("getSupportVectors:\n");
-                displayMatrix(supportVectors);
-                System.out.println("End get Support Vectors");
-
-
-                Mat alpha = new Mat(supportVectors.rows(), supportVectors.cols(), CvType.CV_32S);
-                double value = svm.getDecisionFunction(0, alpha, supportVectors);
-                System.out.println("Decision Function value: " + value);
-
-                System.out.println("Alpha Mat:\n");
-                displayMatrix(alpha);
-                System.out.println("End get AlphaMat");
-
-                System.out.println("Decision Function Support Vectors:\n");
-                displayMatrix(supportVectors);
-                System.out.println("End get Support Vectors");
-
-                outputdata.setText(out);
 
                 points.clear();
                 isFling = false;

@@ -12,6 +12,9 @@ public class Observation implements Serializable
     public static final int numberOfFeatures = 9;
     private ArrayList<Float> features;
     private Touch gesture;
+    private Tap tap;
+    private Scroll scroll;
+    private Fling fling;
     private float linearAcceleration;
     private float lastLinearAcceleration;
     private float angularVelocity;
@@ -93,5 +96,35 @@ public class Observation implements Serializable
     public void setLastAngularVelocity(float lastAngularVelocity)
     {
         this.lastAngularVelocity = lastAngularVelocity;
+    }
+
+    public Tap getTap()
+    {
+        return tap;
+    }
+
+    public void setTap(Tap tap)
+    {
+        this.tap = tap;
+    }
+
+    public Scroll getScroll()
+    {
+        return scroll;
+    }
+
+    public void setScroll(Scroll scroll)
+    {
+        this.scroll = scroll;
+    }
+
+    public Fling getFling()
+    {
+        return fling;
+    }
+
+    public void setFling(Fling fling)
+    {
+        this.fling = fling;
     }
 }

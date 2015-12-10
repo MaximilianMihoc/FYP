@@ -16,4 +16,13 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="39dp"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Test Tap Only"
+        android:id="@+id/testTapOnly"
+        android:layout_below="@+id/testActivityBtn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
 </RelativeLayout>

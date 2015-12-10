@@ -56,6 +56,7 @@ public class TrainActivity extends Activity implements
     private float angularVelocity;
 
     Button goToTest;
+    Button goToTestTap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -95,6 +96,23 @@ public class TrainActivity extends Activity implements
             public void onClick(View v)
             {
                 Intent testActivityIntent = new Intent(TrainActivity.this, TestActivity.class);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("trainObservations", observations);
+                testActivityIntent.putExtras(bundle);
+
+                startActivity(testActivityIntent);
+            }
+        });
+
+        // go to test Tap Only Activity
+        goToTestTap = (Button) findViewById(R.id.testTapOnly);
+        goToTestTap.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent testActivityIntent = new Intent(TrainActivity.this, TestTapOnly.class);
 
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("trainObservations", observations);
@@ -148,6 +166,7 @@ public class TrainActivity extends Activity implements
 
                     Log.d(DEBUG_TAG, "Fling: " + fling.toString());
                     tempObs.setGesture(fling);
+                    tempObs.setFling(fling);
                 }
                 else if(isScroll)
                 {
@@ -161,6 +180,7 @@ public class TrainActivity extends Activity implements
 
                     Log.d(DEBUG_TAG, "Scroll: " + scroll.toString());
                     tempObs.setGesture(scroll);
+                    tempObs.setScroll(scroll);
 
                 }
                 else
@@ -175,6 +195,7 @@ public class TrainActivity extends Activity implements
 
                     Log.d(DEBUG_TAG, "Tap: " + tap.toString());
                     tempObs.setGesture(tap);
+                    tempObs.setTap(tap);
                 }
 
                 // add linear accelerations to the Observation

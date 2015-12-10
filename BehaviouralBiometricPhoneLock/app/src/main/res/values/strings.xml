@@ -7,4 +7,5 @@
     <string name="instruction1">Type .tie5Roanl in the following box.</string>
     <string name="title_activity_my_view_group">MyViewGroupActivity</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_test_touch_only">TestTouchOnly</string>
 </resources>
