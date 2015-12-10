@@ -12,9 +12,25 @@ import java.util.List;
 public class Tap extends Touch implements Serializable
 {
     public static final int numberOfFeatures = 10;
+    protected ArrayList<Point> scaledPoints;
+
     public Tap()
     {
         super();
+        scaledPoints = new ArrayList<>();
+    }
+
+    private void scalePoints(ArrayList<Point> points)
+    {
+        for(Point p : points)
+        {
+            Point scaledP = new Point();
+            double magnitudePointVector = Math.sqrt(p.x * p.x + p.y * p.y);
+            scaledP.x = p.x / magnitudePointVector;
+            scaledP.y = p.y / magnitudePointVector;
+
+            scaledPoints.add(scaledP);
+        }
     }
 
     public double getFingerArea()
