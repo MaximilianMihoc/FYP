@@ -15,6 +15,8 @@ import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.opencv.android.OpenCVLoader;
@@ -65,6 +67,8 @@ public class TestActivity extends Activity implements
     SVM svm;
 
     TextView outputdata;
+    ProgressBar progressBar;
+    int progressVal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -80,6 +84,12 @@ public class TestActivity extends Activity implements
         angularVelocity = 0.0f;
         lastAngularVelocity = 0.0f;
 
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setProgress(0);
+        progressBar.setMax(100);
+        progressVal = 0;
+
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         // Accelerometer declarations
@@ -94,10 +104,10 @@ public class TestActivity extends Activity implements
         svm =  SVM.create();
         svm.setKernel(SVM.RBF);
         svm.setType(SVM.ONE_CLASS);
-        svm.setC(0.3);
+        //svm.setC(0.3);
         //svm.setP(1);
-        //svm.setGamma(0.5);
-        svm.setNu(0.5);
+        svm.setGamma(0.001953125);
+        svm.setNu(0.00390625);
 
         mDetector = new GestureDetectorCompat(this, this);
         testObservations = new ArrayList<>();
@@ -105,7 +115,7 @@ public class TestActivity extends Activity implements
         Bundle bundle = getIntent().getExtras();
         trainObservations = (ArrayList<Observation>) bundle.getSerializable("trainObservations");
 
-        Mat trainMat = new Mat(trainObservations.size(), 10, CvType.CV_32FC1);
+        Mat trainMat = new Mat(trainObservations.size(), 9, CvType.CV_32FC1);
         Mat labelsMat = new Mat(trainObservations.size(), 1, CvType.CV_32S);
 
         for(int i = 0; i < trainObservations.size(); i++)
@@ -123,15 +133,15 @@ public class TestActivity extends Activity implements
             trainMat.put(i, 2, touchGesture.getScaledEndPoint().x);
             trainMat.put(i, 3, touchGesture.getScaledEndPoint().y);
             trainMat.put(i, 4, touchGesture.getScaledDuration());
-            trainMat.put(i, 5, touchGesture.getPressure());
+            //trainMat.put(i, 5, touchGesture.getPressure());
 
             // linear accelerations are part of the observation
-            trainMat.put(i, 6, trainObservations.get(i).getLastLinearAcceleration());
-            trainMat.put(i, 7, trainObservations.get(i).getLinearAcceleration());
+            trainMat.put(i, 5, trainObservations.get(i).getLastLinearAcceleration());
+            trainMat.put(i, 6, trainObservations.get(i).getLinearAcceleration());
 
             // angular Velocity are part of the observation
-            trainMat.put(i, 8, trainObservations.get(i).getLastAngularVelocity());
-            trainMat.put(i, 9, trainObservations.get(i).getAngularVelocity());
+            trainMat.put(i, 7, trainObservations.get(i).getLastAngularVelocity());
+            trainMat.put(i, 8, trainObservations.get(i).getAngularVelocity());
 
             // all labels are 1 in training scenario. I presume that the owner is performing in the training area.
             labelsMat.put(i, 0, 1);
@@ -234,7 +244,7 @@ public class TestActivity extends Activity implements
                 // add observation to testList to remember what observations we tested so far
                 testObservations.add(tempObs);
 
-                Mat testDataMat = new Mat(testObservations.size(), 10, CvType.CV_32FC1);
+                Mat testDataMat = new Mat(testObservations.size(), 9, CvType.CV_32FC1);
                 //write code to predict one Observation at a time. This can be later written in a separate function
                 for(int i = 0; i < testObservations.size(); i++)
                 {
@@ -251,15 +261,15 @@ public class TestActivity extends Activity implements
                     testDataMat.put(i, 2, touchGesture.getScaledEndPoint().x);
                     testDataMat.put(i, 3, touchGesture.getScaledEndPoint().y);
                     testDataMat.put(i, 4, touchGesture.getScaledDuration());
-                    testDataMat.put(i, 5, touchGesture.getPressure());
+                    //testDataMat.put(i, 5, touchGesture.getPressure());
 
                     // get linear accelerations
-                    testDataMat.put(i, 6, testObservations.get(i).getLastLinearAcceleration());
-                    testDataMat.put(i, 7, testObservations.get(i).getLinearAcceleration());
+                    testDataMat.put(i, 5, testObservations.get(i).getLastLinearAcceleration());
+                    testDataMat.put(i, 6, testObservations.get(i).getLinearAcceleration());
 
                     // get angular velocity
-                    testDataMat.put(i, 8, testObservations.get(i).getLastAngularVelocity());
-                    testDataMat.put(i, 9, testObservations.get(i).getAngularVelocity());
+                    testDataMat.put(i, 7, testObservations.get(i).getLastAngularVelocity());
+                    testDataMat.put(i, 8, testObservations.get(i).getAngularVelocity());
 
                 }
                 // create the result Mat
@@ -271,6 +281,12 @@ public class TestActivity extends Activity implements
                 String out = "";
                 for (int i = 0; i < resultMat.rows(); i++)
                 {
+                    if((float)resultMat.get(i, 0)[0] == 0.0f)
+                    {
+                        progressVal += 1;
+                        progressBar.incrementProgressBy(1);
+                    }
+
                     out += "\tpredicted" + i + ": " + (float)resultMat.get(i, 0)[0];
                 }
 
@@ -293,7 +309,7 @@ public class TestActivity extends Activity implements
                 displayMatrix(alpha);
                 System.out.println("End get AlphaMat");
 
-                System.out.println("Decision Fusion Support Vectors:\n");
+                System.out.println("Decision Function Support Vectors:\n");
                 displayMatrix(supportVectors);
                 System.out.println("End get Support Vectors");
 

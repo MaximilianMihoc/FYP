@@ -84,7 +84,7 @@ public class TrainActivity extends Activity implements
 
         //Point p;
 
-        textInstruction1 = (EditText) findViewById(R.id.textInstruction1);
+        //textInstruction1 = (EditText) findViewById(R.id.textInstruction1);
 
         observations = new ArrayList<>();
 
