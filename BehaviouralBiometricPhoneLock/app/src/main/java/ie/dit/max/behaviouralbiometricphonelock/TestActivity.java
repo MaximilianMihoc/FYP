@@ -69,6 +69,7 @@ public class TestActivity extends Activity implements
     TextView outputdata;
     ProgressBar progressBar;
     int progressVal;
+    String out = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -88,7 +89,7 @@ public class TestActivity extends Activity implements
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setProgress(0);
         progressBar.setMax(100);
-        progressVal = 0;
+        progressVal = 10;
 
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -115,34 +116,12 @@ public class TestActivity extends Activity implements
         Bundle bundle = getIntent().getExtras();
         trainObservations = (ArrayList<Observation>) bundle.getSerializable("trainObservations");
 
-        Mat trainMat = new Mat(trainObservations.size(), 9, CvType.CV_32FC1);
+        Mat trainMat = buildTrainOrTestMatFromObservationList(trainObservations);
+
         Mat labelsMat = new Mat(trainObservations.size(), 1, CvType.CV_32S);
 
         for(int i = 0; i < trainObservations.size(); i++)
         {
-            Touch touchGesture = trainObservations.get(i).getGesture();
-            /*trainMat.put(i, 0, touchGesture.getStartPoint().x);
-            trainMat.put(i, 1, touchGesture.getStartPoint().y);
-            trainMat.put(i, 2, touchGesture.getEndPoint().x);
-            trainMat.put(i, 3, touchGesture.getEndPoint().y);
-            trainMat.put(i, 4, touchGesture.getDuration());*/
-            // call scale data function
-            touchGesture.scaleData();
-            trainMat.put(i, 0, touchGesture.getScaledStartPoint().x);
-            trainMat.put(i, 1, touchGesture.getScaledStartPoint().y);
-            trainMat.put(i, 2, touchGesture.getScaledEndPoint().x);
-            trainMat.put(i, 3, touchGesture.getScaledEndPoint().y);
-            trainMat.put(i, 4, touchGesture.getScaledDuration());
-            //trainMat.put(i, 5, touchGesture.getPressure());
-
-            // linear accelerations are part of the observation
-            trainMat.put(i, 5, trainObservations.get(i).getLastLinearAcceleration());
-            trainMat.put(i, 6, trainObservations.get(i).getLinearAcceleration());
-
-            // angular Velocity are part of the observation
-            trainMat.put(i, 7, trainObservations.get(i).getLastAngularVelocity());
-            trainMat.put(i, 8, trainObservations.get(i).getAngularVelocity());
-
             // all labels are 1 in training scenario. I presume that the owner is performing in the training area.
             labelsMat.put(i, 0, 1);
         }
@@ -157,6 +136,34 @@ public class TestActivity extends Activity implements
 
         boolean isTrained = svm.train(trainMat, Ml.ROW_SAMPLE, labelsMat);
 
+    }
+
+    public Mat buildTrainOrTestMatFromObservationList(ArrayList<Observation> listObservations)
+    {
+        Mat tempMat = new Mat(listObservations.size(), Observation.numberOfFeatures, CvType.CV_32FC1);
+
+        for(int i = 0; i < listObservations.size(); i++)
+        {
+            Touch touchGesture = listObservations.get(i).getGesture();
+            int j = 0;
+            // call scale data function
+            touchGesture.scaleData();
+            tempMat.put(i, j++, touchGesture.getScaledStartPoint().x);
+            tempMat.put(i, j++, touchGesture.getScaledStartPoint().y);
+            tempMat.put(i, j++, touchGesture.getScaledEndPoint().x);
+            tempMat.put(i, j++, touchGesture.getScaledEndPoint().y);
+            tempMat.put(i, j++, touchGesture.getScaledDuration());
+
+            // linear accelerations are part of the observation
+            tempMat.put(i, j++, trainObservations.get(i).getLastLinearAcceleration());
+            tempMat.put(i, j++, trainObservations.get(i).getLinearAcceleration());
+
+            // angular Velocity are part of the observation
+            tempMat.put(i, j++, trainObservations.get(i).getLastAngularVelocity());
+            tempMat.put(i, j++, trainObservations.get(i).getAngularVelocity());
+        }
+
+        return tempMat;
     }
 
     @Override
@@ -241,50 +248,27 @@ public class TestActivity extends Activity implements
                 tempObs.setLastAngularVelocity(lastAngularVelocity);
                 Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
 
-                // add observation to testList to remember what observations we tested so far
+                // add observation to testList to remember what observations we tested so far - not used anywhere else
                 testObservations.add(tempObs);
 
-                Mat testDataMat = new Mat(testObservations.size(), 9, CvType.CV_32FC1);
-                //write code to predict one Observation at a time. This can be later written in a separate function
-                for(int i = 0; i < testObservations.size(); i++)
-                {
-                    Touch touchGesture = testObservations.get(i).getGesture();
-                    /*testDataMat.put(i, 0, touchGesture.getStartPoint().x);
-                    testDataMat.put(i, 1, touchGesture.getStartPoint().y);
-                    testDataMat.put(i, 2, touchGesture.getEndPoint().x);
-                    testDataMat.put(i, 3, touchGesture.getEndPoint().y);
-                    testDataMat.put(i, 4, touchGesture.getDuration());*/
-                    //call scale data function
-                    touchGesture.scaleData();
-                    testDataMat.put(i, 0, touchGesture.getScaledStartPoint().x);
-                    testDataMat.put(i, 1, touchGesture.getScaledStartPoint().y);
-                    testDataMat.put(i, 2, touchGesture.getScaledEndPoint().x);
-                    testDataMat.put(i, 3, touchGesture.getScaledEndPoint().y);
-                    testDataMat.put(i, 4, touchGesture.getScaledDuration());
-                    //testDataMat.put(i, 5, touchGesture.getPressure());
+                //create a list containing only one Obs which s used to create the test Mat
+                ArrayList<Observation> tempObsList = new ArrayList<Observation>();
+                tempObsList.add(tempObs);
 
-                    // get linear accelerations
-                    testDataMat.put(i, 5, testObservations.get(i).getLastLinearAcceleration());
-                    testDataMat.put(i, 6, testObservations.get(i).getLinearAcceleration());
+                Mat testDataMat = buildTrainOrTestMatFromObservationList(tempObsList);
 
-                    // get angular velocity
-                    testDataMat.put(i, 7, testObservations.get(i).getLastAngularVelocity());
-                    testDataMat.put(i, 8, testObservations.get(i).getAngularVelocity());
-
-                }
                 // create the result Mat
-                Mat resultMat = new Mat(testObservations.size(), 1, CvType.CV_32S);
+                Mat resultMat = new Mat(tempObsList.size(), 1, CvType.CV_32S);
 
                 svm.predict(testDataMat, resultMat, 0);
                 //svm.predict(testDataMat, resultMat, StatModel.RAW_OUTPUT);
 
-                String out = "";
+
                 for (int i = 0; i < resultMat.rows(); i++)
                 {
                     if((float)resultMat.get(i, 0)[0] == 0.0f)
                     {
-                        progressVal += 1;
-                        progressBar.incrementProgressBy(1);
+                        progressBar.incrementProgressBy(progressVal);
                     }
 
                     out += "\tpredicted" + i + ": " + (float)resultMat.get(i, 0)[0];

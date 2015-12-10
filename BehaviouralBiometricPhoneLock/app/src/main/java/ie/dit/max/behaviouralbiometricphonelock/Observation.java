@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class Observation implements Serializable
 {
+    public static final int numberOfFeatures = 9;
     private ArrayList<Float> features;
     private Touch gesture;
     private float linearAcceleration;
