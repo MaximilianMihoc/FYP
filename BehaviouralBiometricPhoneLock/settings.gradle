@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':firebase-client-android-2.5.0'
 include ':libraries:opencv'
