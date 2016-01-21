@@ -37,6 +37,7 @@ public class TrainActivity extends Activity implements
     Point startPoint, endPoint;
     ArrayList<Point> points = new ArrayList<Point>();
     ArrayList<Observation> observations;
+    ArrayList<Observation> tapOnlyObservations;
 
     boolean isScroll = false;
     boolean isFling = false;
@@ -88,6 +89,7 @@ public class TrainActivity extends Activity implements
         //textInstruction1 = (EditText) findViewById(R.id.textInstruction1);
 
         observations = new ArrayList<>();
+        tapOnlyObservations = new ArrayList<>();
 
         goToTest = (Button) findViewById(R.id.testActivityBtn);
         goToTest.setOnClickListener(new View.OnClickListener()
@@ -115,7 +117,7 @@ public class TrainActivity extends Activity implements
                 Intent testActivityIntent = new Intent(TrainActivity.this, TestTapOnly.class);
 
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("trainObservations", observations);
+                bundle.putSerializable("trainObservations", tapOnlyObservations);
                 testActivityIntent.putExtras(bundle);
 
                 startActivity(testActivityIntent);
@@ -183,7 +185,7 @@ public class TrainActivity extends Activity implements
                     tempObs.setScroll(scroll);
 
                 }
-                else
+                else if(!isFling && !isScroll)
                 {
                     //touch = tap
                     Tap tap = new Tap();
@@ -208,8 +210,9 @@ public class TrainActivity extends Activity implements
                 tempObs.setLastAngularVelocity(lastAngularVelocity);
                 Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
 
-                // add Observation to the List of training observations
-                observations.add(tempObs);
+                // add Observation to the List of training observations. Separate list of obs for tap gesture.
+                if(!isFling && !isScroll) tapOnlyObservations.add(tempObs);
+                else observations.add(tempObs);
 
                 points.clear();
                 isFling = false;

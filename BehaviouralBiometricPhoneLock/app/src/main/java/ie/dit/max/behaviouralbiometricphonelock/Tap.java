@@ -1,8 +1,13 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
+import android.util.Log;
+
 import org.opencv.core.Point;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +43,8 @@ public class Tap extends Touch implements Serializable
         double sum = 0;
         double fingerArea = 0;
 
+        // calculate finger area using Shoelace formula
+
         if (!points.isEmpty())
         {
             for(int i = 0; i < points.size() - 1; i++)
@@ -59,6 +66,9 @@ public class Tap extends Touch implements Serializable
 
         if(sum < 0) sum = -1 * sum;
         fingerArea = sum / 2;
+
+        //scale value in order to be between 0 and 1
+        if(fingerArea != 0) fingerArea = 100/fingerArea;
 
         return fingerArea;
     }
