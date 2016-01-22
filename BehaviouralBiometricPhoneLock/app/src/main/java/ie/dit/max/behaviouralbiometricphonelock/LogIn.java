@@ -12,8 +12,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.Map;
 
 public class LogIn extends AppCompatActivity
 {
@@ -50,8 +54,29 @@ public class LogIn extends AppCompatActivity
                     public void onAuthenticated(AuthData authData)
                     {
                         System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
-                        Intent trainIntent = new Intent(LogIn.this, TrainActivity.class);
-                        startActivity(trainIntent);
+
+                        // Attach an listener to read the data at our posts reference
+                        Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users/" + authData.getUid());
+
+                        userRef.addValueEventListener(new ValueEventListener()
+                        {
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot)
+                            {
+                                User usrObj = snapshot.getValue(User.class);
+                                System.out.println(usrObj.getUserID() + " - " + usrObj.getEmail());
+
+                                Intent trainIntent = new Intent(LogIn.this, TrainActivity.class);
+                                trainIntent.putExtra("userObject", usrObj);
+                                startActivity(trainIntent);
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError)
+                            {
+                                System.out.println("The read failed: " + firebaseError.getMessage());
+                            }
+                        });
                     }
 
                     @Override

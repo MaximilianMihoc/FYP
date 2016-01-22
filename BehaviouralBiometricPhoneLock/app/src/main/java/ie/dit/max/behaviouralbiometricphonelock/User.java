@@ -1,13 +1,19 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
+import java.io.Serializable;
+
 /**
  * Created by Maximilian on 22/01/2016.
  */
-public class User
+public class User implements Serializable
 {
-    protected String userName;
-    protected String userID;
-    protected String email;
+    private String userName;
+    private String userID;
+    private String email;
+
+    public User()
+    {
+    }
 
     public User(String userName, String email, String userID)
     {

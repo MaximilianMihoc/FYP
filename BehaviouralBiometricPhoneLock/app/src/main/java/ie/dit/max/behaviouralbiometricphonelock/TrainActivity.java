@@ -123,6 +123,10 @@ public class TrainActivity extends Activity implements
                 startActivity(testActivityIntent);
             }
         });
+
+        //test
+        User u = (User) getIntent().getSerializableExtra("userObject");
+        System.out.println("Success login:  " + u.getUserID());
     }
 
     @Override
