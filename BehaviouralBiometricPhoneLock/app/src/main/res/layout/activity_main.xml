@@ -14,9 +14,32 @@
         android:layout_height="wrap_content"
         android:text="Train System"
         android:id="@+id/goToTrainButton"
+        android:layout_marginTop="89dp"
+        android:layout_below="@+id/goToRegistrationActivity"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log In"
+        android:id="@+id/goToLoginActivity"
         android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="56dp" />
+        android:layout_marginTop="64dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quick Register"
+        android:id="@+id/goToRegistrationActivity"
+        android:layout_below="@+id/goToLoginActivity"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/goToLoginActivity"
+        android:layout_alignEnd="@+id/goToLoginActivity"/>
 
 </RelativeLayout>

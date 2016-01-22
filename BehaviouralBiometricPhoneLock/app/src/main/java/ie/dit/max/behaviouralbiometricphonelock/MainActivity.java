@@ -12,9 +12,6 @@ import android.widget.Button;
 import com.firebase.client.Firebase;
 
 import org.opencv.android.OpenCVLoader;
-import org.opencv.ml.Ml;
-import org.opencv.ml.SVM;
-import org.opencv.ml.TrainData;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -33,6 +30,8 @@ public class MainActivity extends AppCompatActivity
 
     //Declare global variables
     Button goToTrainButton;
+    Button foToLogInActivity;
+    Button goToRegistrationActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,7 +40,29 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         goToTrainButton = (Button) findViewById(R.id.goToTrainButton);
-        //goToViewGroupBtn = (Button) findViewById(R.id.myViewGroupBtn);
+        foToLogInActivity = (Button) findViewById(R.id.goToLoginActivity);
+        goToRegistrationActivity = (Button) findViewById(R.id.goToRegistrationActivity);
+
+        foToLogInActivity.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent trainIntent = new Intent(MainActivity.this, LogIn.class);
+                startActivity(trainIntent);
+            }
+        });
+
+        goToRegistrationActivity.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent trainIntent = new Intent(MainActivity.this, RegisterUser.class);
+                startActivity(trainIntent);
+            }
+        });
+
         goToTrainButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -52,11 +73,13 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+
+        /*
         Firebase.setAndroidContext(this);
         Firebase rootRef = new Firebase("https://fyp-max.firebaseio.com/");
 
         Firebase messageRef = rootRef.child("messageTest").child("MaxIsAwesome");
-        messageRef.setValue("Hello Maxim, you are awesome?");
+        messageRef.setValue("Hello Maxim, you are awesome?");*/
 
     }
 
