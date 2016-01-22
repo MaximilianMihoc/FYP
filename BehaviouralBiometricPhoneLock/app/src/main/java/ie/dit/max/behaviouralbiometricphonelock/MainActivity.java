@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.firebase.client.Firebase;
+
 import org.opencv.android.OpenCVLoader;
 import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
@@ -31,7 +33,6 @@ public class MainActivity extends AppCompatActivity
 
     //Declare global variables
     Button goToTrainButton;
-    Button goToViewGroupBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,16 +52,12 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        /*goToViewGroupBtn = (Button) findViewById(R.id.myViewGroupBtn);
-        goToViewGroupBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent groupView = new Intent(MainActivity.this, MyViewGroupActivity.class);
-                startActivity(groupView);
-            }
-        });*/
+        Firebase.setAndroidContext(this);
+        Firebase rootRef = new Firebase("https://fyp-max.firebaseio.com/");
+
+        Firebase messageRef = rootRef.child("messageTest").child("MaxIsAwesome");
+        messageRef.setValue("Hello Maxim, you are awesome?");
+
     }
 
     @Override
