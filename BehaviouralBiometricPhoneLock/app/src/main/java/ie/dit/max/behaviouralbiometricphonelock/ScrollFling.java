@@ -5,9 +5,9 @@ import java.io.Serializable;
 /**
  * Created by Maximilian on 02/11/2015.
  */
-public class Scroll extends Touch implements Serializable
+public class ScrollFling extends Touch implements Serializable
 {
-    public Scroll()
+    public ScrollFling()
     {
         super();
     }
@@ -15,7 +15,7 @@ public class Scroll extends Touch implements Serializable
     @Override
     public String toString()
     {
-        return "Scroll{" +
+        return "ScrollFling{" +
                 "startPoint= " + startPoint +
                 ", points= " + points +
                 ", endPoint= " + endPoint +

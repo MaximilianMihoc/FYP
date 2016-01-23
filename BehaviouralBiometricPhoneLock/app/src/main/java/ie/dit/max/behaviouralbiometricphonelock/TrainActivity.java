@@ -22,7 +22,6 @@ import android.widget.EditText;
 import org.opencv.core.Point;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TrainActivity extends Activity implements
         GestureDetector.OnGestureListener,
@@ -160,34 +159,19 @@ public class TrainActivity extends Activity implements
                 duration = event.getEventTime() - event.getDownTime();
                 Observation tempObs = new Observation();
 
-                if(isFling)
+                if(isFling || isScroll)
                 {
-                    //touch = fling
-                    Fling fling = new Fling();
-                    fling.setStartPoint(startPoint);
-                    fling.setEndPoint(endPoint);
-                    fling.setPoints(points);
-                    fling.setDuration(duration);
-                    fling.setPressure(event.getPressure());
+                    //touch = scrollFling
+                    ScrollFling scrollFling = new ScrollFling();
+                    scrollFling.setStartPoint(startPoint);
+                    scrollFling.setEndPoint(endPoint);
+                    scrollFling.setPoints(points);
+                    scrollFling.setDuration(duration);
+                    scrollFling.setPressure(event.getPressure());
 
-                    Log.d(DEBUG_TAG, "Fling: " + fling.toString());
-                    tempObs.setGesture(fling);
-                    tempObs.setFling(fling);
-                }
-                else if(isScroll)
-                {
-                    //touch = scroll
-                    Scroll scroll = new Scroll();
-                    scroll.setStartPoint(startPoint);
-                    scroll.setEndPoint(endPoint);
-                    scroll.setPoints(points);
-                    scroll.setDuration(duration);
-                    scroll.setPressure(event.getPressure());
-
-                    Log.d(DEBUG_TAG, "Scroll: " + scroll.toString());
-                    tempObs.setGesture(scroll);
-                    tempObs.setScroll(scroll);
-
+                    Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
+                    tempObs.setGesture(scrollFling);
+                    tempObs.setScrollFling(scrollFling);
                 }
                 else if(!isFling && !isScroll)
                 {

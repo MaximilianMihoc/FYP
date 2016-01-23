@@ -13,8 +13,7 @@ public class Observation implements Serializable
     private ArrayList<Float> features;
     private Touch gesture;
     private Tap tap;
-    private Scroll scroll;
-    private Fling fling;
+    private ScrollFling scrollFling;
     private float linearAcceleration;
     private float lastLinearAcceleration;
     private float angularVelocity;
@@ -108,23 +107,13 @@ public class Observation implements Serializable
         this.tap = tap;
     }
 
-    public Scroll getScroll()
+    public ScrollFling getScrollFling()
     {
-        return scroll;
+        return scrollFling;
     }
 
-    public void setScroll(Scroll scroll)
+    public void setScrollFling(ScrollFling scrollFling)
     {
-        this.scroll = scroll;
-    }
-
-    public Fling getFling()
-    {
-        return fling;
-    }
-
-    public void setFling(Fling fling)
-    {
-        this.fling = fling;
+        this.scrollFling = scrollFling;
     }
 }

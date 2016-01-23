@@ -1,3 +1,7 @@
+/*
+*   This Activity is for Scroll/Fling interaction tests
+*
+* */
 package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.app.Activity;
@@ -8,27 +12,21 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
-import org.opencv.ml.StatModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TestActivity extends Activity implements
         GestureDetector.OnGestureListener,
@@ -107,7 +105,7 @@ public class TestActivity extends Activity implements
         Bundle bundle = getIntent().getExtras();
         trainObservations = (ArrayList<Observation>) bundle.getSerializable("trainObservations");
 
-        Mat trainMat = buildTrainOrTestMatFromObservationList(trainObservations);
+        Mat trainMat = buildTrainOrTestMatForScrollFling(trainObservations);
 
         Mat labelsMat = new Mat(trainObservations.size(), 1, CvType.CV_32S);
 
@@ -129,7 +127,7 @@ public class TestActivity extends Activity implements
 
     }
 
-    public Mat buildTrainOrTestMatFromObservationList(ArrayList<Observation> listObservations)
+    public Mat buildTrainOrTestMatForScrollFling(ArrayList<Observation> listObservations)
     {
         Mat tempMat = new Mat(listObservations.size(), Observation.numberOfFeatures, CvType.CV_32FC1);
 
@@ -184,115 +182,90 @@ public class TestActivity extends Activity implements
             }
             case (MotionEvent.ACTION_UP):
             {
-                endPoint = new Point(event.getX(), event.getY());
-                duration = event.getEventTime() - event.getDownTime();
-                Observation tempObs = new Observation();
-
-                if(isFling)
+                if(isFling || isScroll)
                 {
-                    //touch = fling
-                    Fling fling = new Fling();
-                    fling.setStartPoint(startPoint);
-                    fling.setEndPoint(endPoint);
-                    fling.setPoints(points);
-                    fling.setDuration(duration);
-                    fling.setPressure(event.getPressure());
+                    endPoint = new Point(event.getX(), event.getY());
+                    duration = event.getEventTime() - event.getDownTime();
+                    Observation tempObs = new Observation();
 
-                    Log.d(DEBUG_TAG, "Fling: " + fling.toString());
-                    tempObs.setGesture(fling);
-                }
-                else if(isScroll)
-                {
-                    //touch = scroll
-                    Scroll scroll = new Scroll();
-                    scroll.setStartPoint(startPoint);
-                    scroll.setEndPoint(endPoint);
-                    scroll.setPoints(points);
-                    scroll.setDuration(duration);
-                    scroll.setPressure(event.getPressure());
+                    //touch = scrollFling
+                    ScrollFling scrollFling = new ScrollFling();
+                    scrollFling.setStartPoint(startPoint);
+                    scrollFling.setEndPoint(endPoint);
+                    scrollFling.setPoints(points);
+                    scrollFling.setDuration(duration);
+                    scrollFling.setPressure(event.getPressure());
 
-                    Log.d(DEBUG_TAG, "Scroll: " + scroll.toString());
-                    tempObs.setGesture(scroll);
+                    Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
+                    tempObs.setGesture(scrollFling);
 
-                }
-                else
-                {
-                    //touch = tap
-                    Tap tap = new Tap();
-                    tap.setStartPoint(startPoint);
-                    tap.setEndPoint(endPoint);
-                    tap.setPoints(points);
-                    tap.setDuration(duration);
-                    tap.setPressure(event.getPressure());
+                    // add linear accelerations to the Observation
+                    tempObs.setLinearAcceleration(linearAcceleration);
+                    tempObs.setLastLinearAcceleration(lastLinearAcceleration);
+                    Log.d(DEBUG_TAG, "Linear Accelerations on touch - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
 
-                    Log.d(DEBUG_TAG, "Tap: " + tap.toString());
-                    tempObs.setGesture(tap);
-                }
+                    // add angular velocity to the Observation on touch gesture
+                    tempObs.setAngularVelocity(angularVelocity);
+                    tempObs.setLastAngularVelocity(lastAngularVelocity);
+                    Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
 
-                // add linear accelerations to the Observation
-                tempObs.setLinearAcceleration(linearAcceleration);
-                tempObs.setLastLinearAcceleration(lastLinearAcceleration);
-                Log.d(DEBUG_TAG, "Linear Accelerations on touch - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
+                    // add observation to testList to remember what observations we tested so far - not used anywhere else
+                    testObservations.add(tempObs);
 
-                // add angular velocity to the Observation on touch gesture
-                tempObs.setAngularVelocity(angularVelocity);
-                tempObs.setLastAngularVelocity(lastAngularVelocity);
-                Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
+                    //create a list containing only one Obs which s used to create the test Mat
+                    ArrayList<Observation> tempObsList = new ArrayList<Observation>();
+                    tempObsList.add(tempObs);
 
-                // add observation to testList to remember what observations we tested so far - not used anywhere else
-                testObservations.add(tempObs);
+                    Mat testDataMat = buildTrainOrTestMatForScrollFling(tempObsList);
 
-                //create a list containing only one Obs which s used to create the test Mat
-                ArrayList<Observation> tempObsList = new ArrayList<Observation>();
-                tempObsList.add(tempObs);
+                    // create the result Mat
+                    Mat resultMat = new Mat(tempObsList.size(), 1, CvType.CV_32S);
 
-                Mat testDataMat = buildTrainOrTestMatFromObservationList(tempObsList);
-
-                // create the result Mat
-                Mat resultMat = new Mat(tempObsList.size(), 1, CvType.CV_32S);
-
-                svm.predict(testDataMat, resultMat, 0);
-                //svm.predict(testDataMat, resultMat, StatModel.RAW_OUTPUT);
+                    svm.predict(testDataMat, resultMat, 0);
+                    //svm.predict(testDataMat, resultMat, StatModel.RAW_OUTPUT);
 
 
-                for (int i = 0; i < resultMat.rows(); i++)
-                {
-                    if((float)resultMat.get(i, 0)[0] == 0.0f)
+                    for (int i = 0; i < resultMat.rows(); i++)
                     {
-                        progressBar.incrementProgressBy(progressVal);
+                        if((float)resultMat.get(i, 0)[0] == 0.0f)
+                        {
+                            progressBar.incrementProgressBy(progressVal);
+                        }
+
+                        out += "\tpredicted" + i + ": " + (float)resultMat.get(i, 0)[0];
                     }
 
-                    out += "\tpredicted" + i + ": " + (float)resultMat.get(i, 0)[0];
+                    /*
+                    * Printing things on console to help me understand the algorithm.
+                    *
+                    * */
+
+                    Mat supportVectors = svm.getSupportVectors();
+                    System.out.println("getSupportVectors:\n");
+                    displayMatrix(supportVectors);
+                    System.out.println("End get Support Vectors");
+
+
+                    Mat alpha = new Mat(supportVectors.rows(), supportVectors.cols(), CvType.CV_32S);
+                    double value = svm.getDecisionFunction(0, alpha, supportVectors);
+                    System.out.println("Decision Function value: " + value);
+
+                    System.out.println("Alpha Mat:\n");
+                    displayMatrix(alpha);
+                    System.out.println("End get AlphaMat");
+
+                    System.out.println("Decision Function Support Vectors:\n");
+                    displayMatrix(supportVectors);
+                    System.out.println("End get Support Vectors");
+
+                    outputdata.setText(out);
+
+                    points.clear();
+                    isFling = false;
+                    isScroll = false;
+
                 }
 
-                /*
-                * Printing things on console to help me understand the algorithm.
-                *
-                * */
-
-                Mat supportVectors = svm.getSupportVectors();
-                System.out.println("getSupportVectors:\n");
-                displayMatrix(supportVectors);
-                System.out.println("End get Support Vectors");
-
-
-                Mat alpha = new Mat(supportVectors.rows(), supportVectors.cols(), CvType.CV_32S);
-                double value = svm.getDecisionFunction(0, alpha, supportVectors);
-                System.out.println("Decision Function value: " + value);
-
-                System.out.println("Alpha Mat:\n");
-                displayMatrix(alpha);
-                System.out.println("End get AlphaMat");
-
-                System.out.println("Decision Function Support Vectors:\n");
-                displayMatrix(supportVectors);
-                System.out.println("End get Support Vectors");
-
-                outputdata.setText(out);
-
-                points.clear();
-                isFling = false;
-                isScroll = false;
                 return true;
             }
         }

@@ -105,7 +105,7 @@ public class TestTapOnly extends Activity implements
         Bundle bundle = getIntent().getExtras();
         trainObservations = (ArrayList<Observation>) bundle.getSerializable("trainObservations");
 
-        Mat trainMat = buildTrainOrTestMatFromObservationList(trainObservations);
+        Mat trainMat = buildTrainOrTestMatFotTaps(trainObservations);
 
         Mat labelsMat = new Mat(trainObservations.size(), 1, CvType.CV_32S);
 
@@ -127,7 +127,7 @@ public class TestTapOnly extends Activity implements
 
     }
 
-    public Mat buildTrainOrTestMatFromObservationList(ArrayList<Observation> listObservations)
+    public Mat buildTrainOrTestMatFotTaps(ArrayList<Observation> listObservations)
     {
         Mat tempMat = new Mat(listObservations.size(), Tap.numberOfFeatures, CvType.CV_32FC1);
 
@@ -216,7 +216,7 @@ public class TestTapOnly extends Activity implements
                     ArrayList<Observation> tempObsList = new ArrayList<>();
                     tempObsList.add(tempObs);
 
-                    Mat testDataMat = buildTrainOrTestMatFromObservationList(tempObsList);
+                    Mat testDataMat = buildTrainOrTestMatFotTaps(tempObsList);
 
                     // create the result Mat
                     Mat resultMat = new Mat(tempObsList.size(), 1, CvType.CV_32S);
