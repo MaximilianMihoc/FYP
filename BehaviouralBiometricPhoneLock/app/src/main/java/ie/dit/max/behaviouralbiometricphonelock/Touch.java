@@ -109,7 +109,7 @@ public class Touch implements Serializable
         this.startPoint = startPoint;
     }
 
-    public List<Point> getPoints()
+    public ArrayList<Point> getPoints()
     {
         return points;
     }

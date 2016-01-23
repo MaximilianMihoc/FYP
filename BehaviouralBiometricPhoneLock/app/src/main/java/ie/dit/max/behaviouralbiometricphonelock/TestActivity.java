@@ -133,10 +133,12 @@ public class TestActivity extends Activity implements
 
         for(int i = 0; i < listObservations.size(); i++)
         {
-            Touch touchGesture = listObservations.get(i).getGesture();
+            ScrollFling touchGesture = listObservations.get(i).getScrollFling();
             int j = 0;
+
             // call scale data function
             touchGesture.scaleData();
+            tempMat.put(i, j++, touchGesture.getMidStrokeAreaCovered());
             tempMat.put(i, j++, touchGesture.getScaledStartPoint().x);
             tempMat.put(i, j++, touchGesture.getScaledStartPoint().y);
             tempMat.put(i, j++, touchGesture.getScaledEndPoint().x);
@@ -197,7 +199,7 @@ public class TestActivity extends Activity implements
                     scrollFling.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
-                    tempObs.setGesture(scrollFling);
+                    tempObs.setScrollFling(scrollFling);
 
                     // add linear accelerations to the Observation
                     tempObs.setLinearAcceleration(linearAcceleration);
