@@ -130,7 +130,6 @@ public class TestTapOnly extends Activity implements
             Tap tapInteraction = listObservations.get(i).getTap();
             int j = 0;
             // call scale data function
-            tapInteraction.scaleData();
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);
             tempMat.put(i, j++, tapInteraction.getScaledEndPoint().x);

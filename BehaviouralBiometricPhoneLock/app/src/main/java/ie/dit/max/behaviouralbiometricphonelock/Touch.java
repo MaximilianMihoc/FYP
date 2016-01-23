@@ -26,46 +26,42 @@ public class Touch implements Serializable
         endPoint = new Point();
         scaledStartPoint = new Point();
         scaledEndPoint = new Point();
-        points = new ArrayList<>();
+        points = new ArrayList<Point>();
         duration = 0;
         scaledDuration = 0;
     }
 
-    public void scaleData()
+    public Point getScaledStartPoint()
     {
         // unit length for my vector is 1
         //scale data for Start Vector
-        double magnitudeStartVector = Math.sqrt(this.startPoint.x * this.startPoint.x + this.startPoint.y * this.startPoint.y);
-        this.scaledStartPoint.x = this.startPoint.x / magnitudeStartVector;
-        this.scaledStartPoint.y = this.startPoint.y / magnitudeStartVector;
+        double magnitudeStartVector = Math.sqrt(startPoint.x * startPoint.x + startPoint.y * startPoint.y);
+        scaledStartPoint.x = startPoint.x / magnitudeStartVector;
+        scaledStartPoint.y = startPoint.y / magnitudeStartVector;
 
+        return scaledStartPoint;
+    }
+
+    public Point getScaledEndPoint()
+    {
         //scale data for end Vector
-        double magnitudeEndVector = Math.sqrt(this.endPoint.x * this.endPoint.x + this.endPoint.y * this.endPoint.y);
-        this.scaledEndPoint.x = this.endPoint.x / magnitudeEndVector;
-        this.scaledEndPoint.y = this.endPoint.y / magnitudeEndVector;
+        double magnitudeEndVector = Math.sqrt(endPoint.x * endPoint.x + endPoint.y * endPoint.y);
+        scaledEndPoint.x = endPoint.x / magnitudeEndVector;
+        scaledEndPoint.y = endPoint.y / magnitudeEndVector;
 
+        return scaledEndPoint;
+    }
+
+    public double getScaledDuration()
+    {
         /*
         * Scale duration and save it into scaledDuration variable
         * To scale duration, transform it from milliseconds to seconds.
         * Touch actions usually do not take more than a second and scaling this to seconds would
         * keep data close to my other features data
         * */
-        this.scaledDuration = this.duration / 1000;
+        scaledDuration = duration / 1000;
 
-    }
-
-    public Point getScaledStartPoint()
-    {
-        return scaledStartPoint;
-    }
-
-    public Point getScaledEndPoint()
-    {
-        return scaledEndPoint;
-    }
-
-    public double getScaledDuration()
-    {
         return scaledDuration;
     }
 

@@ -81,10 +81,6 @@ public class TrainActivity extends Activity implements
         senGyroscope = senSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         senSensorManager.registerListener(this, senGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
-        //Point p;
-
-        //textInstruction1 = (EditText) findViewById(R.id.textInstruction1);
-
         observations = new ArrayList<>();
         tapOnlyObservations = new ArrayList<>();
 
@@ -122,8 +118,8 @@ public class TrainActivity extends Activity implements
         });
 
         //test
-        User u = (User) getIntent().getSerializableExtra("userObject");
-        System.out.println("Success login:  " + u.getUserID());
+        /*User u = (User) getIntent().getSerializableExtra("userObject");
+        System.out.println("Success login:  " + u.getUserID());*/
     }
 
     @Override
@@ -168,7 +164,6 @@ public class TrainActivity extends Activity implements
                     scrollFling.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
-                    tempObs.setGesture(scrollFling);
                     tempObs.setScrollFling(scrollFling);
                 }
                 else
@@ -182,7 +177,6 @@ public class TrainActivity extends Activity implements
                     tap.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "Tap: " + tap.toString());
-                    tempObs.setGesture(tap);
                     tempObs.setTap(tap);
                 }
 
@@ -199,6 +193,8 @@ public class TrainActivity extends Activity implements
                 // add Observation to the List of training observations. Separate list of obs for tap gesture.
                 if(!isFling && !isScroll) tapOnlyObservations.add(tempObs);
                 else observations.add(tempObs);
+
+                System.out.println("Points in train: " + points.toString());
 
                 points.clear();
                 isFling = false;

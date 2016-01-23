@@ -16,16 +16,12 @@ public class ScrollFling extends Touch implements Serializable
     }
 
     // This method will create a list with all the points on the stroke, including start and end points
-    private ArrayList<Point> normalizeStrokePoints()
+    public ArrayList<Point> normalizeStrokePoints()
     {
         ArrayList<Point> scaledPoints = new ArrayList<>();
 
         //Add StartPoint of Stroke to the list of points
-        double magnitudeStartPoint = Math.sqrt(startPoint.x * startPoint.x + startPoint.y * startPoint.y);
-        Point scaledStartPoint = new Point();
-        scaledStartPoint.x = startPoint.x / magnitudeStartPoint;
-        scaledStartPoint.y = startPoint.y / magnitudeStartPoint;
-        scaledPoints.add(scaledStartPoint);
+        scaledPoints.add(getScaledStartPoint());
 
         // normalize all points of the stroke and store them into a new array
         for(Point p : points)
@@ -39,14 +35,12 @@ public class ScrollFling extends Touch implements Serializable
         }
 
         //Add EndPoint of Stroke to the list of points
-        double magnitudeEndPoint = Math.sqrt(endPoint.x * endPoint.x + endPoint.y * endPoint.y);
-        Point scaledEndPoint = new Point();
-        scaledEndPoint.x = endPoint.x / magnitudeEndPoint;
-        scaledEndPoint.y = endPoint.y / magnitudeEndPoint;
-        scaledPoints.add(scaledEndPoint);
+        scaledPoints.add(getScaledEndPoint());
 
         // Add start point to the end of the list in order to apply Shoelace formula easier to find the area.
-        scaledPoints.add(scaledStartPoint);
+        scaledPoints.add(getScaledStartPoint());
+
+        System.out.println("Points in scroll/field: " + scaledPoints.toString());
 
         return scaledPoints;
     }
@@ -71,12 +65,23 @@ public class ScrollFling extends Touch implements Serializable
         }
 
         if(sum < 0) sum = -1 * sum;
+
         midStrokeArea = sum / 2;
 
         //scale value in order to be between 0 and 1
         //if(midStrokeArea != 0) midStrokeArea = 1/midStrokeArea;
 
         return midStrokeArea;
+    }
+
+    public double getDirectionOfEndToEndLine()
+    {
+        double direction;
+        direction = (endPoint.y - startPoint.y)/(endPoint.x - startPoint.x);
+
+        System.out.println("Direction angle: " + 1/Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x)) ;
+
+        return Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
     }
 
     @Override
@@ -88,6 +93,7 @@ public class ScrollFling extends Touch implements Serializable
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
                 ", midStrokeArea= " + getMidStrokeAreaCovered() +
+                ",direction= " + getDirectionOfEndToEndLine() +
                 '}';
     }
 }

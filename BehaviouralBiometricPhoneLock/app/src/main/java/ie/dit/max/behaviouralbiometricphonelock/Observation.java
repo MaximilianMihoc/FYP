@@ -10,7 +10,6 @@ import java.util.List;
 public class Observation implements Serializable
 {
     public static final int numberOfFeatures = 9;
-    private ArrayList<Float> features;
     private Touch gesture;
     private Tap tap;
     private ScrollFling scrollFling;
@@ -21,7 +20,6 @@ public class Observation implements Serializable
 
     public Observation()
     {
-        features = new ArrayList<>();
         gesture = new Touch();
         linearAcceleration = 0.0f;
         lastLinearAcceleration = 0.0f;
@@ -37,24 +35,9 @@ public class Observation implements Serializable
         this.gesture = gesture;
     }
 
-    public List<Float> getFeatures()
-    {
-        return features;
-    }
-
-    public void setFeatures(ArrayList<Float> features)
-    {
-        this.features = features;
-    }
-
     public String toString()
     {
         return "Observation: ";
-    }
-
-    public void addFeature(Float feature)
-    {
-        this.features.add(feature);
     }
 
     public float getLinearAcceleration()

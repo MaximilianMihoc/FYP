@@ -105,6 +105,9 @@ public class TestActivity extends Activity implements
         Bundle bundle = getIntent().getExtras();
         trainObservations = (ArrayList<Observation>) bundle.getSerializable("trainObservations");
 
+        /*ScrollFling sf = trainObservations.get(0).getScrollFling();
+        System.out.println("Train obs check: " + sf.toString());*/
+
         Mat trainMat = buildTrainOrTestMatForScrollFling(trainObservations);
 
         Mat labelsMat = new Mat(trainObservations.size(), 1, CvType.CV_32S);
@@ -136,8 +139,7 @@ public class TestActivity extends Activity implements
             ScrollFling touchGesture = listObservations.get(i).getScrollFling();
             int j = 0;
 
-            // call scale data function
-            touchGesture.scaleData();
+            tempMat.put(i, j++, touchGesture.getDirectionOfEndToEndLine());
             tempMat.put(i, j++, touchGesture.getMidStrokeAreaCovered());
             tempMat.put(i, j++, touchGesture.getScaledStartPoint().x);
             tempMat.put(i, j++, touchGesture.getScaledStartPoint().y);
@@ -258,16 +260,13 @@ public class TestActivity extends Activity implements
 
                     System.out.println("Decision Function Support Vectors:\n");
                     displayMatrix(supportVectors);
-                    System.out.println("End get Support Vectors");
 
                     outputdata.setText(out);
-
-                    points.clear();
-                    isFling = false;
-                    isScroll = false;
-
                 }
 
+                points.clear();
+                isFling = false;
+                isScroll = false;
                 return true;
             }
         }
