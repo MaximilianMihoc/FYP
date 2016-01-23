@@ -9,8 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.firebase.client.Firebase;
-
 import org.opencv.android.OpenCVLoader;
 
 public class MainActivity extends AppCompatActivity

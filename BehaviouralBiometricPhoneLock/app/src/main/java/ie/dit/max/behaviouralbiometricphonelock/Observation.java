@@ -21,7 +21,7 @@ public class Observation implements Serializable
 
     public Observation()
     {
-        features = new ArrayList<Float>();
+        features = new ArrayList<>();
         gesture = new Touch();
         linearAcceleration = 0.0f;
         lastLinearAcceleration = 0.0f;

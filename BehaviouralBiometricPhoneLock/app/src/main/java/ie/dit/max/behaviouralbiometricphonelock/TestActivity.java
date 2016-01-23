@@ -46,7 +46,7 @@ public class TestActivity extends Activity implements
     private float angularVelocity;
 
     Point startPoint, endPoint;
-    ArrayList<Point> points = new ArrayList<Point>();
+    ArrayList<Point> points = new ArrayList<>();
     ArrayList<Observation> trainObservations;
     ArrayList<Observation> testObservations;
 
@@ -123,7 +123,7 @@ public class TestActivity extends Activity implements
         displayMatrix(trainMat);
 
 
-        boolean isTrained = svm.train(trainMat, Ml.ROW_SAMPLE, labelsMat);
+        svm.train(trainMat, Ml.ROW_SAMPLE, labelsMat);
 
     }
 
@@ -149,7 +149,7 @@ public class TestActivity extends Activity implements
 
             // angular Velocity are part of the observation
             tempMat.put(i, j++, trainObservations.get(i).getLastAngularVelocity());
-            tempMat.put(i, j++, trainObservations.get(i).getAngularVelocity());
+            tempMat.put(i, j, trainObservations.get(i).getAngularVelocity());
         }
 
         return tempMat;
@@ -213,7 +213,7 @@ public class TestActivity extends Activity implements
                     testObservations.add(tempObs);
 
                     //create a list containing only one Obs which s used to create the test Mat
-                    ArrayList<Observation> tempObsList = new ArrayList<Observation>();
+                    ArrayList<Observation> tempObsList = new ArrayList<>();
                     tempObsList.add(tempObs);
 
                     Mat testDataMat = buildTrainOrTestMatForScrollFling(tempObsList);

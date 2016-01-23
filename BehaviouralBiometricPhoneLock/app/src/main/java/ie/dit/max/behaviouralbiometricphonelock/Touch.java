@@ -26,7 +26,7 @@ public class Touch implements Serializable
         endPoint = new Point();
         scaledStartPoint = new Point();
         scaledEndPoint = new Point();
-        points = new ArrayList<Point>();
+        points = new ArrayList<>();
         duration = 0;
         scaledDuration = 0;
     }

@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import org.opencv.core.Point;
 
@@ -32,9 +31,8 @@ public class TrainActivity extends Activity implements
     private static final String DEBUG_TAG = "Gestures";
     private GestureDetectorCompat mDetector;
 
-    EditText textInstruction1;
     Point startPoint, endPoint;
-    ArrayList<Point> points = new ArrayList<Point>();
+    ArrayList<Point> points = new ArrayList<>();
     ArrayList<Observation> observations;
     ArrayList<Observation> tapOnlyObservations;
 
@@ -173,7 +171,7 @@ public class TrainActivity extends Activity implements
                     tempObs.setGesture(scrollFling);
                     tempObs.setScrollFling(scrollFling);
                 }
-                else if(!isFling && !isScroll)
+                else
                 {
                     //touch = tap
                     Tap tap = new Tap();

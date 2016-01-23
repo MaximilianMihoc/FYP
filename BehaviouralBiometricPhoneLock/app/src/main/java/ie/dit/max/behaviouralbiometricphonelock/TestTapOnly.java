@@ -8,18 +8,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -46,7 +42,7 @@ public class TestTapOnly extends Activity implements
     private float angularVelocity;
 
     Point startPoint, endPoint;
-    ArrayList<Point> points = new ArrayList<Point>();
+    ArrayList<Point> points = new ArrayList<>();
     ArrayList<Observation> trainObservations;
     ArrayList<Observation> testObservations;
 
@@ -122,9 +118,7 @@ public class TestTapOnly extends Activity implements
         System.out.println("Train Matrix is:\n");
         displayMatrix(trainMat);
 
-
-        boolean isTrained = svm.train(trainMat, Ml.ROW_SAMPLE, labelsMat);
-
+        svm.train(trainMat, Ml.ROW_SAMPLE, labelsMat);
     }
 
     public Mat buildTrainOrTestMatFotTaps(ArrayList<Observation> listObservations)

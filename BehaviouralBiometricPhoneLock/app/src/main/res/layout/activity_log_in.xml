@@ -20,6 +20,7 @@
         android:inputType="textEmailAddress"
         android:ems="10"
         android:id="@+id/emailLogin"
+        android:hint="E-mail"
         android:layout_below="@+id/textView5"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
