@@ -19,7 +19,7 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.Map;
 
-public class LogIn extends AppCompatActivity
+public class LogIn extends TrainActivity
 {
 
     Firebase ref;
