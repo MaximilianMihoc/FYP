@@ -11,6 +11,8 @@ import android.widget.Button;
 
 import org.opencv.android.OpenCVLoader;
 
+import ie.dit.max.foregroundApp.Home;
+
 public class MainActivity extends AppCompatActivity
 {
 
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(MainActivity.this, TrainActivity.class);
+                Intent trainIntent = new Intent(MainActivity.this, Home.class);
                 startActivity(trainIntent);
             }
         });
