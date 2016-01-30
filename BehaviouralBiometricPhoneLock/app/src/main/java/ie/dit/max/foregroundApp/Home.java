@@ -42,7 +42,7 @@ public class Home extends AppCompatActivity
         setContentView(R.layout.activity_home);
 
 
-        startConnection("https://api.stackexchange.com/2.2/questions?pagesize=100&order=desc&sort=activity&site=stackoverflow");
+        startConnection("https://api.stackexchange.com/2.2/questions?pagesize=100&order=desc&sort=activity&site=stackoverflow&filter=!9YdnSIN18");
 
         queionsList = (ListView) findViewById(android.R.id.list);
         searchView = (SearchView) findViewById(R.id.searchView);
@@ -54,7 +54,7 @@ public class Home extends AppCompatActivity
 
                 String safeQuery = URLParamEncoder.encode(query);
 
-                String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&intitle=" + safeQuery + "&site=stackoverflow";
+                String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&intitle=" + safeQuery + "&site=stackoverflow&filter=!9YdnSIN18";
                 System.out.println("URL: " + url);
 
                 startConnection(url);
@@ -120,7 +120,7 @@ public class Home extends AppCompatActivity
                     JSONObject ownerJson = item.getJSONObject("owner");
 
                     Owner questionOwner = new Owner((int)ownerJson.get("reputation"), (int)ownerJson.get("user_id"), ownerJson.get("display_name").toString());
-                    Question question = new Question( (int)item.get("question_id"), (int)item.get("answer_count"), (int)item.get("creation_date"), item.get("title").toString(), questionOwner);
+                    Question question = new Question( (int)item.get("question_id"), (int)item.get("answer_count"), (int)item.get("creation_date"), item.get("title").toString(), questionOwner, item.get("body").toString());
 
                     questionsList.add(question);
                 }

@@ -14,15 +14,17 @@ public class Question implements Serializable
     private long creation_date;
     private String title;
     private Owner owner;
+    private String body;
 
 
-    public Question(long question_id, int answer_count, long creation_date, String title, Owner owner)
+    public Question(long question_id, int answer_count, long creation_date, String title, Owner owner, String body)
     {
         this.question_id = question_id;
         this.answer_count = answer_count;
         this.creation_date = creation_date;
         this.title = title;
         this.owner = owner;
+        this.body = body;
     }
 
     public Question()
