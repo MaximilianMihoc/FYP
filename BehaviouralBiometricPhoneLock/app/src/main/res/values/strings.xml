@@ -13,4 +13,5 @@
     <string name="title_activity_log_in">LogIn</string>
     <string name="title_activity_register_user">RegisterUser</string>
     <string name="title_activity_home">Home</string>
+    <string name="noData">Sorry, No Questions on the searched items. \nPlease try something else.</string>
 </resources>

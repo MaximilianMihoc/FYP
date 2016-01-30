@@ -43,10 +43,13 @@ public class QuestionListAdapter extends ArrayAdapter<Question>
             qTitle.setText(Html.fromHtml(q.getTitle()));
 
             TextView dateAnswers = (TextView) row.findViewById(R.id.dateAndAnswersCount);
-            dateAnswers.setText("asked " + q.getCreation_date() + "\n" + q.getAnswer_count() + " Answers");
+            if(q.getAnswer_count() == 1 )
+                dateAnswers.setText("asked " + q.getCreation_date() + "\n" + q.getAnswer_count() + " Answer");
+            else
+                dateAnswers.setText("asked " + q.getCreation_date() + "\n" + q.getAnswer_count() + " Answers");
 
             TextView qOwner = (TextView) row.findViewById(R.id.questionOwner);
-            qOwner.setText("Owner: " + q.getOwner().getDisplay_name() + " Reputation: " + q.getOwner().getReputation());
+            qOwner.setText("Owner: " + q.getOwner().getDisplay_name() + " -> Reputation: " + q.getOwner().getReputation());
 
         }
 

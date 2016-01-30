@@ -2,6 +2,7 @@ package ie.dit.max.foregroundApp;
 
 /**
  * Created by Maximilian on 30/01/2016.
+ * Reference: http://stackoverflow.com/questions/724043/http-url-address-encoding-in-java/4605816#4605816
  */
 public class URLParamEncoder
 {
@@ -28,4 +29,5 @@ public class URLParamEncoder
             return true;
         return " %$&+,/:;=?@<>#%".indexOf(ch) >= 0;
     }
+    /* Reference End. */
 }

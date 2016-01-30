@@ -41,6 +41,7 @@ public class Home extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+
         startConnection("https://api.stackexchange.com/2.2/questions?pagesize=100&order=desc&sort=activity&site=stackoverflow");
 
         queionsList = (ListView) findViewById(android.R.id.list);
@@ -125,6 +126,7 @@ public class Home extends AppCompatActivity
                 }
 
                 questionsListAdapter = new QuestionListAdapter(getApplicationContext(), questionsList);
+                queionsList.setEmptyView(findViewById(android.R.id.empty));
                 queionsList.setAdapter(questionsListAdapter);
 
 
