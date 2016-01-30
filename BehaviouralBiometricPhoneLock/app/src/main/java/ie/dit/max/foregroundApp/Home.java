@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +32,8 @@ public class Home extends AppCompatActivity
     private static final String DEBUG_TAG = "ForegroundApp";
 
     ListView queionsList;
+    QuestionListAdapter questionsListAdapter;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,9 +41,31 @@ public class Home extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        startConnection("https://api.stackexchange.com/2.2/questions?order=desc&sort=activity&site=stackoverflow");
+        startConnection("https://api.stackexchange.com/2.2/questions?pagesize=100&order=desc&sort=activity&site=stackoverflow");
 
         queionsList = (ListView) findViewById(android.R.id.list);
+        searchView = (SearchView) findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String query)
+            {
+
+                String safeQuery = URLParamEncoder.encode(query);
+
+                String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&intitle=" + safeQuery + "&site=stackoverflow";
+                System.out.println("URL: " + url);
+
+                startConnection(url);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText)
+            {
+                return false;
+            }
+        });
 
     }
 
@@ -84,18 +109,23 @@ public class Home extends AppCompatActivity
 
                 JSONArray items = json.getJSONArray("items");
 
-                List<String> your_array_list = new ArrayList<String>();
+                ArrayList<Question> questionsList = new ArrayList<>();
 
                 for(int i=0; i < items.length(); i++)
                 {
                     JSONObject item = items.getJSONObject(i);
-                    System.out.println("Question ID: " + item.get("question_id") + "\nTitle: " + item.get("title"));
-                    your_array_list.add(item.get("title").toString());
+                    //System.out.println("Question ID: " + item.get("question_id") + "\nTitle: " + item.get("title"));
+
+                    JSONObject ownerJson = item.getJSONObject("owner");
+
+                    Owner questionOwner = new Owner((int)ownerJson.get("reputation"), (int)ownerJson.get("user_id"), ownerJson.get("display_name").toString());
+                    Question question = new Question( (int)item.get("question_id"), (int)item.get("answer_count"), (int)item.get("creation_date"), item.get("title").toString(), questionOwner);
+
+                    questionsList.add(question);
                 }
 
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, your_array_list );
-
-                queionsList.setAdapter(arrayAdapter);
+                questionsListAdapter = new QuestionListAdapter(getApplicationContext(), questionsList);
+                queionsList.setAdapter(questionsListAdapter);
 
 
             } catch (JSONException e)
