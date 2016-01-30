@@ -29,6 +29,7 @@ public class AnswersScreen extends AppCompatActivity
 
     ListView answersListView;
     AnswerListAdapter answerListAdapter;
+    Question questionSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,21 +39,11 @@ public class AnswersScreen extends AppCompatActivity
 
         answersListView = (ListView) findViewById(android.R.id.list);
 
-        Question questionSelected = new Question();
-        questionSelected.setQuestion_id(13409651);
-        questionSelected.setAnswer_count(4);
-        questionSelected.setCreation_date(1453883985);
-        questionSelected.setBody("<p>I know that I can set the content of the view in an Android app by saying setContentView(int). Is there a function I can use to know what the current content view is? I don't know if that makes any sense, but what I'm looking for is a function called, say, getContentView that returns an int.</p>\\n\\n<p>Ideally, it would look like this:</p>\\n\\n<pre><code>setContentView(R.layout.main); // sets the content view to main.xml\\nint contentView = getContentView(); // does this function exist?\\n</code></pre>\\n\\n<p>How would I do that?</p>\\n");
-        questionSelected.setOwner(new Owner(534, 1081786, "Lincoln Bergeson"));
+        Bundle bundle = getIntent().getExtras();
+        questionSelected = (Question) bundle.getSerializable("selectedQuestion");
 
-        TextView questionBody = (TextView)findViewById(R.id.questionBody);
-        questionBody.setText(Html.fromHtml(questionSelected.getBody()));
-
-        TextView questionOwner = (TextView)findViewById(R.id.questionBodyOwner);
-        questionOwner.setText("asked: " + questionSelected.getCreation_date() + "\n" + questionSelected.getOwner().getDisplay_name());
-
-        TextView questionNumberOfAnswers = (TextView)findViewById(R.id.answersCount);
-        questionNumberOfAnswers.setText(questionSelected.getAnswer_count() + " Answers");
+        TextView questionTitle = (TextView)findViewById(R.id.questionBody);
+        questionTitle.setText(Html.fromHtml(questionSelected.getTitle()));
 
         startConnection("https://api.stackexchange.com/2.2/questions/" + questionSelected.getQuestion_id() + "/answers?order=desc&sort=activity&site=stackoverflow&filter=!3yXvhCikopVa8vWh*");
 

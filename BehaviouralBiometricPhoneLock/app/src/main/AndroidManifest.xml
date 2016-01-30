@@ -47,6 +47,10 @@
             android:name="ie.dit.max.foregroundApp.AnswersScreen"
             android:label="@string/title_activity_answers_screen" >
         </activity>
+        <activity
+            android:name="ie.dit.max.foregroundApp.QuestionBodyScreen"
+            android:label="@string/title_activity_question_body_screen" >
+        </activity>
     </application>
 
 </manifest>

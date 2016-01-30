@@ -13,6 +13,7 @@ import org.opencv.android.OpenCVLoader;
 
 import ie.dit.max.foregroundApp.AnswersScreen;
 import ie.dit.max.foregroundApp.Home;
+import ie.dit.max.foregroundApp.QuestionBodyScreen;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(MainActivity.this, AnswersScreen.class);
+                Intent trainIntent = new Intent(MainActivity.this, QuestionBodyScreen.class);
                 startActivity(trainIntent);
             }
         });

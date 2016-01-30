@@ -38,7 +38,7 @@ public class AnswerListAdapter extends ArrayAdapter<Answer>
             row = inflater.inflate(R.layout.answer_row, parent, false);
 
             TextView answerBody = (TextView) row.findViewById(R.id.answerBody);
-            answerBody.setText(Html.fromHtml(answer.getBody()));
+            answerBody.setText(Html.fromHtml("<br/>" + answer.getBody()));
 
             TextView answerOwner = (TextView) row.findViewById(R.id.answerBodyOwner);
             answerOwner.setText(Html.fromHtml("answered: " + answer.getCreation_date() + "\n" + answer.getOwner().getDisplay_name()));

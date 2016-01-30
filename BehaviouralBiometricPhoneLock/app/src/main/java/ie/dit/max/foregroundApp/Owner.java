@@ -1,9 +1,11 @@
 package ie.dit.max.foregroundApp;
 
+import java.io.Serializable;
+
 /**
  * Created by Maximilian on 30/01/2016.
  */
-public class Owner
+public class Owner implements Serializable
 {
     private int reputation;
     private long user_id;
