@@ -31,14 +31,6 @@ public class Question implements Serializable
     {
     }
 
-    public String ConvertMillisecondsToDateString(long milliseconds)
-    {
-        //Calendar calendar = Calendar.getInstance();
-        //calendar.setTimeInMillis(milliseconds);
-
-        return DateFormat.getDateInstance(DateFormat.SHORT).format(milliseconds);
-    }
-
     public Owner getOwner()
     {
         return owner;
@@ -71,7 +63,7 @@ public class Question implements Serializable
 
     public String getCreation_date() // return Date in Date Format
     {
-        return ConvertMillisecondsToDateString(creation_date*1000);
+        return DateFormat.getDateInstance(DateFormat.SHORT).format(creation_date * 1000);
     }
 
     public void setCreation_date(long creation_date)
@@ -87,5 +79,15 @@ public class Question implements Serializable
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    public String getBody()
+    {
+        return body;
+    }
+
+    public void setBody(String body)
+    {
+        this.body = body;
     }
 }

@@ -29,7 +29,7 @@ import ie.dit.max.behaviouralbiometricphonelock.R;
 
 public class Home extends AppCompatActivity
 {
-    private static final String DEBUG_TAG = "ForegroundApp";
+    private static final String DEBUG_TAG = "ForegroundApp - Home";
 
     ListView queionsList;
     QuestionListAdapter questionsListAdapter;

@@ -18,7 +18,8 @@ public class Owner
 
     public Owner()
     {
-
+        this.reputation = 0;
+        this.user_id = 0;
     }
 
     public int getReputation()
