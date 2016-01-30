@@ -7,15 +7,19 @@
 package ie.dit.max.foregroundApp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +38,8 @@ public class Home extends AppCompatActivity
     ListView queionsList;
     QuestionListAdapter questionsListAdapter;
     SearchView searchView;
+    ArrayList<Question> questionsList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,10 +47,8 @@ public class Home extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
         startConnection("https://api.stackexchange.com/2.2/questions?pagesize=100&order=desc&sort=activity&site=stackoverflow&filter=!9YdnSIN18");
 
-        queionsList = (ListView) findViewById(android.R.id.list);
         searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
@@ -65,6 +69,25 @@ public class Home extends AppCompatActivity
             public boolean onQueryTextChange(String newText)
             {
                 return false;
+            }
+        });
+
+        queionsList = (ListView) findViewById(android.R.id.list);
+        queionsList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Intent goToQuestionBodyIntent = new Intent(Home.this, QuestionBodyScreen.class);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("questionSelected", questionsList.get(position));
+                goToQuestionBodyIntent.putExtras(bundle);
+
+                startActivity(goToQuestionBodyIntent);
+
+                //Toast toast = Toast.makeText(getApplicationContext(), questionsList.get(position).getTitle(), Toast.LENGTH_SHORT);
+                //toast.show();
             }
         });
 
@@ -110,7 +133,7 @@ public class Home extends AppCompatActivity
 
                 JSONArray items = json.getJSONArray("items");
 
-                ArrayList<Question> questionsList = new ArrayList<>();
+                questionsList = new ArrayList<>();
 
                 for(int i=0; i < items.length(); i++)
                 {
@@ -119,8 +142,8 @@ public class Home extends AppCompatActivity
 
                     JSONObject ownerJson = item.getJSONObject("owner");
 
-                    Owner questionOwner = new Owner((int)ownerJson.get("reputation"), (int)ownerJson.get("user_id"), ownerJson.get("display_name").toString());
-                    Question question = new Question( (int)item.get("question_id"), (int)item.get("answer_count"), (int)item.get("creation_date"), item.get("title").toString(), questionOwner, item.get("body").toString());
+                    Owner questionOwner = new Owner(ownerJson.getInt("reputation"), ownerJson.getLong("user_id"), ownerJson.getString("display_name"));
+                    Question question = new Question( item.getLong("question_id"), item.getInt("answer_count"), item.getLong("creation_date"), item.getString("title"), questionOwner, item.getString("body"));
 
                     questionsList.add(question);
                 }

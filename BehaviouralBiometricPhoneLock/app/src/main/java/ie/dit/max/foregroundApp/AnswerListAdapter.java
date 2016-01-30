@@ -41,10 +41,10 @@ public class AnswerListAdapter extends ArrayAdapter<Answer>
             answerBody.setText(Html.fromHtml("<br/>" + answer.getBody()));
 
             TextView answerOwner = (TextView) row.findViewById(R.id.answerBodyOwner);
-            answerOwner.setText(Html.fromHtml("answered: " + answer.getCreation_date() + "\n" + answer.getOwner().getDisplay_name()));
+            answerOwner.setText(Html.fromHtml("answered: " + answer.getCreation_date() + "<br/>By: " + answer.getOwner().getDisplay_name()));
 
             TextView comments = (TextView) row.findViewById(R.id.answerComments);
-            comments.setText("Comments To be added");
+            comments.setText(Html.fromHtml("Comments To be added <hr> <br/>"));
 
         }
 

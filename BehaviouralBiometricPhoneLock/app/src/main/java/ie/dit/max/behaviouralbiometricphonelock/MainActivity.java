@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(MainActivity.this, QuestionBodyScreen.class);
+                Intent trainIntent = new Intent(MainActivity.this, Home.class);
                 startActivity(trainIntent);
             }
         });

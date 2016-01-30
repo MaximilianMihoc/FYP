@@ -24,13 +24,9 @@ public class QuestionBodyScreen extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_body_screen);
 
-        questionSelected = new Question();
-        questionSelected.setQuestion_id(13409651);
-        questionSelected.setAnswer_count(4);
-        questionSelected.setCreation_date(1453883985);
-        questionSelected.setBody("<p>I know that I can set the content of the view in an Android app by saying setContentView(int). Is there a function I can use to know what the current content view is? I don't know if that makes any sense, but what I'm looking for is a function called, say, getContentView that returns an int.</p>\n\n<p>Ideally, it would look like this:</p>\n\n<pre><code>setContentView(R.layout.main); // sets the content view to main.xml\nint contentView = getContentView(); // does this function exist?\n</code></pre>\n\n<p>How would I do that?</p>\n");
-        questionSelected.setOwner(new Owner(534, 1081786, "Lincoln Bergeson"));
-        questionSelected.setTitle("Best practise to initialize the same elements accross many Activities?");
+
+        Bundle bundle = getIntent().getExtras();
+        questionSelected = (Question) bundle.getSerializable("questionSelected");
 
         TextView questionTitle = (TextView)findViewById(R.id.bodyScreenTitle);
         questionTitle.setText(Html.fromHtml(questionSelected.getTitle()));
@@ -39,10 +35,13 @@ public class QuestionBodyScreen extends AppCompatActivity
         questionBody.setText(Html.fromHtml("<br/>" + questionSelected.getBody()));
 
         TextView questionOwner = (TextView)findViewById(R.id.questionBodyOwner);
-        questionOwner.setText("asked: " + questionSelected.getCreation_date() + "\n" + questionSelected.getOwner().getDisplay_name());
+        questionOwner.setText("asked: " + questionSelected.getCreation_date() + "\nBy: " + questionSelected.getOwner().getDisplay_name());
 
         goToAnswers = (Button) findViewById(R.id.goToAnswers);
-        goToAnswers.setText("View " + questionSelected.getAnswer_count() + " Answers");
+
+        if (questionSelected.getAnswer_count() == 1) goToAnswers.setText("View " + questionSelected.getAnswer_count() + " Answer");
+        else goToAnswers.setText("View " + questionSelected.getAnswer_count() + " Answers");
+
         goToAnswers.setOnClickListener(new View.OnClickListener()
         {
             @Override
