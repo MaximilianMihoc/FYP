@@ -48,7 +48,7 @@ public class Comment
 
     public String getCreation_date()
     {
-        return DateFormat.getDateInstance(DateFormat.SHORT).format(creation_date * 1000);
+        return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(creation_date * 1000);
     }
 
     public void setCreation_date(long creation_date)

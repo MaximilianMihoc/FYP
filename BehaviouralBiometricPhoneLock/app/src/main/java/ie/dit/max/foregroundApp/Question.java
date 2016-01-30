@@ -2,7 +2,9 @@ package ie.dit.max.foregroundApp;
 
 import java.io.Serializable;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Maximilian on 30/01/2016.
@@ -63,7 +65,7 @@ public class Question implements Serializable
 
     public String getCreation_date() // return Date in Date Format
     {
-        return DateFormat.getDateInstance(DateFormat.SHORT).format(creation_date * 1000);
+        return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(creation_date * 1000);
     }
 
     public void setCreation_date(long creation_date)

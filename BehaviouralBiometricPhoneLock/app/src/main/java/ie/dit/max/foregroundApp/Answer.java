@@ -30,19 +30,6 @@ public class Answer
         this.body = body;
     }
 
-    public Answer(Owner owner, int comment_count, int down_vote_count, int up_vote_count, boolean is_accepted, int score, long creation_date, String body, ArrayList<Comment> comments)
-    {
-        this.owner = owner;
-        this.comment_count = comment_count;
-        this.down_vote_count = down_vote_count;
-        this.up_vote_count = up_vote_count;
-        this.is_accepted = is_accepted;
-        this.score = score;
-        this.creation_date = creation_date;
-        this.body = body;
-        this.comments = comments;
-    }
-
     public Answer()
     {
     }
@@ -109,7 +96,7 @@ public class Answer
 
     public String getCreation_date()
     {
-        return DateFormat.getDateInstance(DateFormat.SHORT).format(creation_date*1000);
+        return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(creation_date * 1000);
     }
 
     public void setCreation_date(long creation_date)
