@@ -43,7 +43,7 @@ public class AnswersScreen extends AppCompatActivity
         questionSelected = (Question) bundle.getSerializable("selectedQuestion");
 
         TextView questionTitle = (TextView)findViewById(R.id.questionBody);
-        questionTitle.setText(Html.fromHtml(questionSelected.getTitle()));
+        questionTitle.setText(Html.fromHtml("<b>" + questionSelected.getTitle() + "</b>"));
 
         startConnection("https://api.stackexchange.com/2.2/questions/" + questionSelected.getQuestion_id() + "/answers?order=desc&sort=activity&site=stackoverflow&filter=!3yXvhCikopVa8vWh*");
 
@@ -112,7 +112,7 @@ public class AnswersScreen extends AppCompatActivity
                             item.getLong("creation_date"),
                             item.getString("body"));
 
-                    if(item.getInt("comment_count") != 0)
+                    if(item.getInt("comment_count") > 0)
                     {
                         ArrayList<Comment> commentsList = new ArrayList<>();
                         JSONArray commentsJson = item.getJSONArray("comments");
