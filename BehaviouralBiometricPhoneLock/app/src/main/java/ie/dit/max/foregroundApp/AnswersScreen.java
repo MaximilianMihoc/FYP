@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -22,8 +23,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
+import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
-public class AnswersScreen extends AppCompatActivity
+public class AnswersScreen extends TrainActivity
 {
     private static final String DEBUG_TAG = "AnswersScreen";
 
@@ -38,6 +40,7 @@ public class AnswersScreen extends AppCompatActivity
         setContentView(R.layout.activity_answers_screen);
 
         answersListView = (ListView) findViewById(android.R.id.list);
+        answersListView.setOnTouchListener(gestureListener);
 
         Bundle bundle = getIntent().getExtras();
         questionSelected = (Question) bundle.getSerializable("selectedQuestion");

@@ -10,7 +10,7 @@
                 tools:context="ie.dit.max.foregroundApp.AnswersScreen">
 
     <TextView
-        android:text="Question Body"
+        android:text="Question Title"
         android:id="@+id/questionBody"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

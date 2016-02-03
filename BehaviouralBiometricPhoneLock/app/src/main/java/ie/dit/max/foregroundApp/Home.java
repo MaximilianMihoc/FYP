@@ -21,6 +21,8 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +33,7 @@ import java.util.List;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
+import ie.dit.max.behaviouralbiometricphonelock.User;
 
 public class Home extends TrainActivity
 {
@@ -40,7 +43,6 @@ public class Home extends TrainActivity
     QuestionListAdapter questionsListAdapter;
     SearchView searchView;
     ArrayList<Question> questionsList;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

@@ -1,6 +1,9 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +22,9 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.Map;
 
-public class LogIn extends TrainActivity
+import ie.dit.max.foregroundApp.Home;
+
+public class LogIn extends Activity
 {
 
     Firebase ref;
@@ -27,6 +32,8 @@ public class LogIn extends TrainActivity
     EditText email;
     EditText password;
     Button logInButton;
+
+    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,6 +43,7 @@ public class LogIn extends TrainActivity
         Firebase.setAndroidContext(this);
 
         ref = new Firebase("https://fyp-max.firebaseio.com");
+        sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
         email = (EditText) findViewById(R.id.emailLogin);
         password = (EditText) findViewById(R.id.passwordLogin);
@@ -66,8 +74,11 @@ public class LogIn extends TrainActivity
                                 User usrObj = snapshot.getValue(User.class);
                                 System.out.println(usrObj.getUserID() + " - " + usrObj.getEmail());
 
-                                Intent trainIntent = new Intent(LogIn.this, TrainActivity.class);
-                                trainIntent.putExtra("userObject", usrObj);
+                                SharedPreferences.Editor editor = sharedpreferences.edit();
+                                editor.putString("UserID", usrObj.getUserID());
+                                editor.commit();
+
+                                Intent trainIntent = new Intent(LogIn.this, Home.class);
                                 startActivity(trainIntent);
                             }
 

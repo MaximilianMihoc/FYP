@@ -136,7 +136,7 @@ public class TestActivity extends Activity implements
 
         for(int i = 0; i < listObservations.size(); i++)
         {
-            ScrollFling touchGesture = listObservations.get(i).getScrollFling();
+            ScrollFling touchGesture = (ScrollFling)listObservations.get(i).getTouch();
             int j = 0;
 
             tempMat.put(i, j++, touchGesture.getDirectionOfEndToEndLine());
@@ -201,7 +201,7 @@ public class TestActivity extends Activity implements
                     scrollFling.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
-                    tempObs.setScrollFling(scrollFling);
+                    tempObs.setTouch(scrollFling);
 
                     // add linear accelerations to the Observation
                     //tempObs.setLinearAcceleration(linearAcceleration);

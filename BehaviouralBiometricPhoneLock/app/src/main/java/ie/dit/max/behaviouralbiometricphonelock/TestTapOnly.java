@@ -127,7 +127,7 @@ public class TestTapOnly extends Activity implements
 
         for(int i = 0; i < listObservations.size(); i++)
         {
-            Tap tapInteraction = listObservations.get(i).getTap();
+            Tap tapInteraction = (Tap) listObservations.get(i).getTouch();
             int j = 0;
             // call scale data function
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
@@ -190,7 +190,7 @@ public class TestTapOnly extends Activity implements
                     tap.setPressure(event.getPressure());
 
                     Log.d(DEBUG_TAG, "Tap: " + tap.toString());
-                    tempObs.setTap(tap);
+                    tempObs.setTouch(tap);
 
                     // add linear accelerations to the Observation
                     //tempObs.setLinearAcceleration(linearAcceleration);

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        goToTrainButton.setOnClickListener(new View.OnClickListener()
+        /*goToTrainButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity
                 Intent trainIntent = new Intent(MainActivity.this, Home.class);
                 startActivity(trainIntent);
             }
-        });
+        });*/
 
 
         /*

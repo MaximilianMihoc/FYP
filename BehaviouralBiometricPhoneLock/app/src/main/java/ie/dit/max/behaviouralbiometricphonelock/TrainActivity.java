@@ -3,6 +3,7 @@ package ie.dit.max.behaviouralbiometricphonelock;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,6 +20,8 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 
+import com.firebase.client.Firebase;
+
 import org.opencv.core.Point;
 
 import java.util.ArrayList;
@@ -28,6 +31,8 @@ public class TrainActivity extends Activity implements
         GestureDetector.OnDoubleTapListener,
         SensorEventListener
 {
+
+    Firebase ref;
 
     private static final String DEBUG_TAG = "Train Activity";
     private GestureDetectorCompat mDetector;
@@ -54,10 +59,15 @@ public class TrainActivity extends Activity implements
     private Float linearAcceleration;
     private Float angularVelocity;
 
+    SharedPreferences sharedpreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
+        ref = new Firebase("https://fyp-max.firebaseio.com");
+        sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
         mDetector = new GestureDetectorCompat(this, this);
         mDetector.setOnDoubleTapListener(this);
@@ -81,14 +91,14 @@ public class TrainActivity extends Activity implements
         linearAccelerations = new ArrayList<>();
         angularVelocities = new ArrayList<>();
 
+
+
         gestureListener = new OnTouchListener()
         {
             public boolean onTouch(View v, MotionEvent event)
             {
                 // need to call the gesture detector first so that the strokes can be differentiated from taps
                 mDetector.onTouchEvent(event);
-
-                Log.d(DEBUG_TAG, "onTouchEvent MM: " + event.toString());
 
                 //assignValuesToObservations(event);
                 //add linear Acceleration and angular Velocity to list
@@ -115,7 +125,7 @@ public class TrainActivity extends Activity implements
                     {
                         endPoint = new Point(event.getX(), event.getY());
                         duration = event.getEventTime() - event.getDownTime();
-                        Observation tempObs = new Observation();
+                        Observation tempObs = new Observation(new Touch(), new ArrayList<Float>(), new ArrayList<Float>());
 
                         if(isFling || isScroll)
                         {
@@ -128,7 +138,8 @@ public class TrainActivity extends Activity implements
                             scrollFling.setPressure(event.getPressure());
 
                             Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
-                            tempObs.setScrollFling(scrollFling);
+                            //tempObs.setScrollFling(scrollFling);
+                            tempObs.setTouch(scrollFling);
                         }
                         else
                         {
@@ -141,7 +152,9 @@ public class TrainActivity extends Activity implements
                             tap.setPressure(event.getPressure());
 
                             Log.d(DEBUG_TAG, "Tap: " + tap.toString());
-                            tempObs.setTap(tap);
+                            //tempObs.setTap(tap);
+                            tempObs.setTouch(tap);
+
                         }
 
                         //adding the lists of linearAccelerations and AngularVelocity to the Observation
@@ -149,10 +162,20 @@ public class TrainActivity extends Activity implements
                         tempObs.setLinearAccelerations(linearAccelerations);
 
                         // add Observation to the List of training observations. Separate list of obs for tap gesture.
-                        if(!isFling && !isScroll) tapOnlyObservations.add(tempObs);
-                        else scrollFlingObservations.add(tempObs);
-
-                        //TODO: Save Observations in Firebase using userID.
+                        // get User details
+                        String userID = sharedpreferences.getString("UserID", "");
+                        if(!isFling && !isScroll)
+                        {
+                            tapOnlyObservations.add(tempObs);
+                            Firebase newUserRef = ref.child("trainData").child(userID).child("tap");
+                            newUserRef.push().setValue(tempObs);
+                        }
+                        else
+                        {
+                            scrollFlingObservations.add(tempObs);
+                            Firebase newUserRef = ref.child("trainData").child(userID).child("scrollFling");
+                            newUserRef.push().setValue(tempObs);
+                        }
 
                         points.clear();
                         linearAccelerations.clear();
@@ -166,14 +189,6 @@ public class TrainActivity extends Activity implements
                 return mDetector.onTouchEvent(event);
             }
         };
-    }
-
-    /*
-    *  private method to assign values to the Observations.
-    * */
-    private void assignValuesToObservations(MotionEvent event)
-    {
-
     }
 
     @Override

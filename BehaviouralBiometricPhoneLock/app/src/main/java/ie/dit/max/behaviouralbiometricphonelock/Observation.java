@@ -7,28 +7,31 @@ import java.util.List;
 /**
  * Created by Maximilian on 29/10/2015.
  */
-public class Observation implements Serializable
+public class Observation
 {
     public static final int numberOfFeatures = 9;
-    private Tap tap;
-    private ScrollFling scrollFling;
 
+    private Touch touch;
     private ArrayList<Float> linearAccelerations;
     private ArrayList<Float> angularVelocities;
 
+    public Observation(Touch touch, ArrayList<Float> linearAccelerations, ArrayList<Float> angularVelocities)
+    {
+        this.touch = touch;
+        this.linearAccelerations = linearAccelerations;
+        this.angularVelocities = angularVelocities;
+    }
+
     public Observation()
     {
-        tap = new Tap();
-        scrollFling = new ScrollFling();
-        linearAccelerations = new ArrayList<>();
-        angularVelocities = new ArrayList<>();
+
     }
 
     public String toString()
     {
         return "Observation: " +
-                "tap: " + tap.toString() +
-                "scrollFling: " + scrollFling.toString() +
+                //"tap: " + tap.toString() +
+                //"scrollFling: " + scrollFling.toString() +
                 "linearAccelerations: " + linearAccelerations.toString() +
                 "angularVelocities: " + angularVelocities.toString();
     }
@@ -58,7 +61,7 @@ public class Observation implements Serializable
         this.angularVelocities = angularVelocities;
     }
 
-    public Tap getTap()
+    /*public Tap getTap()
     {
         return tap;
     }
@@ -76,5 +79,15 @@ public class Observation implements Serializable
     public void setScrollFling(ScrollFling scrollFling)
     {
         this.scrollFling = scrollFling;
+    }*/
+
+    public Touch getTouch()
+    {
+        return touch;
+    }
+
+    public void setTouch(Touch touch)
+    {
+        this.touch = touch;
     }
 }
