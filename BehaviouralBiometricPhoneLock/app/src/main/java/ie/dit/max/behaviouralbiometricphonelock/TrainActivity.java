@@ -28,8 +28,11 @@ public class TrainActivity extends Activity implements
         SensorEventListener
 {
 
-    private static final String DEBUG_TAG = "Gestures";
+    private static final String DEBUG_TAG = "Train Activity";
     private GestureDetectorCompat mDetector;
+
+    //to be used for list views.
+    public View.OnTouchListener gestureListener;
 
     Point startPoint, endPoint;
     ArrayList<Point> points = new ArrayList<>();
@@ -42,10 +45,6 @@ public class TrainActivity extends Activity implements
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     private Sensor senGyroscope;
-
-    //private long lastUpdate = 0;
-    //private float last_x, last_y, last_z;
-    //private static final int SHAKE_THRESHOLD = 600;
 
     private float lastLinearAcceleration;
     private float linearAcceleration;
@@ -60,10 +59,14 @@ public class TrainActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_train);
 
         mDetector = new GestureDetectorCompat(this, this);
         mDetector.setOnDoubleTapListener(this);
+
+        gestureListener = new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return mDetector.onTouchEvent(event);
+            }};
 
         linearAcceleration = 0.0f;
         lastLinearAcceleration = 0.0f;
@@ -83,43 +86,6 @@ public class TrainActivity extends Activity implements
 
         observations = new ArrayList<>();
         tapOnlyObservations = new ArrayList<>();
-
-        goToTest = (Button) findViewById(R.id.testActivityBtn);
-        goToTest.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent testActivityIntent = new Intent(TrainActivity.this, TestActivity.class);
-
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("trainObservations", observations);
-                testActivityIntent.putExtras(bundle);
-
-                startActivity(testActivityIntent);
-            }
-        });
-
-        // go to test Tap Only Activity
-        goToTestTap = (Button) findViewById(R.id.testTapOnly);
-        goToTestTap.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent testActivityIntent = new Intent(TrainActivity.this, TestTapOnly.class);
-
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("trainObservations", tapOnlyObservations);
-                testActivityIntent.putExtras(bundle);
-
-                startActivity(testActivityIntent);
-            }
-        });
-
-        //test
-        /*User u = (User) getIntent().getSerializableExtra("userObject");
-        System.out.println("Success login:  " + u.getUserID());*/
     }
 
     @Override
@@ -163,7 +129,7 @@ public class TrainActivity extends Activity implements
                     scrollFling.setDuration(duration);
                     scrollFling.setPressure(event.getPressure());
 
-                    Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
+                    //Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
                     tempObs.setScrollFling(scrollFling);
                 }
                 else
@@ -176,25 +142,25 @@ public class TrainActivity extends Activity implements
                     tap.setDuration(duration);
                     tap.setPressure(event.getPressure());
 
-                    Log.d(DEBUG_TAG, "Tap: " + tap.toString());
+                    //Log.d(DEBUG_TAG, "Tap: " + tap.toString());
                     tempObs.setTap(tap);
                 }
 
                 // add linear accelerations to the Observation
                 tempObs.setLinearAcceleration(linearAcceleration);
                 tempObs.setLastLinearAcceleration(lastLinearAcceleration);
-                Log.d(DEBUG_TAG, "Linear Accelerations on touch - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
+                //Log.d(DEBUG_TAG, "Linear Accelerations on touch - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
 
                 // add angular velocity to the Observation on touch gesture
                 tempObs.setAngularVelocity(angularVelocity);
                 tempObs.setLastAngularVelocity(lastAngularVelocity);
-                Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
+                //Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
 
                 // add Observation to the List of training observations. Separate list of obs for tap gesture.
                 if(!isFling && !isScroll) tapOnlyObservations.add(tempObs);
                 else observations.add(tempObs);
 
-                System.out.println("Points in train: " + points.toString());
+                //System.out.println("Points in train: " + points.toString());
 
                 points.clear();
                 isFling = false;
@@ -213,15 +179,15 @@ public class TrainActivity extends Activity implements
     public boolean onDown(MotionEvent e)
     {
         //This event does not give me much information
-        //Log.d(DEBUG_TAG, "onDown: " + e.toString());
-        return true;
+        Log.d(DEBUG_TAG, "onDown: " + e.toString());
+        return false;
     }
 
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e)
     {
-        //Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + e.toString());
+        Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + e.toString());
         return false;
     }
 
@@ -240,13 +206,13 @@ public class TrainActivity extends Activity implements
     @Override
     public void onShowPress(MotionEvent e)
     {
-        //Log.d(DEBUG_TAG, "onShowPress: " + e.toString());
+        Log.d(DEBUG_TAG, "onShowPress: " + e.toString());
     }
 
     @Override
     public boolean onSingleTapUp(MotionEvent e)
     {
-        //Log.d(DEBUG_TAG, "onSingleTapUp: " + e.toString());
+        Log.d(DEBUG_TAG, "onSingleTapUp: " + e.toString());
         return false;
     }
 
@@ -255,13 +221,13 @@ public class TrainActivity extends Activity implements
     {
         isScroll = true;
         Log.d(DEBUG_TAG, "onScroll: " + e1.toString() + " <-> " + e2.toString());
-        return true;
+        return false;
     }
 
     @Override
     public void onLongPress(MotionEvent e)
     {
-        //Log.d(DEBUG_TAG, "onLongPress: " + e.toString());
+        Log.d(DEBUG_TAG, "onLongPress: " + e.toString());
     }
 
     @Override
@@ -269,7 +235,7 @@ public class TrainActivity extends Activity implements
     {
         isFling = true;
         Log.d(DEBUG_TAG, "onFling: " + e1.toString() + " <-> " + e2.toString());
-        return true;
+        return false;
     }
 
     @Override
@@ -310,45 +276,18 @@ public class TrainActivity extends Activity implements
 
             lastAngularVelocity = angularVelocity;
             angularVelocity = (float) Math.sqrt((double) (x*x + y*y + z*z));
-
-            //Log.d(DEBUG_TAG, "Sensor - lastAngularVelocity: " + lastAngularVelocity + " angularVelocity: " + angularVelocity);
-
-            //Log.i("Gyroscope ", " x= " + x + " y= " + y + " z= " + z);
         }
 
         if (mySensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION)
         {
             //this sensor gives me the linear acceleration values for x, y, z.
             // linear acceleration is the acceleration - earth gravity.
-
             float x = sensorEvent.values[0];
             float y = sensorEvent.values[1];
             float z = sensorEvent.values[2];
 
             lastLinearAcceleration = linearAcceleration;
             linearAcceleration = (float) Math.sqrt((double) (x*x + y*y + z*z));
-
-            //Log.d(DEBUG_TAG, "Sensor - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
-
-            //Log.i("Accelerometer", " x= " + x + " y= " + y + " z= " + z);
-
-            /*long curTime = System.currentTimeMillis();
-
-            if ((curTime - lastUpdate) > 1) {
-                long diffTime = (curTime - lastUpdate);
-                lastUpdate = curTime;
-
-                float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000;
-
-                if (speed > SHAKE_THRESHOLD)
-                {
-
-                }
-
-                last_x = x;
-                last_y = y;
-                last_z = z;
-            }*/
         }
     }
 

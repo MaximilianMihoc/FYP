@@ -30,8 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
+import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
-public class Home extends AppCompatActivity
+public class Home extends TrainActivity
 {
     private static final String DEBUG_TAG = "ForegroundApp - Home";
 
@@ -73,6 +74,7 @@ public class Home extends AppCompatActivity
         });
 
         queionsList = (ListView) findViewById(android.R.id.list);
+        queionsList.setOnTouchListener(gestureListener);
         queionsList.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
