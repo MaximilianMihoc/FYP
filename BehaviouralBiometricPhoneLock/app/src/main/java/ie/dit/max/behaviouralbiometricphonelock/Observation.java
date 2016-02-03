@@ -10,74 +10,52 @@ import java.util.List;
 public class Observation implements Serializable
 {
     public static final int numberOfFeatures = 9;
-    private Touch gesture;
     private Tap tap;
     private ScrollFling scrollFling;
-    private float linearAcceleration;
-    private float lastLinearAcceleration;
-    private float angularVelocity;
-    private float lastAngularVelocity;
+
+    private ArrayList<Float> linearAccelerations;
+    private ArrayList<Float> angularVelocities;
 
     public Observation()
     {
-        gesture = new Touch();
-        linearAcceleration = 0.0f;
-        lastLinearAcceleration = 0.0f;
-    }
-
-    public Touch getGesture()
-    {
-        return gesture;
-    }
-
-    public void setGesture(Touch gesture)
-    {
-        this.gesture = gesture;
+        tap = new Tap();
+        scrollFling = new ScrollFling();
+        linearAccelerations = new ArrayList<>();
+        angularVelocities = new ArrayList<>();
     }
 
     public String toString()
     {
-        return "Observation: ";
+        return "Observation: " +
+                "tap: " + tap.toString() +
+                "scrollFling: " + scrollFling.toString() +
+                "linearAccelerations: " + linearAccelerations.toString() +
+                "angularVelocities: " + angularVelocities.toString();
     }
 
-    public float getLinearAcceleration()
+    public static int getNumberOfFeatures()
     {
-        return linearAcceleration;
+        return numberOfFeatures;
     }
 
-    public void setLinearAcceleration(float linearAcceleration)
+    public ArrayList<Float> getLinearAccelerations()
     {
-        this.linearAcceleration = linearAcceleration;
+        return linearAccelerations;
     }
 
-    public float getLastLinearAcceleration()
+    public void setLinearAccelerations(ArrayList<Float> linearAccelerations)
     {
-        return lastLinearAcceleration;
+        this.linearAccelerations = linearAccelerations;
     }
 
-    public void setLastLinearAcceleration(float lastLinearAcceleration)
+    public ArrayList<Float> getAngularVelocities()
     {
-        this.lastLinearAcceleration = lastLinearAcceleration;
+        return angularVelocities;
     }
 
-    public float getAngularVelocity()
+    public void setAngularVelocities(ArrayList<Float> angularVelocities)
     {
-        return angularVelocity;
-    }
-
-    public void setAngularVelocity(float angularVelocity)
-    {
-        this.angularVelocity = angularVelocity;
-    }
-
-    public float getLastAngularVelocity()
-    {
-        return lastAngularVelocity;
-    }
-
-    public void setLastAngularVelocity(float lastAngularVelocity)
-    {
-        this.lastAngularVelocity = lastAngularVelocity;
+        this.angularVelocities = angularVelocities;
     }
 
     public Tap getTap()

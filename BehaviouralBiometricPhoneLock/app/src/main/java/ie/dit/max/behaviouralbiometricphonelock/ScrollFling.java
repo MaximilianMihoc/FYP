@@ -40,7 +40,7 @@ public class ScrollFling extends Touch implements Serializable
         // Add start point to the end of the list in order to apply Shoelace formula easier to find the area.
         scaledPoints.add(getScaledStartPoint());
 
-        System.out.println("Points in scroll/field: " + scaledPoints.toString());
+        //System.out.println("Points in scroll/field: " + scaledPoints.toString());
 
         return scaledPoints;
     }

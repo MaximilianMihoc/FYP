@@ -148,12 +148,12 @@ public class TestActivity extends Activity implements
             tempMat.put(i, j++, touchGesture.getScaledDuration());
 
             // linear accelerations are part of the observation
-            tempMat.put(i, j++, trainObservations.get(i).getLastLinearAcceleration());
-            tempMat.put(i, j++, trainObservations.get(i).getLinearAcceleration());
+            //tempMat.put(i, j++, trainObservations.get(i).getLastLinearAcceleration());
+            //tempMat.put(i, j++, trainObservations.get(i).getLinearAcceleration());
 
             // angular Velocity are part of the observation
-            tempMat.put(i, j++, trainObservations.get(i).getLastAngularVelocity());
-            tempMat.put(i, j, trainObservations.get(i).getAngularVelocity());
+            //tempMat.put(i, j++, trainObservations.get(i).getLastAngularVelocity());
+            //tempMat.put(i, j, trainObservations.get(i).getAngularVelocity());
         }
 
         return tempMat;
@@ -204,13 +204,13 @@ public class TestActivity extends Activity implements
                     tempObs.setScrollFling(scrollFling);
 
                     // add linear accelerations to the Observation
-                    tempObs.setLinearAcceleration(linearAcceleration);
-                    tempObs.setLastLinearAcceleration(lastLinearAcceleration);
+                    //tempObs.setLinearAcceleration(linearAcceleration);
+                    //tempObs.setLastLinearAcceleration(lastLinearAcceleration);
                     Log.d(DEBUG_TAG, "Linear Accelerations on touch - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
 
                     // add angular velocity to the Observation on touch gesture
-                    tempObs.setAngularVelocity(angularVelocity);
-                    tempObs.setLastAngularVelocity(lastAngularVelocity);
+                    //tempObs.setAngularVelocity(angularVelocity);
+                    //tempObs.setLastAngularVelocity(lastAngularVelocity);
                     Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
 
                     // add observation to testList to remember what observations we tested so far - not used anywhere else

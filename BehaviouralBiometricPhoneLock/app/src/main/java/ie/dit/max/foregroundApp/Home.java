@@ -144,7 +144,17 @@ public class Home extends TrainActivity
 
                     JSONObject ownerJson = item.getJSONObject("owner");
 
-                    Owner questionOwner = new Owner(ownerJson.getInt("reputation"), ownerJson.getLong("user_id"), ownerJson.getString("display_name"));
+                    Owner questionOwner;
+                    if(ownerJson.getString("user_type").equals("registered"))
+                    {
+                        questionOwner = new Owner(ownerJson.getInt("reputation"), ownerJson.getLong("user_id"), ownerJson.getString("display_name"));
+                    }
+                    else
+                    {
+                        questionOwner = new Owner();
+                        questionOwner.setDisplay_name(ownerJson.getString("display_name"));
+                    }
+
                     Question question = new Question( item.getLong("question_id"), item.getInt("answer_count"), item.getLong("creation_date"), item.getString("title"), questionOwner, item.getString("body"));
 
                     questionsList.add(question);

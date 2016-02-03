@@ -64,7 +64,7 @@ public class Tap extends Touch implements Serializable
         }
         sum += ( (endPoint.x * startPoint.y) - (endPoint.y * startPoint.x) );
 
-        System.out.println("Points in Tap: " + points.toString());
+        //System.out.println("Points in Tap: " + points.toString());
 
         if(sum < 0) sum = -1 * sum;
         fingerArea = sum / 2;

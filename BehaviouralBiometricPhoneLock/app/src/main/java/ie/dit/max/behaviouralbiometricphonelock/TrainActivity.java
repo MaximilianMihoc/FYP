@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 
 import org.opencv.core.Point;
@@ -31,13 +32,17 @@ public class TrainActivity extends Activity implements
     private static final String DEBUG_TAG = "Train Activity";
     private GestureDetectorCompat mDetector;
 
-    //to be used for list views.
-    public View.OnTouchListener gestureListener;
+    //to be used for assigning listener to different views.
+    public OnTouchListener gestureListener;
 
     Point startPoint, endPoint;
     ArrayList<Point> points = new ArrayList<>();
-    ArrayList<Observation> observations;
+    ArrayList<Observation> scrollFlingObservations;
     ArrayList<Observation> tapOnlyObservations;
+
+    private ArrayList<Float> linearAccelerations;
+    private ArrayList<Float> angularVelocities;
+
 
     boolean isScroll = false;
     boolean isFling = false;
@@ -46,14 +51,8 @@ public class TrainActivity extends Activity implements
     private Sensor senAccelerometer;
     private Sensor senGyroscope;
 
-    private float lastLinearAcceleration;
-    private float linearAcceleration;
-
-    private float lastAngularVelocity;
-    private float angularVelocity;
-
-    Button goToTest;
-    Button goToTestTap;
+    private Float linearAcceleration;
+    private Float angularVelocity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -63,16 +62,8 @@ public class TrainActivity extends Activity implements
         mDetector = new GestureDetectorCompat(this, this);
         mDetector.setOnDoubleTapListener(this);
 
-        gestureListener = new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                return mDetector.onTouchEvent(event);
-            }};
-
         linearAcceleration = 0.0f;
-        lastLinearAcceleration = 0.0f;
-
         angularVelocity = 0.0f;
-        lastAngularVelocity = 0.0f;
 
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -84,102 +75,114 @@ public class TrainActivity extends Activity implements
         senGyroscope = senSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         senSensorManager.registerListener(this, senGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
-        observations = new ArrayList<>();
+        scrollFlingObservations = new ArrayList<>();
         tapOnlyObservations = new ArrayList<>();
+        points = new ArrayList<>();
+        linearAccelerations = new ArrayList<>();
+        angularVelocities = new ArrayList<>();
+
+        gestureListener = new OnTouchListener()
+        {
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                // need to call the gesture detector first so that the strokes can be differentiated from taps
+                mDetector.onTouchEvent(event);
+
+                Log.d(DEBUG_TAG, "onTouchEvent MM: " + event.toString());
+
+                //assignValuesToObservations(event);
+                //add linear Acceleration and angular Velocity to list
+                linearAccelerations.add(linearAcceleration);
+                angularVelocities.add(angularVelocity);
+
+                double duration;
+
+                int action = event.getAction();
+                switch (action)
+                {
+                    case (MotionEvent.ACTION_DOWN):
+                    {
+                        startPoint = new Point(event.getX(), event.getY());
+                        return false;
+                    }
+                    case (MotionEvent.ACTION_MOVE):
+                    {
+                        Point newP = new Point(event.getX(), event.getY());
+                        points.add(newP);
+                        return false;
+                    }
+                    case (MotionEvent.ACTION_UP):
+                    {
+                        endPoint = new Point(event.getX(), event.getY());
+                        duration = event.getEventTime() - event.getDownTime();
+                        Observation tempObs = new Observation();
+
+                        if(isFling || isScroll)
+                        {
+                            //touch = scrollFling
+                            ScrollFling scrollFling = new ScrollFling();
+                            scrollFling.setStartPoint(startPoint);
+                            scrollFling.setEndPoint(endPoint);
+                            scrollFling.setPoints(points);
+                            scrollFling.setDuration(duration);
+                            scrollFling.setPressure(event.getPressure());
+
+                            Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
+                            tempObs.setScrollFling(scrollFling);
+                        }
+                        else
+                        {
+                            //touch = tap
+                            Tap tap = new Tap();
+                            tap.setStartPoint(startPoint);
+                            tap.setEndPoint(endPoint);
+                            tap.setPoints(points);
+                            tap.setDuration(duration);
+                            tap.setPressure(event.getPressure());
+
+                            Log.d(DEBUG_TAG, "Tap: " + tap.toString());
+                            tempObs.setTap(tap);
+                        }
+
+                        //adding the lists of linearAccelerations and AngularVelocity to the Observation
+                        tempObs.setAngularVelocities(angularVelocities);
+                        tempObs.setLinearAccelerations(linearAccelerations);
+
+                        // add Observation to the List of training observations. Separate list of obs for tap gesture.
+                        if(!isFling && !isScroll) tapOnlyObservations.add(tempObs);
+                        else scrollFlingObservations.add(tempObs);
+
+                        //TODO: Save Observations in Firebase using userID.
+
+                        points.clear();
+                        linearAccelerations.clear();
+                        angularVelocities.clear();
+                        isFling = false;
+                        isScroll = false;
+                        return false;
+                    }
+                }
+
+                return mDetector.onTouchEvent(event);
+            }
+        };
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event)
+    /*
+    *  private method to assign values to the Observations.
+    * */
+    private void assignValuesToObservations(MotionEvent event)
     {
-        this.mDetector.onTouchEvent(event);
 
-        Log.d(DEBUG_TAG, "onTouchEvent: " + event.toString());
-
-        double duration;
-
-        int action = MotionEventCompat.getActionMasked(event);
-        switch(action)
-        {
-            case (MotionEvent.ACTION_DOWN):
-            {
-                startPoint = new Point(event.getX(), event.getY());
-
-                return true;
-            }
-            case (MotionEvent.ACTION_MOVE):
-            {
-                Point newP = new Point(event.getX(), event.getY());
-                points.add(newP);
-
-                return true;
-            }
-            case (MotionEvent.ACTION_UP):
-            {
-                endPoint = new Point(event.getX(), event.getY());
-                duration = event.getEventTime() - event.getDownTime();
-                Observation tempObs = new Observation();
-
-                if(isFling || isScroll)
-                {
-                    //touch = scrollFling
-                    ScrollFling scrollFling = new ScrollFling();
-                    scrollFling.setStartPoint(startPoint);
-                    scrollFling.setEndPoint(endPoint);
-                    scrollFling.setPoints(points);
-                    scrollFling.setDuration(duration);
-                    scrollFling.setPressure(event.getPressure());
-
-                    //Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
-                    tempObs.setScrollFling(scrollFling);
-                }
-                else
-                {
-                    //touch = tap
-                    Tap tap = new Tap();
-                    tap.setStartPoint(startPoint);
-                    tap.setEndPoint(endPoint);
-                    tap.setPoints(points);
-                    tap.setDuration(duration);
-                    tap.setPressure(event.getPressure());
-
-                    //Log.d(DEBUG_TAG, "Tap: " + tap.toString());
-                    tempObs.setTap(tap);
-                }
-
-                // add linear accelerations to the Observation
-                tempObs.setLinearAcceleration(linearAcceleration);
-                tempObs.setLastLinearAcceleration(lastLinearAcceleration);
-                //Log.d(DEBUG_TAG, "Linear Accelerations on touch - lastLinearAcceleration: " + lastLinearAcceleration + " LinearAcceleration: " + linearAcceleration);
-
-                // add angular velocity to the Observation on touch gesture
-                tempObs.setAngularVelocity(angularVelocity);
-                tempObs.setLastAngularVelocity(lastAngularVelocity);
-                //Log.d(DEBUG_TAG, "Angular Velocity on touch - lastAngularVelocity: " + lastAngularVelocity + " Angular Velocity: " + angularVelocity);
-
-                // add Observation to the List of training observations. Separate list of obs for tap gesture.
-                if(!isFling && !isScroll) tapOnlyObservations.add(tempObs);
-                else observations.add(tempObs);
-
-                //System.out.println("Points in train: " + points.toString());
-
-                points.clear();
-                isFling = false;
-                isScroll = false;
-                return true;
-            }
-        }
-
-        //Log.d(DEBUG_TAG, "Touch Count: " + event.getPointerCount());
-        //Log.d(DEBUG_TAG, "Pressure: " + event.getPressure());
-
-        return super.onTouchEvent(event);
     }
 
     @Override
     public boolean onDown(MotionEvent e)
     {
-        //This event does not give me much information
-        Log.d(DEBUG_TAG, "onDown: " + e.toString());
+        //add linear Acceleration and angular Velocity to list
+        linearAccelerations.add(linearAcceleration);
+        angularVelocities.add(angularVelocity);
+
         return false;
     }
 
@@ -187,7 +190,6 @@ public class TrainActivity extends Activity implements
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e)
     {
-        Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + e.toString());
         return false;
     }
 
@@ -206,13 +208,16 @@ public class TrainActivity extends Activity implements
     @Override
     public void onShowPress(MotionEvent e)
     {
-        Log.d(DEBUG_TAG, "onShowPress: " + e.toString());
+        //Log.d(DEBUG_TAG, "onShowPress: " + e.toString());
     }
 
     @Override
     public boolean onSingleTapUp(MotionEvent e)
     {
-        Log.d(DEBUG_TAG, "onSingleTapUp: " + e.toString());
+        //add linear Acceleration and angular Velocity to list
+        linearAccelerations.add(linearAcceleration);
+        angularVelocities.add(angularVelocity);
+
         return false;
     }
 
@@ -220,21 +225,27 @@ public class TrainActivity extends Activity implements
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
     {
         isScroll = true;
-        Log.d(DEBUG_TAG, "onScroll: " + e1.toString() + " <-> " + e2.toString());
+        //add linear Acceleration and angular Velocity to list
+        linearAccelerations.add(linearAcceleration);
+        angularVelocities.add(angularVelocity);
+
         return false;
     }
 
     @Override
     public void onLongPress(MotionEvent e)
     {
-        Log.d(DEBUG_TAG, "onLongPress: " + e.toString());
+        //Log.d(DEBUG_TAG, "onLongPress: " + e.toString());
     }
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
     {
         isFling = true;
-        Log.d(DEBUG_TAG, "onFling: " + e1.toString() + " <-> " + e2.toString());
+        //add linear Acceleration and angular Velocity to list
+        linearAccelerations.add(linearAcceleration);
+        angularVelocities.add(angularVelocity);
+
         return false;
     }
 
@@ -274,7 +285,6 @@ public class TrainActivity extends Activity implements
             float y = sensorEvent.values[1];
             float z = sensorEvent.values[2];
 
-            lastAngularVelocity = angularVelocity;
             angularVelocity = (float) Math.sqrt((double) (x*x + y*y + z*z));
         }
 
@@ -286,7 +296,6 @@ public class TrainActivity extends Activity implements
             float y = sensorEvent.values[1];
             float z = sensorEvent.values[2];
 
-            lastLinearAcceleration = linearAcceleration;
             linearAcceleration = (float) Math.sqrt((double) (x*x + y*y + z*z));
         }
     }

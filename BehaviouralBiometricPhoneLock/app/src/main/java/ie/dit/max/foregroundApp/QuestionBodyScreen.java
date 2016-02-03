@@ -8,11 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
+import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
-public class QuestionBodyScreen extends AppCompatActivity
+public class QuestionBodyScreen extends TrainActivity
 {
 
     Question questionSelected;
@@ -24,9 +28,11 @@ public class QuestionBodyScreen extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_body_screen);
 
-
         Bundle bundle = getIntent().getExtras();
         questionSelected = (Question) bundle.getSerializable("questionSelected");
+
+        ScrollView Sv = (ScrollView)findViewById(R.id.questionBodyScrollViewID);
+        Sv.setOnTouchListener(gestureListener);
 
         TextView questionTitle = (TextView)findViewById(R.id.bodyScreenTitle);
         questionTitle.setText(Html.fromHtml(questionSelected.getTitle()));
@@ -42,6 +48,7 @@ public class QuestionBodyScreen extends AppCompatActivity
         if (questionSelected.getAnswer_count() == 1) goToAnswers.setText("View " + questionSelected.getAnswer_count() + " Answer");
         else goToAnswers.setText("View " + questionSelected.getAnswer_count() + " Answers");
 
+        goToAnswers.setOnTouchListener(gestureListener);
         goToAnswers.setOnClickListener(new View.OnClickListener()
         {
             @Override

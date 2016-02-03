@@ -27,6 +27,7 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:id="@+id/questionBodyScrollViewID"
         android:layout_above="@+id/buttonLayout">
 
         <RelativeLayout
