@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Maximilian on 31/10/2015.
  */
-public class Touch implements Serializable
+public class Touch
 {
     protected Point startPoint;
     protected Point endPoint;
@@ -63,6 +63,21 @@ public class Touch implements Serializable
         scaledDuration = duration / 1000;
 
         return scaledDuration;
+    }
+
+    public void setScaledStartPoint(Point scaledStartPoint)
+    {
+        this.scaledStartPoint = scaledStartPoint;
+    }
+
+    public void setScaledEndPoint(Point scaledEndPoint)
+    {
+        this.scaledEndPoint = scaledEndPoint;
+    }
+
+    public void setScaledDuration(double scaledDuration)
+    {
+        this.scaledDuration = scaledDuration;
     }
 
     public void addPoint(Point p)

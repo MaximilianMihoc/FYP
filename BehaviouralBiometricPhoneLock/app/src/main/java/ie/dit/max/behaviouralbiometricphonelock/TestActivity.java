@@ -139,8 +139,8 @@ public class TestActivity extends Activity implements
             ScrollFling touchGesture = (ScrollFling)listObservations.get(i).getTouch();
             int j = 0;
 
-            tempMat.put(i, j++, touchGesture.getDirectionOfEndToEndLine());
-            tempMat.put(i, j++, touchGesture.getMidStrokeAreaCovered());
+            tempMat.put(i, j++, touchGesture.calculateDirectionOfEndToEndLine());
+            tempMat.put(i, j++, touchGesture.calculateMidStrokeAreaCovered());
             tempMat.put(i, j++, touchGesture.getScaledStartPoint().x);
             tempMat.put(i, j++, touchGesture.getScaledStartPoint().y);
             tempMat.put(i, j++, touchGesture.getScaledEndPoint().x);

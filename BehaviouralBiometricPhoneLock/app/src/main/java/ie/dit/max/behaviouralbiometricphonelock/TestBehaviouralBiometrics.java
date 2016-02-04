@@ -8,44 +8,50 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.v4.view.GestureDetectorCompat;
 import android.os.Bundle;
-import android.support.v4.view.MotionEventCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
-import android.widget.Button;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import org.opencv.core.Point;
 
 import java.util.ArrayList;
 
-public class TrainActivity extends Activity implements
-        GestureDetector.OnGestureListener,
-        GestureDetector.OnDoubleTapListener,
-        SensorEventListener
-{
+import ie.dit.max.foregroundApp.Home;
 
+/**
+ * Created by Maximilian on 04/02/2016.
+ */
+public class TestBehaviouralBiometrics extends Activity implements
+        GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, SensorEventListener
+{
     Firebase ref;
 
-    private static final String DEBUG_TAG = "Train Activity";
+    private static final String DEBUG_TAG = "Test Activity";
     private GestureDetectorCompat mDetector;
 
     //to be used for assigning listener to different views.
-    public OnTouchListener gestureListener;
+    public View.OnTouchListener gestureListener;
 
     Point startPoint, endPoint;
     ArrayList<Point> points = new ArrayList<>();
+    ArrayList<Observation> trainScrollFlingObservations;
+    ArrayList<Observation> scrollFlingObservations;
+    ArrayList<Observation> tapOnlyObservations;
+    ArrayList<Observation> trainTapOnlyObservations;
 
     private ArrayList<Float> linearAccelerations;
     private ArrayList<Float> angularVelocities;
-
 
     boolean isScroll = false;
     boolean isFling = false;
@@ -58,6 +64,7 @@ public class TrainActivity extends Activity implements
     private Float angularVelocity;
 
     SharedPreferences sharedpreferences;
+    String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -83,11 +90,22 @@ public class TrainActivity extends Activity implements
         senGyroscope = senSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         senSensorManager.registerListener(this, senGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
+        scrollFlingObservations = new ArrayList<>();
+        trainScrollFlingObservations = new ArrayList<>();
+        tapOnlyObservations = new ArrayList<>();
+        trainTapOnlyObservations = new ArrayList<>();
+
         points = new ArrayList<>();
         linearAccelerations = new ArrayList<>();
         angularVelocities = new ArrayList<>();
 
-        gestureListener = new OnTouchListener()
+        // get User details
+        userID = sharedpreferences.getString("UserID", "");
+
+        /* Get user training data from Firebase */
+        getTrainingDataFromFirebase();
+
+        gestureListener = new View.OnTouchListener()
         {
             public boolean onTouch(View v, MotionEvent event)
             {
@@ -156,17 +174,16 @@ public class TrainActivity extends Activity implements
                         tempObs.setLinearAccelerations(linearAccelerations);
 
                         // add Observation to the List of training observations. Separate list of obs for tap gesture.
-                        // get User details
-                        String userID = sharedpreferences.getString("UserID", "");
+
                         if(!isFling && !isScroll)
                         {
-                            Firebase newUserRef = ref.child("trainData").child(userID).child("tap");
-                            newUserRef.push().setValue(tempObs);
+                            tapOnlyObservations.add(tempObs);
+
                         }
                         else
                         {
-                            Firebase newUserRef = ref.child("trainData").child(userID).child("scrollFling");
-                            newUserRef.push().setValue(tempObs);
+                            scrollFlingObservations.add(tempObs);
+
                         }
 
                         points.clear();
@@ -183,6 +200,43 @@ public class TrainActivity extends Activity implements
         };
     }
 
+    private void getTrainingDataFromFirebase()
+    {
+        Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
+
+        userRef.addValueEventListener(new ValueEventListener()
+        {
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            @Override
+            public void onDataChange(DataSnapshot snapshot)
+            {
+                System.out.println("data: " + snapshot.toString());
+                System.out.println("There are " + snapshot.getChildrenCount() + " blog posts");
+
+                for (DataSnapshot obsSnapshot: snapshot.getChildren()) {
+                    System.out.println("data: " + obsSnapshot.toString());
+                    Observation obs = obsSnapshot.getValue(Observation.class);
+
+                    trainScrollFlingObservations.add(obs);
+
+                    /*Touch t = post.getTouch();
+                    if(t instanceof ScrollFling){
+                        ScrollFling sf = (ScrollFling)t;
+                    }
+                    System.out.println(t.toString());*/
+                }
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError)
+            {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+
+    }
+
     @Override
     public boolean onDown(MotionEvent e)
     {
@@ -192,6 +246,7 @@ public class TrainActivity extends Activity implements
 
         return false;
     }
+
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e)

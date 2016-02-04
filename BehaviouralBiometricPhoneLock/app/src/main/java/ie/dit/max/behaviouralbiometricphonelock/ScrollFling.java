@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by Maximilian on 02/11/2015.
  */
-public class ScrollFling extends Touch implements Serializable
+public class ScrollFling extends Touch
 {
     public ScrollFling()
     {
@@ -45,7 +45,7 @@ public class ScrollFling extends Touch implements Serializable
         return scaledPoints;
     }
 
-    public double getMidStrokeAreaCovered()
+    public double calculateMidStrokeAreaCovered()
     {
         ArrayList<Point> strokePoints = normalizeStrokePoints();
 
@@ -74,7 +74,7 @@ public class ScrollFling extends Touch implements Serializable
         return midStrokeArea;
     }
 
-    public double getDirectionOfEndToEndLine()
+    public double calculateDirectionOfEndToEndLine()
     {
         double direction;
         direction = (endPoint.y - startPoint.y)/(endPoint.x - startPoint.x);
@@ -92,8 +92,8 @@ public class ScrollFling extends Touch implements Serializable
                 ", points= " + points +
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
-                ", midStrokeArea= " + getMidStrokeAreaCovered() +
-                ",direction= " + getDirectionOfEndToEndLine() +
+                ", midStrokeArea= " + calculateMidStrokeAreaCovered() +
+                ",direction= " + calculateDirectionOfEndToEndLine() +
                 '}';
     }
 }

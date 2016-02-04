@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by Maximilian on 31/10/2015.
  */
-public class Tap extends Touch implements Serializable
+public class Tap extends Touch
 {
     public static final int numberOfFeatures = 10;
     protected ArrayList<Point> scaledPoints;
@@ -38,7 +38,7 @@ public class Tap extends Touch implements Serializable
         }
     }
 
-    public double getFingerArea()
+    public double calculateFingerArea()
     {
         double sum = 0;
         double fingerArea = 0;
@@ -84,7 +84,7 @@ public class Tap extends Touch implements Serializable
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
                 ", pressure= " + pressure +
-                ", fingerArea= " + getFingerArea() +
+                ", fingerArea= " + calculateFingerArea() +
                 '}';
     }
 }

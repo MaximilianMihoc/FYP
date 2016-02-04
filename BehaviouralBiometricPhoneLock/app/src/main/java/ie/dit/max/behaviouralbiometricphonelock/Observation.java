@@ -24,7 +24,9 @@ public class Observation
 
     public Observation()
     {
-
+        touch = new Touch();
+        linearAccelerations = new ArrayList<>();
+        angularVelocities = new ArrayList<>();
     }
 
     public String toString()
