@@ -14,11 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <TextView
-        android:text="@string/register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView2"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -27,7 +22,6 @@
         android:hint="UserName"
         android:ems="10"
         android:id="@+id/userNameRegister"
-        android:layout_below="@+id/textView2"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="42dp"
@@ -91,10 +85,9 @@
         android:layout_height="wrap_content"
         android:text="Register"
         android:id="@+id/registerButton"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="51dp"
+        android:layout_below="@+id/confirmPassword"
         android:layout_alignRight="@+id/confirmPassword"
         android:layout_alignEnd="@+id/confirmPassword"/>
 

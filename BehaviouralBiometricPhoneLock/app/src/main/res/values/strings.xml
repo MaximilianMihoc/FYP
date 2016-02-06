@@ -16,4 +16,5 @@
     <string name="noData">Sorry, No Questions on the searched items. \nPlease try something else.</string>
     <string name="title_activity_answers_screen">AnswersScreen</string>
     <string name="title_activity_question_body_screen">QuestionBodyScreen</string>
+    <string name="title_activity_options_screen">OptionsScreen</string>
 </resources>

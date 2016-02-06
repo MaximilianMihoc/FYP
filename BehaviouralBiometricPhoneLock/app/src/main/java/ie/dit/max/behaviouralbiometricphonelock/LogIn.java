@@ -59,7 +59,6 @@ public class LogIn extends Activity
                     {
                         System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
 
-                        // Attach an listener to read the data at our posts reference
                         Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users/" + authData.getUid());
 
                         userRef.addValueEventListener(new ValueEventListener()
