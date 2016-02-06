@@ -98,7 +98,7 @@ public class StackOverflowHomeScreen extends TrainActivity
         if (networkInfo != null && networkInfo.isConnected()) {
             new DownloadWebpageTask().execute(stringUrl);
         } else {
-            Log.d(DEBUG_TAG, "No network connection available.");
+            System.out.println(DEBUG_TAG + " No internet connection available.");
         }
     }
 
