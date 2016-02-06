@@ -1,4 +1,4 @@
-package ie.dit.max.foregroundApp;
+package ie.dit.max.foregroundAppStackOverflow;
 
 import android.content.Context;
 import android.text.Html;
@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
 

@@ -1,4 +1,4 @@
-package ie.dit.max.foregroundApp;
+package ie.dit.max.foregroundAppStackOverflow;
 
 /**
  * Created by Maximilian on 30/01/2016.

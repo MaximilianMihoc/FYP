@@ -18,7 +18,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-import ie.dit.max.foregroundApp.StackOverflowHomeScreen;
+import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
 
 public class LogIn extends Activity
 {

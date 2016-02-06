@@ -1,4 +1,4 @@
-package ie.dit.max.foregroundApp;
+package ie.dit.max.foregroundAppStackOverflow;
 
 import android.content.Context;
 import android.graphics.Color;

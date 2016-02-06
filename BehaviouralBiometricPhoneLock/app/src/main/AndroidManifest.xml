@@ -40,15 +40,15 @@
             android:label="@string/title_activity_register_user" >
         </activity>
         <activity
-            android:name="ie.dit.max.foregroundApp.StackOverflowHomeScreen"
+            android:name="ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen"
             android:label="@string/title_activity_home" >
         </activity>
         <activity
-            android:name="ie.dit.max.foregroundApp.AnswersScreen"
+            android:name="ie.dit.max.foregroundAppStackOverflow.AnswersScreen"
             android:label="@string/title_activity_answers_screen" >
         </activity>
         <activity
-            android:name="ie.dit.max.foregroundApp.QuestionBodyScreen"
+            android:name="ie.dit.max.foregroundAppStackOverflow.QuestionBodyScreen"
             android:label="@string/title_activity_question_body_screen" >
         </activity>
     </application>

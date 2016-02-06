@@ -1,4 +1,4 @@
-package ie.dit.max.foregroundApp;
+package ie.dit.max.foregroundAppStackOverflow;
 
 import java.io.Serializable;
 
