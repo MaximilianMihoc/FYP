@@ -10,6 +10,7 @@ import java.util.ArrayList;
  */
 public class ScrollFling extends Touch
 {
+    public static final int numberOfFeatures = 9;
     public ScrollFling()
     {
         super();
@@ -91,7 +92,7 @@ public class ScrollFling extends Touch
         double direction;
         direction = (endPoint.y - startPoint.y)/(endPoint.x - startPoint.x);
 
-        System.out.println("Direction angle: " + 1/Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x)) ;
+        //System.out.println("Direction angle: " + 1/Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x)) ;
 
         return Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
     }

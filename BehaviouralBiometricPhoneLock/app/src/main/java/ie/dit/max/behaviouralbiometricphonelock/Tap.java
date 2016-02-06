@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class Tap extends Touch
 {
-    public static final int numberOfFeatures = 10;
+    public static final int numberOfFeatures = 8;
     protected ArrayList<Point> scaledPoints;
 
     public Tap()

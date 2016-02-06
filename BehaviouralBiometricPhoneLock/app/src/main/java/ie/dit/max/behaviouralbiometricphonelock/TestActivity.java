@@ -132,7 +132,7 @@ public class TestActivity extends Activity implements
 
     public Mat buildTrainOrTestMatForScrollFling(ArrayList<Observation> listObservations)
     {
-        Mat tempMat = new Mat(listObservations.size(), Observation.numberOfFeatures, CvType.CV_32FC1);
+        Mat tempMat = new Mat(listObservations.size(), ScrollFling.numberOfFeatures, CvType.CV_32FC1);
 
         for(int i = 0; i < listObservations.size(); i++)
         {

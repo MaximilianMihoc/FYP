@@ -9,8 +9,6 @@ import java.util.List;
  */
 public class Observation
 {
-    public static final int numberOfFeatures = 9;
-
     private Touch touch;
     private ArrayList<Float> linearAccelerations;
     private ArrayList<Float> angularVelocities;
@@ -31,6 +29,41 @@ public class Observation
         judgement = 0;
     }
 
+    public float calculateAVGLinearAcc()
+    {
+        float sum = 0;
+        float avg = 0;
+        for(float la : linearAccelerations)
+        {
+            sum += la;
+        }
+
+        if(sum > 0 && linearAccelerations.size() > 0)
+        {
+            avg = sum/linearAccelerations.size();
+        }
+
+        return avg;
+    }
+
+    public float calculateAVGAngularVelocity()
+    {
+        float sum = 0;
+        float avg = 0;
+        for(float la : angularVelocities)
+        {
+            sum += la;
+        }
+
+        if(sum > 0 && angularVelocities.size() > 0)
+        {
+            avg = sum/angularVelocities.size();
+        }
+
+        return avg;
+    }
+
+
     public String toString()
     {
         return "Observation: " +
@@ -38,11 +71,6 @@ public class Observation
                 //"scrollFling: " + scrollFling.toString() +
                 "linearAccelerations: " + linearAccelerations.toString() +
                 "angularVelocities: " + angularVelocities.toString();
-    }
-
-    public static int getNumberOfFeatures()
-    {
-        return numberOfFeatures;
     }
 
     public ArrayList<Float> getLinearAccelerations()
