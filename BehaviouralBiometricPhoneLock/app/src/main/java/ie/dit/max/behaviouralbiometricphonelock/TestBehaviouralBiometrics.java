@@ -137,7 +137,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                     {
                         endPoint = new Point(event.getX(), event.getY());
                         duration = event.getEventTime() - event.getDownTime();
-                        Observation tempObs = new Observation(new Touch(), new ArrayList<Float>(), new ArrayList<Float>());
+                        Observation tempObs = new Observation();
 
                         if(isFling || isScroll)
                         {
@@ -211,6 +211,10 @@ public class TestBehaviouralBiometrics extends Activity implements
             {
                 //System.out.println("data: " + snapshot.toString());
                 //System.out.println("There are " + snapshot.getChildrenCount() + " observations");
+                if(snapshot.getValue() == null)
+                {
+                    System.out.println("No Scroll Fling data available. ");
+                }
 
                 for (DataSnapshot obsSnapshot: snapshot.getChildren()) {
                     //System.out.println("data: " + obsSnapshot.toString());

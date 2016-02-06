@@ -14,6 +14,7 @@ public class Observation
     private Touch touch;
     private ArrayList<Float> linearAccelerations;
     private ArrayList<Float> angularVelocities;
+    private int judgement;
 
     public Observation(Touch touch, ArrayList<Float> linearAccelerations, ArrayList<Float> angularVelocities)
     {
@@ -27,6 +28,7 @@ public class Observation
         touch = new Touch();
         linearAccelerations = new ArrayList<>();
         angularVelocities = new ArrayList<>();
+        judgement = 0;
     }
 
     public String toString()
@@ -63,26 +65,6 @@ public class Observation
         this.angularVelocities = angularVelocities;
     }
 
-    /*public Tap getTap()
-    {
-        return tap;
-    }
-
-    public void setTap(Tap tap)
-    {
-        this.tap = tap;
-    }
-
-    public ScrollFling getScrollFling()
-    {
-        return scrollFling;
-    }
-
-    public void setScrollFling(ScrollFling scrollFling)
-    {
-        this.scrollFling = scrollFling;
-    }*/
-
     public Touch getTouch()
     {
         return touch;
@@ -91,5 +73,15 @@ public class Observation
     public void setTouch(Touch touch)
     {
         this.touch = touch;
+    }
+
+    public int getJudgement()
+    {
+        return judgement;
+    }
+
+    public void setJudgement(int judgement)
+    {
+        this.judgement = judgement;
     }
 }

@@ -155,6 +155,9 @@ public class TrainActivity extends Activity implements
                         tempObs.setAngularVelocities(angularVelocities);
                         tempObs.setLinearAccelerations(linearAccelerations);
 
+                        //all Observations from Training are owner observations
+                        tempObs.setJudgement(1);
+
                         // add Observation to the List of training observations. Separate list of obs for tap gesture.
                         // get User details
                         String userID = sharedpreferences.getString("UserID", "");

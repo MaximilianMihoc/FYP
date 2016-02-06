@@ -32,11 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
-import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 import ie.dit.max.behaviouralbiometricphonelock.User;
 
-public class Home extends TestBehaviouralBiometrics
+public class Home extends TrainActivity
 {
     private static final String DEBUG_TAG = "ForegroundApp - Home";
 
