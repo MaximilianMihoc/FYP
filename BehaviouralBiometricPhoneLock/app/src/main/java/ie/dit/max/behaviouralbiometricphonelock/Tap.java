@@ -25,6 +25,18 @@ public class Tap extends Touch
         scaledPoints = new ArrayList<>();
     }
 
+    public Tap(Touch t)
+    {
+        super();
+        startPoint = t.startPoint;
+        endPoint = t.endPoint;
+        scaledStartPoint = t.scaledStartPoint;
+        scaledEndPoint = t.scaledEndPoint;
+        points = t.points;
+        duration = t.duration;
+        scaledDuration = t.scaledDuration;
+    }
+
     private void scalePoints(ArrayList<Point> points)
     {
         for(Point p : points)

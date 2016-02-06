@@ -202,30 +202,46 @@ public class TestBehaviouralBiometrics extends Activity implements
 
     private void getTrainingDataFromFirebase()
     {
-        Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
-
-        userRef.addValueEventListener(new ValueEventListener()
+        //get Scroll Fling Observations from Firebase
+        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
+        scrollFlingRef.addValueEventListener(new ValueEventListener()
         {
-            @JsonIgnoreProperties(ignoreUnknown = true)
             @Override
             public void onDataChange(DataSnapshot snapshot)
             {
-                System.out.println("data: " + snapshot.toString());
-                System.out.println("There are " + snapshot.getChildrenCount() + " blog posts");
+                //System.out.println("data: " + snapshot.toString());
+                //System.out.println("There are " + snapshot.getChildrenCount() + " observations");
 
                 for (DataSnapshot obsSnapshot: snapshot.getChildren()) {
-                    System.out.println("data: " + obsSnapshot.toString());
+                    //System.out.println("data: " + obsSnapshot.toString());
                     Observation obs = obsSnapshot.getValue(Observation.class);
-
                     trainScrollFlingObservations.add(obs);
 
-                    /*Touch t = post.getTouch();
-                    if(t instanceof ScrollFling){
-                        ScrollFling sf = (ScrollFling)t;
-                    }
-                    System.out.println(t.toString());*/
+                    //just some tests
+                    /*Touch t = obs.getTouch();
+                    ScrollFling sf = new ScrollFling(t);
+                    System.out.println(sf.toString());*/
                 }
+            }
 
+            @Override
+            public void onCancelled(FirebaseError firebaseError)
+            {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+
+        //get Tap Observations from Firebase
+        Firebase tapRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/tap");
+        tapRef.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot snapshot)
+            {
+                for (DataSnapshot obsSnapshot: snapshot.getChildren()) {
+                    Observation obs = obsSnapshot.getValue(Observation.class);
+                    trainTapOnlyObservations.add(obs);
+                }
             }
 
             @Override

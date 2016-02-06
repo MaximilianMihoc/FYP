@@ -15,6 +15,18 @@ public class ScrollFling extends Touch
         super();
     }
 
+    public ScrollFling(Touch t)
+    {
+        super();
+        startPoint = t.startPoint;
+        endPoint = t.endPoint;
+        scaledStartPoint = t.scaledStartPoint;
+        scaledEndPoint = t.scaledEndPoint;
+        points = t.points;
+        duration = t.duration;
+        scaledDuration = t.scaledDuration;
+    }
+
     // This method will create a list with all the points on the stroke, including start and end points
     public ArrayList<Point> normalizeStrokePoints()
     {
