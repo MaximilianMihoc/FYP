@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,9 +18,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-import java.util.Map;
-
-import ie.dit.max.foregroundApp.Home;
+import ie.dit.max.foregroundApp.StackOverflowHomeScreen;
 
 public class LogIn extends Activity
 {
@@ -78,7 +74,7 @@ public class LogIn extends Activity
                                 editor.putString("UserID", usrObj.getUserID());
                                 editor.commit();
 
-                                Intent trainIntent = new Intent(LogIn.this, Home.class);
+                                Intent trainIntent = new Intent(LogIn.this, StackOverflowHomeScreen.class);
                                 startActivity(trainIntent);
                             }
 
@@ -114,7 +110,7 @@ public class LogIn extends Activity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+        // automatically handle clicks on the StackOverflowHomeScreen/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 

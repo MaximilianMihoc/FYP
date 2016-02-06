@@ -40,7 +40,7 @@
             android:label="@string/title_activity_register_user" >
         </activity>
         <activity
-            android:name="ie.dit.max.foregroundApp.Home"
+            android:name="ie.dit.max.foregroundApp.StackOverflowHomeScreen"
             android:label="@string/title_activity_home" >
         </activity>
         <activity

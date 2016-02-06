@@ -2,7 +2,6 @@ package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,13 +11,10 @@ import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -31,8 +27,6 @@ import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
 
 import java.util.ArrayList;
-
-import ie.dit.max.foregroundApp.Home;
 
 /**
  * Created by Maximilian on 04/02/2016.

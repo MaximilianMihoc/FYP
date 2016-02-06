@@ -11,10 +11,6 @@ import android.widget.Button;
 
 import org.opencv.android.OpenCVLoader;
 
-import ie.dit.max.foregroundApp.AnswersScreen;
-import ie.dit.max.foregroundApp.Home;
-import ie.dit.max.foregroundApp.QuestionBodyScreen;
-
 public class MainActivity extends AppCompatActivity
 {
 
@@ -70,7 +66,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(MainActivity.this, Home.class);
+                Intent trainIntent = new Intent(MainActivity.this, StackOverflowHomeScreen.class);
                 startActivity(trainIntent);
             }
         });*/
@@ -97,7 +93,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+        // automatically handle clicks on the StackOverflowHomeScreen/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 

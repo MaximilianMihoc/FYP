@@ -11,17 +11,12 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
-
-import com.firebase.client.Firebase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,18 +24,15 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
-import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
-import ie.dit.max.behaviouralbiometricphonelock.User;
 
-public class Home extends TestBehaviouralBiometrics
+public class StackOverflowHomeScreen extends TrainActivity
 {
-    private static final String DEBUG_TAG = "ForegroundApp - Home";
+    private static final String DEBUG_TAG = "ForegroundApp - StackOverflowHomeScreen";
 
-    ListView queionsList;
+    ListView questionsListView;
     QuestionListAdapter questionsListAdapter;
     SearchView searchView;
     ArrayList<Question> questionsList;
@@ -76,14 +68,14 @@ public class Home extends TestBehaviouralBiometrics
             }
         });
 
-        queionsList = (ListView) findViewById(android.R.id.list);
-        queionsList.setOnTouchListener(gestureListener);
-        queionsList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        questionsListView = (ListView) findViewById(android.R.id.list);
+        questionsListView.setOnTouchListener(gestureListener);
+        questionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                Intent goToQuestionBodyIntent = new Intent(Home.this, QuestionBodyScreen.class);
+                Intent goToQuestionBodyIntent = new Intent(StackOverflowHomeScreen.this, QuestionBodyScreen.class);
 
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("questionSelected", questionsList.get(position));
@@ -164,8 +156,8 @@ public class Home extends TestBehaviouralBiometrics
                 }
 
                 questionsListAdapter = new QuestionListAdapter(getApplicationContext(), questionsList);
-                queionsList.setEmptyView(findViewById(android.R.id.empty));
-                queionsList.setAdapter(questionsListAdapter);
+                questionsListView.setEmptyView(findViewById(android.R.id.empty));
+                questionsListView.setAdapter(questionsListAdapter);
 
 
             } catch (JSONException e)
