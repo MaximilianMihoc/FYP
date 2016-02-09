@@ -206,8 +206,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                             //displayMatrix(resultMat);
 
                             // uncomment the next 2 lines to add test data in Firebase.
-                            //Firebase newUserRef = ref.child("testData").child(userID).child("tap");
-                            //newUserRef.push().setValue(tempObs);
+                            Firebase newUserRef = ref.child("testData").child(userID).child("tap");
+                            newUserRef.push().setValue(tempObs);
 
                             tapOnlyObservations.add(tempObs);
                         }
@@ -244,8 +244,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                             //displayMatrix(resultMat);
 
                             // uncomment the next 2 lines to add test data in Firebase.
-                            //Firebase newUserRef = ref.child("testData").child(userID).child("scrollFling");
-                            //newUserRef.push().setValue(tempObs);
+                            Firebase newUserRef = ref.child("testData").child(userID).child("scrollFling");
+                            newUserRef.push().setValue(tempObs);
 
                             scrollFlingObservations.add(tempObs);
                         }

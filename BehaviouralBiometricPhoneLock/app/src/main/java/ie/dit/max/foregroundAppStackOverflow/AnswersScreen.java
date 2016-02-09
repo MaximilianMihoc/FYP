@@ -20,9 +20,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
+import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
-public class AnswersScreen extends TrainActivity
+public class AnswersScreen extends TestBehaviouralBiometrics
 {
     private static final String DEBUG_TAG = "AnswersScreen";
 

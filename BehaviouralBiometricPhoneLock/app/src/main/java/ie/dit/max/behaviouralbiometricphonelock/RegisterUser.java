@@ -96,6 +96,48 @@ public class RegisterUser extends AppCompatActivity
                             User newUser = new User(userName.getText().toString(), email.getText().toString(), result.get("uid").toString());
 
                             newUserRef.setValue(newUser);
+
+                            // log in the new user in the new created account.
+                            ref.authWithPassword(email.getText().toString(), password.getText().toString(), new Firebase.AuthResultHandler()
+                            {
+                                @Override
+                                public void onAuthenticated(AuthData authData)
+                                {
+                                    System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+
+                                    Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users/" + authData.getUid());
+
+                                    userRef.addValueEventListener(new ValueEventListener()
+                                    {
+                                        @Override
+                                        public void onDataChange(DataSnapshot snapshot)
+                                        {
+                                            User usrObj = snapshot.getValue(User.class);
+                                            System.out.println(usrObj.getUserID() + " - " + usrObj.getEmail());
+
+                                            SharedPreferences.Editor editor = sharedpreferences.edit();
+                                            editor.putString("UserID", usrObj.getUserID());
+                                            editor.commit();
+
+                                            Intent trainIntent = new Intent(RegisterUser.this, StackOverflowHomeScreen.class);
+                                            startActivity(trainIntent);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(FirebaseError firebaseError)
+                                        {
+                                            System.out.println("The read failed: " + firebaseError.getMessage());
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onAuthenticationError(FirebaseError firebaseError)
+                                {
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Something went Wrong, Please try again", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                            });
                         }
 
                         @Override
@@ -105,46 +147,7 @@ public class RegisterUser extends AppCompatActivity
                         }
                     });
 
-                    ref.authWithPassword(email.getText().toString(), password.getText().toString(), new Firebase.AuthResultHandler()
-                    {
-                        @Override
-                        public void onAuthenticated(AuthData authData)
-                        {
-                            System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
 
-                            Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users/" + authData.getUid());
-
-                            userRef.addValueEventListener(new ValueEventListener()
-                            {
-                                @Override
-                                public void onDataChange(DataSnapshot snapshot)
-                                {
-                                    User usrObj = snapshot.getValue(User.class);
-                                    System.out.println(usrObj.getUserID() + " - " + usrObj.getEmail());
-
-                                    SharedPreferences.Editor editor = sharedpreferences.edit();
-                                    editor.putString("UserID", usrObj.getUserID());
-                                    editor.commit();
-
-                                    Intent trainIntent = new Intent(RegisterUser.this, StackOverflowHomeScreen.class);
-                                    startActivity(trainIntent);
-                                }
-
-                                @Override
-                                public void onCancelled(FirebaseError firebaseError)
-                                {
-                                    System.out.println("The read failed: " + firebaseError.getMessage());
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onAuthenticationError(FirebaseError firebaseError)
-                        {
-                            Toast toast = Toast.makeText(getApplicationContext(), "Something went Wrong, Please try again", Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
-                    });
                 }
 
             }

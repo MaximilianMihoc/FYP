@@ -11,9 +11,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
+import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
-public class QuestionBodyScreen extends TrainActivity
+public class QuestionBodyScreen extends TestBehaviouralBiometrics
 {
 
     Question questionSelected;

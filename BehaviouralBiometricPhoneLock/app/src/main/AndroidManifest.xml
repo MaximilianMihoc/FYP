@@ -55,6 +55,10 @@
             android:name=".OptionsScreen"
             android:label="@string/title_activity_options_screen" >
         </activity>
+        <activity
+            android:name="ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScreen"
+            android:label="@string/title_activity_train_activity_first_screen" >
+        </activity>
     </application>
 
 </manifest>

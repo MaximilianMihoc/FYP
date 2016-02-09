@@ -17,4 +17,5 @@
     <string name="title_activity_answers_screen">AnswersScreen</string>
     <string name="title_activity_question_body_screen">QuestionBodyScreen</string>
     <string name="title_activity_options_screen">OptionsScreen</string>
+    <string name="title_activity_train_activity_first_screen">TrainActivityFirstScreen</string>
 </resources>

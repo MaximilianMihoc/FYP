@@ -26,9 +26,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
+import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
-public class StackOverflowHomeScreen extends TrainActivity
+public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
 {
     private static final String DEBUG_TAG = "ForegroundApp - StackOverflowHomeScreen";
 
