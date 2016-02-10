@@ -119,7 +119,7 @@ public class RegisterUser extends AppCompatActivity
                                             editor.putString("UserID", usrObj.getUserID());
                                             editor.commit();
 
-                                            Intent trainIntent = new Intent(RegisterUser.this, StackOverflowHomeScreen.class);
+                                            Intent trainIntent = new Intent(RegisterUser.this, OptionsScreen.class);
                                             startActivity(trainIntent);
                                         }
 

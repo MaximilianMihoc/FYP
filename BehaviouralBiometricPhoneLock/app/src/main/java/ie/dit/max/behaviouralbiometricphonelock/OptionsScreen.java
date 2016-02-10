@@ -1,12 +1,20 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
+import ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScreen;
 
 public class OptionsScreen extends AppCompatActivity
 {
+    Button goToStackOverflow;
+    Button goToTrainFirstActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -14,8 +22,28 @@ public class OptionsScreen extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options_screen);
 
+        goToStackOverflow = (Button) findViewById(R.id.goToStackOverflowApp);
+        goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
 
+        goToTrainFirstActivity.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent trainIntent = new Intent(OptionsScreen.this, TrainActivityFirstScreen.class);
+                startActivity(trainIntent);
+            }
+        });
 
+        goToStackOverflow.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent trainIntent = new Intent(OptionsScreen.this, StackOverflowHomeScreen.class);
+                startActivity(trainIntent);
+            }
+        });
     }
 
     @Override

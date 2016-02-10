@@ -73,7 +73,7 @@ public class LogIn extends Activity
                                 editor.putString("UserID", usrObj.getUserID());
                                 editor.commit();
 
-                                Intent trainIntent = new Intent(LogIn.this, StackOverflowHomeScreen.class);
+                                Intent trainIntent = new Intent(LogIn.this, OptionsScreen.class);
                                 startActivity(trainIntent);
                             }
 
