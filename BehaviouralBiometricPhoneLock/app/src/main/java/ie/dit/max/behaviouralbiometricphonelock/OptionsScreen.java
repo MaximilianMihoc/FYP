@@ -1,12 +1,20 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
 import ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScreen;
@@ -15,12 +23,21 @@ public class OptionsScreen extends AppCompatActivity
 {
     Button goToStackOverflow;
     Button goToTrainFirstActivity;
+    Firebase ref;
+    SharedPreferences sharedpreferences;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options_screen);
+        Firebase.setAndroidContext(this);
+        ref = new Firebase("https://fyp-max.firebaseio.com");
+        sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+
+        // get User details
+        userID = sharedpreferences.getString("UserID", "");
 
         goToStackOverflow = (Button) findViewById(R.id.goToStackOverflowApp);
         goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
@@ -40,10 +57,48 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(OptionsScreen.this, StackOverflowHomeScreen.class);
-                startActivity(trainIntent);
+                if(checkIfTrainingDataExists())
+                {
+                    Intent trainIntent = new Intent(OptionsScreen.this, StackOverflowHomeScreen.class);
+                    startActivity(trainIntent);
+                }
+                else
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         });
+    }
+
+    boolean trained;
+    private boolean checkIfTrainingDataExists()
+    {
+        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
+        scrollFlingRef.addValueEventListener(new ValueEventListener()
+        {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if(dataSnapshot.getValue() == null)
+                {
+                    trained = false;
+                }
+                else
+                {
+                    trained = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError)
+            {
+
+            }
+        });
+
+        return trained;
     }
 
     @Override
