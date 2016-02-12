@@ -26,7 +26,7 @@
                 android:layout_alignEnd="@+id/predictions"/>
 
             <TextView
-                android:text="@string/hello_world"
+                android:text="Wait for the predictions"
                 android:id="@+id/predictions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

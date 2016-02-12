@@ -12,7 +12,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Train System"
+        android:text="Cross Validation"
         android:id="@+id/goToTrainButton"
         android:layout_marginTop="89dp"
         android:layout_below="@+id/goToRegistrationActivity"

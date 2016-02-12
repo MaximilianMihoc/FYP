@@ -48,16 +48,6 @@ public class CrossValidationActivity extends Activity
     ArrayList<Observation> tapOnlyObservations;
     ArrayList<Observation> trainTapOnlyObservations;
 
-    private ArrayList<Float> linearAccelerations;
-    private ArrayList<Float> angularVelocities;
-
-    boolean isScroll = false;
-    boolean isFling = false;
-
-
-    private Float linearAcceleration;
-    private Float angularVelocity;
-
     private String userID;
 
     private SVM scrollFlingSVM;
@@ -78,16 +68,11 @@ public class CrossValidationActivity extends Activity
         // get User ID details
         userID = "7796e45a-8310-48e9-9cca-5f9d4ce3f83a";
 
-        linearAcceleration = 0.0f;
-        angularVelocity = 0.0f;
-
         scrollFlingObservations = new ArrayList<>();
         trainScrollFlingObservations = new ArrayList<>();
         tapOnlyObservations = new ArrayList<>();
         trainTapOnlyObservations = new ArrayList<>();
         points = new ArrayList<>();
-        linearAccelerations = new ArrayList<>();
-        angularVelocities = new ArrayList<>();
 
         outputData = (TextView) findViewById(R.id.predictions);
 
