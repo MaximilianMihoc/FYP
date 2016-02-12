@@ -27,12 +27,17 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 public class CrossValidationActivity extends Activity
@@ -77,9 +82,7 @@ public class CrossValidationActivity extends Activity
         outputData = (TextView) findViewById(R.id.predictions);
 
         /* Get user training data from Firebase */
-        getTrainingDataFromFirebase();
-
-
+        getTrainDataFromOtherUsersFirebase();
 
     }
 
@@ -121,17 +124,20 @@ public class CrossValidationActivity extends Activity
                         //initialise scrollFlingSVM
                         scrollFlingSVM =  SVM.create();
                         scrollFlingSVM.setKernel(SVM.RBF);
-                        scrollFlingSVM.setType(SVM.ONE_CLASS);
-                        //scrollFlingSVM.setC(0.3);
+
+                        //scrollFlingSVM.setType(SVM.C_SVC);
+                        scrollFlingSVM.setType(SVM.NU_SVC);
+
+                        scrollFlingSVM.setC(0.00390625);
                         //scrollFlingSVM.setP(1);
-                        scrollFlingSVM.setGamma(0.001953125);
+                        //scrollFlingSVM.setGamma(0.001953125);
                         scrollFlingSVM.setNu(0.00390625);
 
                         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
                         Mat labelsScrollFlingMat = buildLabelsMat(trainScrollFlingObservations);
 
-                        //System.out.println("Train Matrix is:\n");
-                        //displayMatrix(trainScrollFlingMat);
+                        System.out.println("Train Matrix is:\n");
+                        displayMatrix(trainScrollFlingMat);
 
                         scrollFlingSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
                         // end training scrollFlingSNM
@@ -172,8 +178,8 @@ public class CrossValidationActivity extends Activity
                         //initialise scrollFlingSVM
                         tapSVM = SVM.create();
                         tapSVM.setKernel(SVM.RBF);
-                        tapSVM.setType(SVM.ONE_CLASS);
-                        //tapSVM.setC(0.3);
+                        tapSVM.setType(SVM.C_SVC);
+                        tapSVM.setC(0.3);
                         //tapSVM.setP(1);
                         tapSVM.setGamma(0.001953125);
                         tapSVM.setNu(0.00390625);
@@ -189,7 +195,7 @@ public class CrossValidationActivity extends Activity
                     }
 
                      /* Get test data from firebase and return predictions. */
-                    getTrainDataFromFirebaseAndTestSystem();
+                    getTestDataFromFirebaseAndTestSystem();
                 }
             }
 
@@ -201,7 +207,64 @@ public class CrossValidationActivity extends Activity
         });
     }
 
-    private void getTrainDataFromFirebaseAndTestSystem()
+    private void getTrainDataFromOtherUsersFirebase()
+    {
+        final Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData");
+        scrollFlingRef.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot snapshot)
+            {
+                if(snapshot.getValue() == null)
+                {
+                    System.out.println("No Scroll Fling data available. ");
+                    Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                else
+                {
+                    for (DataSnapshot usrSnapshot : snapshot.getChildren())
+                    {
+                        if(!usrSnapshot.getKey().equals(userID))
+                        {
+                            //System.out.println("usrSnapshot: " + usrSnapshot.child("scrollFling"));
+
+                            // Scroll/Fling:
+                            DataSnapshot dpScroll = usrSnapshot.child("scrollFling");
+                            for (DataSnapshot obsSnapshot : dpScroll.getChildren())
+                            {
+                                Observation obs = obsSnapshot.getValue(Observation.class);
+                                obs.setJudgement(0);
+                                trainScrollFlingObservations.add(obs);
+                            }
+
+                            // Taps:
+                            DataSnapshot dpTap = usrSnapshot.child("tap");
+                            for (DataSnapshot obsSnapshot : dpScroll.getChildren())
+                            {
+                                Observation obs = obsSnapshot.getValue(Observation.class);
+                                obs.setJudgement(0);
+                                trainTapOnlyObservations.add(obs);
+                            }
+                        }
+                    }
+
+                    // train data for the user.
+                    getTrainingDataFromFirebase();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError)
+            {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+    }
+
+
+    private void getTestDataFromFirebaseAndTestSystem()
     {
         //get Scroll Fling Observations from Firebase
         Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID + "/scrollFling");
@@ -243,8 +306,8 @@ public class CrossValidationActivity extends Activity
                     out += "\nOwners: " + counter + " out of " + scrollFlingObservations.size();
                     outputData.setText(out);
 
-                    System.out.println("Scroll Fling Result Mat: ");
-                    displayMatrix(resultMat);
+                    //System.out.println("Scroll Fling Result Mat: ");
+                    //displayMatrix(resultMat);
                 }
             }
 
@@ -292,8 +355,8 @@ public class CrossValidationActivity extends Activity
                     out += "\nOwners: " + counter + " out of " + tapOnlyObservations.size();
                     outputData.setText(out);
 
-                    System.out.println("Tap Result Mat: ");
-                    displayMatrix(resultMat);
+                    //System.out.println("Tap Result Mat: ");
+                    //displayMatrix(resultMat);
                 }
             }
 
@@ -341,7 +404,7 @@ public class CrossValidationActivity extends Activity
             int j = 0;
 
             tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
-            tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
+            //tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
