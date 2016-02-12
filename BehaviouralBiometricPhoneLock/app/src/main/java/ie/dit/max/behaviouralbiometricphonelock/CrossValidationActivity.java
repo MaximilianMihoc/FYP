@@ -46,7 +46,6 @@ public class CrossValidationActivity extends Activity
 
     private static final String DEBUG_TAG = "Test Activity";
 
-    Point startPoint, endPoint;
     ArrayList<Point> points = new ArrayList<>();
     ArrayList<Observation> trainScrollFlingObservations;
     ArrayList<Observation> scrollFlingObservations;
@@ -61,6 +60,8 @@ public class CrossValidationActivity extends Activity
     TextView outputData;
     String out = "";
 
+    private SharedPreferences sharedpreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -71,7 +72,11 @@ public class CrossValidationActivity extends Activity
         ref = new Firebase("https://fyp-max.firebaseio.com");
 
         // get User ID details
-        userID = "7796e45a-8310-48e9-9cca-5f9d4ce3f83a";
+        //userID = "7796e45a-8310-48e9-9cca-5f9d4ce3f83a"; // - maximilian.mihoc@yahoo.com
+        userID = "6cae8406-d86b-4d56-bc1d-0e86324962c5";
+
+        sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
 
         scrollFlingObservations = new ArrayList<>();
         trainScrollFlingObservations = new ArrayList<>();
@@ -128,10 +133,14 @@ public class CrossValidationActivity extends Activity
                         //scrollFlingSVM.setType(SVM.C_SVC);
                         scrollFlingSVM.setType(SVM.NU_SVC);
 
-                        scrollFlingSVM.setC(0.00390625);
+                        //scrollFlingSVM.setC(0.25);
+                        scrollFlingSVM.setC(0.0001220703125);
+
                         //scrollFlingSVM.setP(1);
                         //scrollFlingSVM.setGamma(0.001953125);
-                        scrollFlingSVM.setNu(0.00390625);
+
+                        //scrollFlingSVM.setNu(0.00390625);
+                        scrollFlingSVM.setNu(0.00048828125);
 
                         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
                         Mat labelsScrollFlingMat = buildLabelsMat(trainScrollFlingObservations);
@@ -178,11 +187,18 @@ public class CrossValidationActivity extends Activity
                         //initialise scrollFlingSVM
                         tapSVM = SVM.create();
                         tapSVM.setKernel(SVM.RBF);
-                        tapSVM.setType(SVM.C_SVC);
-                        tapSVM.setC(0.3);
+
+                        //tapSVM.setType(SVM.C_SVC);
+                        tapSVM.setType(SVM.NU_SVC);
+
+                        //tapSVM.setC(0.3);
+                        tapSVM.setC(0.0001220703125);
+
                         //tapSVM.setP(1);
-                        tapSVM.setGamma(0.001953125);
-                        tapSVM.setNu(0.00390625);
+                        //tapSVM.setGamma(0.001953125);
+
+                        //tapSVM.setNu(0.00390625);
+                        tapSVM.setNu(0.00048828125);
 
                         Mat trainTapMat = buildTrainOrTestMatForTaps(trainTapOnlyObservations);
                         Mat labelsTapMat = buildLabelsMat(trainTapOnlyObservations);

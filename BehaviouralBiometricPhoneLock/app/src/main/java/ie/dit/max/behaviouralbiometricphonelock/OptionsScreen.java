@@ -23,6 +23,8 @@ public class OptionsScreen extends AppCompatActivity
 {
     Button goToStackOverflow;
     Button goToTrainFirstActivity;
+    Button goToCrossValidation;
+
     Firebase ref;
     SharedPreferences sharedpreferences;
     private String userID;
@@ -41,6 +43,7 @@ public class OptionsScreen extends AppCompatActivity
 
         goToStackOverflow = (Button) findViewById(R.id.goToStackOverflowApp);
         goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
+        goToCrossValidation = (Button) findViewById(R.id.goToCrossValidation);
 
         goToTrainFirstActivity.setOnClickListener(new View.OnClickListener()
         {
@@ -67,6 +70,16 @@ public class OptionsScreen extends AppCompatActivity
                     Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
                     toast.show();
                 }
+            }
+        });
+
+        goToCrossValidation.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent trainIntent = new Intent(OptionsScreen.this, CrossValidationActivity.class);
+                startActivity(trainIntent);
             }
         });
     }
