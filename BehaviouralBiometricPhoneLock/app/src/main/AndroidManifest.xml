@@ -24,7 +24,7 @@
             android:label="@string/title_activity_train" >
         </activity>
         <activity
-            android:name=".TestActivity"
+            android:name=".CrossValidationActivity"
             android:label="@string/title_activity_test" >
         </activity>
         <activity

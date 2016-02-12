@@ -61,15 +61,15 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        /*goToTrainButton.setOnClickListener(new View.OnClickListener()
+        goToTrainButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(MainActivity.this, StackOverflowHomeScreen.class);
+                Intent trainIntent = new Intent(MainActivity.this, CrossValidationActivity.class);
                 startActivity(trainIntent);
             }
-        });*/
+        });
 
 
         /*
