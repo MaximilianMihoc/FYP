@@ -30,6 +30,7 @@ public class OptionsScreen extends AppCompatActivity
     Firebase ref;
     SharedPreferences sharedpreferences;
     private String userID;
+    boolean trained;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,6 +40,8 @@ public class OptionsScreen extends AppCompatActivity
         Firebase.setAndroidContext(this);
         ref = new Firebase("https://fyp-max.firebaseio.com");
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+
+        trained = checkIfTrainingDataExists();
 
         // get User details
         userID = sharedpreferences.getString("UserID", "");
@@ -63,7 +66,7 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(checkIfTrainingDataExists())
+                if(checkIfTrainingDataExists() || trained)
                 {
                     Intent trainIntent = new Intent(OptionsScreen.this, StackOverflowHomeScreen.class);
                     startActivity(trainIntent);
@@ -97,7 +100,6 @@ public class OptionsScreen extends AppCompatActivity
         });
     }
 
-    boolean trained;
     private boolean checkIfTrainingDataExists()
     {
         Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);

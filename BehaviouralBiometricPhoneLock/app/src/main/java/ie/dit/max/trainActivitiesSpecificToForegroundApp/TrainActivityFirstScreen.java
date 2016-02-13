@@ -148,12 +148,15 @@ public class TrainActivityFirstScreen extends TrainActivity
 
                 if (trainIterations <= 0 && !endTraining)
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Train model is complete. Please exit.", Toast.LENGTH_SHORT);
-                    toast.show();
                     endTraining = true;
+
+                    centerText.setText("Train model is complete. Please exit.");
                     trainActivityTitle.setText("Well done, training has been completed");
                     startButton.setText("Exit");
                     trainLayout.addView(startButton);
+                    trainLayout.addView(centerText);
+
+                    trainLayout.removeView(listViewTrainScreen);
 
                 }
 

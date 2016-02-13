@@ -114,42 +114,38 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-
-                if (iterations > 0)
+                if(correctValue.equals(newArray[position]))
                 {
-                    if(correctValue.equals(newArray[position]))
-                    {
-                        Toast toast = Toast.makeText(getApplicationContext(), "Well Done. Try another one.", Toast.LENGTH_SHORT);
-                        toast.show();
+                    Toast toast = Toast.makeText(getApplicationContext(), "Well Done. Try another one.", Toast.LENGTH_SHORT);
+                    toast.show();
 
-                        europeCountries = Randomize(europeCountries);
-                        int pos = getRandomNumber(nonEuropeCountries.length);
-                        correctValue = nonEuropeCountries[pos];
-                        newArray = addNonEuropeanCountry(europeCountries, correctValue);
-                        System.out.println("correctValue: " + correctValue);
+                    europeCountries = Randomize(europeCountries);
+                    int pos = getRandomNumber(nonEuropeCountries.length);
+                    correctValue = nonEuropeCountries[pos];
+                    newArray = addNonEuropeanCountry(europeCountries, correctValue);
+                    System.out.println("correctValue: " + correctValue);
 
-                        adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.row_layout_train_activity_firstscreen, newArray);
-                        listViewCountryList.setAdapter(adapter);
+                    adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.row_layout_train_activity_firstscreen, newArray);
+                    listViewCountryList.setAdapter(adapter);
 
-                        iterations --;
-                        goodAttempts++;
+                    iterations --;
+                    goodAttempts++;
 
-                        activityTitle.setText("Find the NON European Country" +
-                                "\nAttempts: " + iterations + " Good: " + goodAttempts + " Wrong: " + badAttempts);
-                    }
-                    else
-                    {
-                        Toast toast = Toast.makeText(getApplicationContext(), "That is an European country. \nPlease have another try.", Toast.LENGTH_SHORT);
-                        toast.show();
-
-                        badAttempts++;
-                        iterations --;
-                        activityTitle.setText("Find the NON European Country" +
-                                "\nAttempts: " + iterations + " Good: " + goodAttempts + " Wrong: " + badAttempts);
-                    }
-
+                    activityTitle.setText("Find the NON European Country" +
+                            "\nAttempts: " + iterations + " Good: " + goodAttempts + " Wrong: " + badAttempts);
                 }
                 else
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(), "That is an European country. \nPlease have another try.", Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    badAttempts++;
+                    iterations --;
+                    activityTitle.setText("Find the NON European Country" +
+                            "\nAttempts: " + iterations + " Good: " + goodAttempts + " Wrong: " + badAttempts);
+                }
+
+                if (iterations <= 0)
                 {
                     centerText.setText("Results: "+
                             "\nAttempts: " + attempts + " Good: " + goodAttempts + " Wrong: " + badAttempts);

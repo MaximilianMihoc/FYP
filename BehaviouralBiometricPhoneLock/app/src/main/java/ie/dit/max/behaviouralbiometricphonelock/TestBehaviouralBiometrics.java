@@ -191,7 +191,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             if(resultMat.rows() > 0)
                                 tempObs.setJudgement((int) resultMat.get(0, 0)[0]);
 
-                            if(tempObs.getJudgement() == 1)
+                            /*if(tempObs.getJudgement() == 1)
                             {
                                 Toast toast = Toast.makeText(getApplicationContext(), "Tap Owner", Toast.LENGTH_SHORT);
                                 toast.show();
@@ -200,7 +200,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             {
                                 Toast toast = Toast.makeText(getApplicationContext(), "Tap Guest", Toast.LENGTH_SHORT);
                                 toast.show();
-                            }
+                            }*/
 
                             //System.out.println("Tap resultMat: " );
                             //displayMatrix(resultMat);
@@ -229,7 +229,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             if(resultMat.rows() > 0)
                                 tempObs.setJudgement((int) resultMat.get(0, 0)[0]);
 
-                            if(tempObs.getJudgement() == 1)
+                            /*if(tempObs.getJudgement() == 1)
                             {
                                 Toast toast = Toast.makeText(getApplicationContext(), "Owner", Toast.LENGTH_SHORT);
                                 toast.show();
@@ -238,7 +238,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             {
                                 Toast toast = Toast.makeText(getApplicationContext(), "Guest", Toast.LENGTH_SHORT);
                                 toast.show();
-                            }
+                            }*/
 
                             //System.out.println("resultMat: " );
                             //displayMatrix(resultMat);
