@@ -16,6 +16,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import ie.dit.max.foregroundAppCountriesPick.NonEuropeanCountryPick;
 import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
 import ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScreen;
 
@@ -24,6 +25,7 @@ public class OptionsScreen extends AppCompatActivity
     Button goToStackOverflow;
     Button goToTrainFirstActivity;
     Button goToCrossValidation;
+    Button goToCountryListGame;
 
     Firebase ref;
     SharedPreferences sharedpreferences;
@@ -44,6 +46,7 @@ public class OptionsScreen extends AppCompatActivity
         goToStackOverflow = (Button) findViewById(R.id.goToStackOverflowApp);
         goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
         goToCrossValidation = (Button) findViewById(R.id.goToCrossValidation);
+        goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
 
         goToTrainFirstActivity.setOnClickListener(new View.OnClickListener()
         {
@@ -79,6 +82,16 @@ public class OptionsScreen extends AppCompatActivity
             public void onClick(View v)
             {
                 Intent trainIntent = new Intent(OptionsScreen.this, CrossValidationActivity.class);
+                startActivity(trainIntent);
+            }
+        });
+
+        goToCountryListGame.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent trainIntent = new Intent(OptionsScreen.this, NonEuropeanCountryPick.class);
                 startActivity(trainIntent);
             }
         });

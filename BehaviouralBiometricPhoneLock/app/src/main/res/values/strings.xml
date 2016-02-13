@@ -43,7 +43,6 @@
         <item>Iceland</item>
         <item>Ireland</item>
         <item>Italy</item>
-        <item>Kazakhstan</item>
         <item>Kosovo</item>
         <item>Latvia</item>
         <item>Liechtenstein</item>
@@ -224,4 +223,5 @@
         <item>Uruguay</item>
         <item>Venezuela</item>
     </string-array>
+    <string name="title_activity_non_european_country_pick">NonEuropeanCountryPick</string>
 </resources>

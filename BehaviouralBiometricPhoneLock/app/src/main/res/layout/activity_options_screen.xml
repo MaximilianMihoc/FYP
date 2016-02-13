@@ -14,33 +14,34 @@
         android:layout_height="wrap_content"
         android:text="Stack Overflow"
         android:id="@+id/goToStackOverflowApp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/goToTrainFirstScreen"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/goToTrainFirstScreen"
+        android:layout_alignEnd="@+id/goToTrainFirstScreen"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Train System"
         android:id="@+id/goToTrainFirstScreen"
-        android:layout_above="@+id/goToStackOverflowApp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="74dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/goToStackOverflowApp"
-        android:layout_alignEnd="@+id/goToStackOverflowApp"/>
+        android:layout_alignParentStart="true"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Settings"
         android:id="@+id/button2"
-        android:layout_below="@+id/goToStackOverflowApp"
+        android:layout_below="@+id/goToCountryListGame"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/goToStackOverflowApp"
-        android:layout_alignEnd="@+id/goToStackOverflowApp"/>
+        android:layout_alignRight="@+id/goToCountryListGame"
+        android:layout_alignEnd="@+id/goToCountryListGame"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -52,4 +53,15 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Country List Game"
+        android:id="@+id/goToCountryListGame"
+        android:layout_below="@+id/goToStackOverflowApp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/goToStackOverflowApp"
+        android:layout_alignEnd="@+id/goToStackOverflowApp"/>
 </RelativeLayout>

@@ -74,9 +74,9 @@ public class RegisterUser extends AppCompatActivity
                 {
                     Toast.makeText(getApplicationContext(), "E-mail and Confirmation e-mail do not match.", Toast.LENGTH_SHORT).show();
                 }
-                else if(password.getText().toString().trim().length() <= 4)
+                else if(password.getText().toString().trim().length() < 5)
                 {
-                    Toast.makeText(getApplicationContext(), "Please Enter a password of at least 4 characters.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Please Enter a password of at least 5 characters.", Toast.LENGTH_SHORT).show();
                 }
                 else if(!password.getText().toString().equals(confirmPassword.getText().toString()))
                 {

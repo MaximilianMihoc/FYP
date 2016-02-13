@@ -145,8 +145,8 @@ public class CrossValidationActivity extends Activity
                         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
                         Mat labelsScrollFlingMat = buildLabelsMat(trainScrollFlingObservations);
 
-                        System.out.println("Train Matrix is:\n");
-                        displayMatrix(trainScrollFlingMat);
+                        //System.out.println("Train Matrix is:\n");
+                        //displayMatrix(trainScrollFlingMat);
 
                         scrollFlingSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
                         // end training scrollFlingSNM
