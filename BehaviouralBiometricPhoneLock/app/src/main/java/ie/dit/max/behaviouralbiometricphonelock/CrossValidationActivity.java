@@ -492,20 +492,29 @@ public class CrossValidationActivity extends Activity
             ScrollFling scrollFlingObs = new ScrollFling(listObservations.get(i).getTouch());
             int j = 0;
 
-            tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
-            //tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
-
             // linear accelerations are part of the observation - get average
             tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
 
             // angular Velocity are part of the observation - get average
             tempMat.put(i, j, listObservations.get(i).calculateAVGAngularVelocity());
 
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
+            tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
+            //tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
+
+            // Stop x
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
-            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
+
+            // Start x
+            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
+
+            // Stroke Duration
             tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
+
+            // Start y
+            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
+
+            // Stop y
+            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
 
         }
 
