@@ -86,7 +86,7 @@ public class CrossValidationActivity extends Activity
         //userID = "2b38c8f2-9dc8-4c85-94b8-2dec5e31681d";    // EDy
         //userID = "617c6be8-240c-47bd-ae80-146e77c87576";    // Ciaran
         //userID = "966562f0-8c33-4d5f-ba1d-73925eee377d";    // Bogdan
-        userID = "eb3197dd-4b01-44e2-acd3-9c4b86ac3729";    // Michael
+        //userID = "eb3197dd-4b01-44e2-acd3-9c4b86ac3729";    // Michael
 
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         //if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
@@ -145,10 +145,7 @@ public class CrossValidationActivity extends Activity
                 int i = 0;
                 for (DataSnapshot usrSnapshot : snapshot.getChildren())
                 {
-                    System.out.println(" teststststst:  " + usrSnapshot);
-
                     User u = usrSnapshot.getValue(User.class);
-
                     userKeys[i] = u.getUserID();
                     userNames[i++] = u.getUserName();
                 }
@@ -166,11 +163,10 @@ public class CrossValidationActivity extends Activity
         });
     }
 
-
     private void getTrainingDataFromFirebase()
     {
         //get Scroll Fling Observations from Firebase
-        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
+        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -178,116 +174,100 @@ public class CrossValidationActivity extends Activity
             {
                 //System.out.println("data: " + snapshot.toString());
                 //System.out.println("There are " + snapshot.getChildrenCount() + " observations");
-                if (snapshot.getValue() == null)
+
+                DataSnapshot scrollSnapshot = snapshot.child("scrollFling");
+                for (DataSnapshot obsSnapshot : scrollSnapshot.getChildren())
+                {
+                    //System.out.println("data: " + obsSnapshot.toString());
+                    Observation obs = obsSnapshot.getValue(Observation.class);
+                    trainScrollFlingObservations.add(obs);
+
+                    //just some tests
+                    /*Touch t = obs.getTouch();
+                    ScrollFling sf = new ScrollFling(t);
+                    System.out.println(sf.toString());*/
+                }
+
+                // Built the SVM model for Scroll/Fling Observations if training data exists.
+                if (trainScrollFlingObservations.size() > 0)
+                {
+                    //initialise scrollFlingSVM
+                    scrollFlingSVM = SVM.create();
+                    scrollFlingSVM.setKernel(SVM.RBF);
+
+                    //scrollFlingSVM.setType(SVM.C_SVC);
+                    scrollFlingSVM.setType(SVM.NU_SVC);
+
+                    //scrollFlingSVM.setC(0.25);
+                    scrollFlingSVM.setC(0.0001220703125);
+
+                    //scrollFlingSVM.setP(1);
+                    //scrollFlingSVM.setGamma(0.001953125);
+
+                    //scrollFlingSVM.setNu(0.00390625);
+                    scrollFlingSVM.setNu(0.00048828125);
+
+                    Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
+                    Mat labelsScrollFlingMat = buildLabelsMat(trainScrollFlingObservations);
+
+                    //System.out.println("Train Matrix is:\n");
+                    //displayMatrix(trainScrollFlingMat);
+
+                    scrollFlingSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
+                    // end training scrollFlingSNM
+                }else
                 {
                     System.out.println("No Scroll Fling data available. ");
                     // display a Toast letting the user know that there is no training data available.
                     Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                } else
-                {
-                    for (DataSnapshot obsSnapshot : snapshot.getChildren())
-                    {
-                        //System.out.println("data: " + obsSnapshot.toString());
-                        Observation obs = obsSnapshot.getValue(Observation.class);
-                        trainScrollFlingObservations.add(obs);
-
-                        //just some tests
-                        /*Touch t = obs.getTouch();
-                        ScrollFling sf = new ScrollFling(t);
-                        System.out.println(sf.toString());*/
-                    }
-
-                    // Built the SVM model for Scroll/Fling Observations if training data exists.
-                    if (trainScrollFlingObservations.size() > 0)
-                    {
-                        //initialise scrollFlingSVM
-                        scrollFlingSVM = SVM.create();
-                        scrollFlingSVM.setKernel(SVM.RBF);
-
-                        //scrollFlingSVM.setType(SVM.C_SVC);
-                        scrollFlingSVM.setType(SVM.NU_SVC);
-
-                        //scrollFlingSVM.setC(0.25);
-                        scrollFlingSVM.setC(0.0001220703125);
-
-                        //scrollFlingSVM.setP(1);
-                        //scrollFlingSVM.setGamma(0.001953125);
-
-                        //scrollFlingSVM.setNu(0.00390625);
-                        scrollFlingSVM.setNu(0.00048828125);
-
-                        Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
-                        Mat labelsScrollFlingMat = buildLabelsMat(trainScrollFlingObservations);
-
-                        //System.out.println("Train Matrix is:\n");
-                        //displayMatrix(trainScrollFlingMat);
-
-                        scrollFlingSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
-                        // end training scrollFlingSNM
-                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError)
-            {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
+                // Tap Information
+                DataSnapshot tapSnapshot = snapshot.child("scrollFling");
+                for (DataSnapshot obsSnapshot : tapSnapshot.getChildren())
+                {
+                    Observation obs = obsSnapshot.getValue(Observation.class);
+                    trainTapOnlyObservations.add(obs);
+                }
 
-        //get Tap Observations from Firebase
-        Firebase tapRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/tap");
-        tapRef.addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot snapshot)
-            {
-                if (snapshot.getValue() == null)
+                if (trainTapOnlyObservations.size() > 0)
+                {
+                    //initialise scrollFlingSVM
+                    tapSVM = SVM.create();
+                    tapSVM.setKernel(SVM.RBF);
+
+                    //tapSVM.setType(SVM.C_SVC);
+                    tapSVM.setType(SVM.NU_SVC);
+
+                    //tapSVM.setC(0.3);
+                    tapSVM.setC(0.0001220703125);
+
+                    //tapSVM.setP(1);
+                    //tapSVM.setGamma(0.001953125);
+
+                    //tapSVM.setNu(0.00390625);
+                    tapSVM.setNu(0.00048828125);
+
+                    Mat trainTapMat = buildTrainOrTestMatForTaps(trainTapOnlyObservations);
+                    Mat labelsTapMat = buildLabelsMat(trainTapOnlyObservations);
+
+                    //System.out.println("Train Matrix for Tap is:\n");
+                    //displayMatrix(trainTapMat);
+
+                    tapSVM.train(trainTapMat, Ml.ROW_SAMPLE, labelsTapMat);
+                    // end training TapSVM
+                }else
                 {
                     System.out.println("No Tap data available. ");
                     // display a Toast letting the user know that there is no training data available.
                     Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided for Taps", Toast.LENGTH_SHORT);
                     toast.show();
-                } else
-                {
-                    for (DataSnapshot obsSnapshot : snapshot.getChildren())
-                    {
-                        Observation obs = obsSnapshot.getValue(Observation.class);
-                        trainTapOnlyObservations.add(obs);
-                    }
-
-                    if (trainTapOnlyObservations.size() > 0)
-                    {
-                        //initialise scrollFlingSVM
-                        tapSVM = SVM.create();
-                        tapSVM.setKernel(SVM.RBF);
-
-                        //tapSVM.setType(SVM.C_SVC);
-                        tapSVM.setType(SVM.NU_SVC);
-
-                        //tapSVM.setC(0.3);
-                        tapSVM.setC(0.0001220703125);
-
-                        //tapSVM.setP(1);
-                        //tapSVM.setGamma(0.001953125);
-
-                        //tapSVM.setNu(0.00390625);
-                        tapSVM.setNu(0.00048828125);
-
-                        Mat trainTapMat = buildTrainOrTestMatForTaps(trainTapOnlyObservations);
-                        Mat labelsTapMat = buildLabelsMat(trainTapOnlyObservations);
-
-                        //System.out.println("Train Matrix for Tap is:\n");
-                        //displayMatrix(trainTapMat);
-
-                        tapSVM.train(trainTapMat, Ml.ROW_SAMPLE, labelsTapMat);
-                        // end training TapSVM
-                    }
-
-                     /* Get test data from firebase and return predictions. */
-                    getTestDataFromFirebaseAndTestSystem();
                 }
+
+                 /* Get test data from firebase and return predictions. */
+                getTestDataFromFirebaseAndTestSystem();
+
             }
 
             @Override

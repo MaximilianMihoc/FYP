@@ -185,22 +185,25 @@ public class TestBehaviouralBiometrics extends Activity implements
 
                             // create the result Mat
                             Mat resultMat = new Mat(tempObsList.size(), 1, CvType.CV_32S);
-                            tapSVM.predict(testDataMat, resultMat, 0);
-
-                            // set test Observation Judgement given by the SVM
-                            if(resultMat.rows() > 0)
-                                tempObs.setJudgement((int) resultMat.get(0, 0)[0]);
-
-                            /*if(tempObs.getJudgement() == 1)
+                            if (tapSVM.isTrained() && testDataMat.rows() > 0)
                             {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Tap Owner", Toast.LENGTH_SHORT);
-                                toast.show();
+                                tapSVM.predict(testDataMat, resultMat, 0);
+                                // set test Observation Judgement given by the SVM
+                                if(resultMat.rows() > 0)
+                                    tempObs.setJudgement((int) resultMat.get(0, 0)[0]);
+
+                                /*if(tempObs.getJudgement() == 1)
+                                {
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Tap Owner", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                                else
+                                {
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Tap Guest", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }*/
+
                             }
-                            else
-                            {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Tap Guest", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }*/
 
                             //System.out.println("Tap resultMat: " );
                             //displayMatrix(resultMat);
@@ -222,23 +225,27 @@ public class TestBehaviouralBiometrics extends Activity implements
                             // create the result Mat
                             Mat resultMat = new Mat(tempObsList.size(), 1, CvType.CV_32S);
 
-                            scrollFlingSVM.predict(testDataMat, resultMat, 0);
-                            //svm.predict(testDataMat, resultMat, StatModel.RAW_OUTPUT);
 
-                            // set test Observation Judgement given by the SVM
-                            if(resultMat.rows() > 0)
-                                tempObs.setJudgement((int) resultMat.get(0, 0)[0]);
-
-                            /*if(tempObs.getJudgement() == 1)
+                            if (scrollFlingSVM.isTrained() && testDataMat.rows() > 0)
                             {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Owner", Toast.LENGTH_SHORT);
-                                toast.show();
+                                scrollFlingSVM.predict(testDataMat, resultMat, 0);
+                                //svm.predict(testDataMat, resultMat, StatModel.RAW_OUTPUT);
+
+                                // set test Observation Judgement given by the SVM
+                                if (resultMat.rows() > 0)
+                                    tempObs.setJudgement((int) resultMat.get(0, 0)[0]);
+
+                                /*if(tempObs.getJudgement() == 1)
+                                {
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Owner", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                                else
+                                {
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Guest", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }*/
                             }
-                            else
-                            {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Guest", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }*/
 
                             //System.out.println("resultMat: " );
                             //displayMatrix(resultMat);
@@ -263,11 +270,10 @@ public class TestBehaviouralBiometrics extends Activity implements
             }
         };
     }
-
     private void getTrainingDataFromFirebase()
     {
         //get Scroll Fling Observations from Firebase
-        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
+        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -275,100 +281,82 @@ public class TestBehaviouralBiometrics extends Activity implements
             {
                 //System.out.println("data: " + snapshot.toString());
                 //System.out.println("There are " + snapshot.getChildrenCount() + " observations");
-                if (snapshot.getValue() == null)
+
+                DataSnapshot scrollSnapshot = snapshot.child("scrollFling");
+                for (DataSnapshot obsSnapshot : scrollSnapshot.getChildren())
+                {
+                    //System.out.println("data: " + obsSnapshot.toString());
+                    Observation obs = obsSnapshot.getValue(Observation.class);
+                    trainScrollFlingObservations.add(obs);
+
+                    //just some tests
+                    /*Touch t = obs.getTouch();
+                    ScrollFling sf = new ScrollFling(t);
+                    System.out.println(sf.toString());*/
+                }
+
+                // Built the SVM model for Scroll/Fling Observations if training data exists.
+                if (trainScrollFlingObservations.size() > 0)
+                {
+                    //initialise scrollFlingSVM
+                    scrollFlingSVM = SVM.create();
+                    scrollFlingSVM.setKernel(SVM.RBF);
+                    scrollFlingSVM.setType(SVM.ONE_CLASS);
+                    //scrollFlingSVM.setC(0.3);
+                    //scrollFlingSVM.setP(1);
+                    scrollFlingSVM.setGamma(0.001953125);
+                    scrollFlingSVM.setNu(0.00390625);
+
+                    Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
+                    Mat labelsScrollFlingMat = buildLabelsMat(trainScrollFlingObservations);
+
+                    //System.out.println("Train Matrix is:\n");
+                    //displayMatrix(trainScrollFlingMat);
+
+                    scrollFlingSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
+                    // end training scrollFlingSNM
+                }else
                 {
                     System.out.println("No Scroll Fling data available. ");
                     // display a Toast letting the user know that there is no training data available.
                     Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                } else
-                {
-                    for (DataSnapshot obsSnapshot : snapshot.getChildren())
-                    {
-                        //System.out.println("data: " + obsSnapshot.toString());
-                        Observation obs = obsSnapshot.getValue(Observation.class);
-                        trainScrollFlingObservations.add(obs);
-
-                        //just some tests
-                        /*Touch t = obs.getTouch();
-                        ScrollFling sf = new ScrollFling(t);
-                        System.out.println(sf.toString());*/
-                    }
-
-                    // Built the SVM model for Scroll/Fling Observations if training data exists.
-                    if (trainScrollFlingObservations.size() > 0)
-                    {
-                        //initialise scrollFlingSVM
-                        scrollFlingSVM = SVM.create();
-                        scrollFlingSVM.setKernel(SVM.RBF);
-                        scrollFlingSVM.setType(SVM.ONE_CLASS);
-                        //scrollFlingSVM.setC(0.3);
-                        //scrollFlingSVM.setP(1);
-                        scrollFlingSVM.setGamma(0.001953125);
-                        scrollFlingSVM.setNu(0.00390625);
-
-                        Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
-                        Mat labelsScrollFlingMat = buildLabelsMat(trainScrollFlingObservations);
-
-                        //System.out.println("Train Matrix is:\n");
-                        //displayMatrix(trainScrollFlingMat);
-
-                        scrollFlingSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
-                        // end training scrollFlingSNM
-                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError)
-            {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
+                // Tap information
+                DataSnapshot tapSnapshot = snapshot.child("scrollFling");
+                for (DataSnapshot obsSnapshot : tapSnapshot.getChildren())
+                {
+                    Observation obs = obsSnapshot.getValue(Observation.class);
+                    trainTapOnlyObservations.add(obs);
+                }
 
-        //get Tap Observations from Firebase
-        Firebase tapRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/tap");
-        tapRef.addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot snapshot)
-            {
-                if(snapshot.getValue() == null)
+                if (trainTapOnlyObservations.size() > 0)
+                {
+                    //initialise scrollFlingSVM
+                    tapSVM = SVM.create();
+                    tapSVM.setKernel(SVM.RBF);
+                    tapSVM.setType(SVM.ONE_CLASS);
+                    //tapSVM.setC(0.3);
+                    //tapSVM.setP(1);
+                    tapSVM.setGamma(0.001953125);
+                    tapSVM.setNu(0.00390625);
+
+                    Mat trainTapMat = buildTrainOrTestMatForTaps(trainTapOnlyObservations);
+                    Mat labelsTapMat = buildLabelsMat(trainTapOnlyObservations);
+
+                    //System.out.println("Train Matrix for Tap is:\n");
+                    //displayMatrix(trainTapMat);
+
+                    tapSVM.train(trainTapMat, Ml.ROW_SAMPLE, labelsTapMat);
+                    // end training TapSVM
+                }else
                 {
                     System.out.println("No Tap data available. ");
                     // display a Toast letting the user know that there is no training data available.
                     Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided for Taps", Toast.LENGTH_SHORT);
                     toast.show();
                 }
-                else
-                {
-                    for (DataSnapshot obsSnapshot : snapshot.getChildren())
-                    {
-                        Observation obs = obsSnapshot.getValue(Observation.class);
-                        trainTapOnlyObservations.add(obs);
-                    }
-
-                    if(trainTapOnlyObservations.size() > 0)
-                    {
-                        //initialise scrollFlingSVM
-                        tapSVM =  SVM.create();
-                        tapSVM.setKernel(SVM.RBF);
-                        tapSVM.setType(SVM.ONE_CLASS);
-                        //tapSVM.setC(0.3);
-                        //tapSVM.setP(1);
-                        tapSVM.setGamma(0.001953125);
-                        tapSVM.setNu(0.00390625);
-
-                        Mat trainTapMat = buildTrainOrTestMatForTaps(trainTapOnlyObservations);
-                        Mat labelsTapMat = buildLabelsMat(trainTapOnlyObservations);
-
-                        //System.out.println("Train Matrix for Tap is:\n");
-                        //displayMatrix(trainTapMat);
-
-                        tapSVM.train(trainTapMat, Ml.ROW_SAMPLE, labelsTapMat);
-                        // end training TapSVM
-                    }
-                }
             }
 
             @Override
@@ -377,7 +365,6 @@ public class TestBehaviouralBiometrics extends Activity implements
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
-
     }
 
     private Mat buildLabelsMat(ArrayList<Observation> listObservations)
