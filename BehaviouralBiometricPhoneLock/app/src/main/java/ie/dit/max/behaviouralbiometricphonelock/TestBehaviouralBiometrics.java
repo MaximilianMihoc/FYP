@@ -62,7 +62,7 @@ public class TestBehaviouralBiometrics extends Activity implements
     private Float linearAcceleration;
     private Float angularVelocity;
 
-    private SharedPreferences sharedpreferences;
+    SharedPreferences sharedpreferences;
     private String userID;
 
     private SVM scrollFlingSVM;
@@ -268,23 +268,22 @@ public class TestBehaviouralBiometrics extends Activity implements
     {
         //get Scroll Fling Observations from Firebase
         Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
-        scrollFlingRef.addValueEventListener(new ValueEventListener()
+        scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot snapshot)
             {
                 //System.out.println("data: " + snapshot.toString());
                 //System.out.println("There are " + snapshot.getChildrenCount() + " observations");
-                if(snapshot.getValue() == null)
+                if (snapshot.getValue() == null)
                 {
                     System.out.println("No Scroll Fling data available. ");
                     // display a Toast letting the user know that there is no training data available.
                     Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                }
-                else
+                } else
                 {
-                    for (DataSnapshot obsSnapshot: snapshot.getChildren())
+                    for (DataSnapshot obsSnapshot : snapshot.getChildren())
                     {
                         //System.out.println("data: " + obsSnapshot.toString());
                         Observation obs = obsSnapshot.getValue(Observation.class);
@@ -297,10 +296,10 @@ public class TestBehaviouralBiometrics extends Activity implements
                     }
 
                     // Built the SVM model for Scroll/Fling Observations if training data exists.
-                    if(trainScrollFlingObservations.size() > 0)
+                    if (trainScrollFlingObservations.size() > 0)
                     {
                         //initialise scrollFlingSVM
-                        scrollFlingSVM =  SVM.create();
+                        scrollFlingSVM = SVM.create();
                         scrollFlingSVM.setKernel(SVM.RBF);
                         scrollFlingSVM.setType(SVM.ONE_CLASS);
                         //scrollFlingSVM.setC(0.3);
@@ -329,7 +328,7 @@ public class TestBehaviouralBiometrics extends Activity implements
 
         //get Tap Observations from Firebase
         Firebase tapRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/tap");
-        tapRef.addValueEventListener(new ValueEventListener()
+        tapRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot snapshot)

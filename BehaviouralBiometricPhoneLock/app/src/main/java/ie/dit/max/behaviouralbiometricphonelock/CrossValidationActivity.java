@@ -95,23 +95,22 @@ public class CrossValidationActivity extends Activity
     {
         //get Scroll Fling Observations from Firebase
         Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
-        scrollFlingRef.addValueEventListener(new ValueEventListener()
+        scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot snapshot)
             {
                 //System.out.println("data: " + snapshot.toString());
                 //System.out.println("There are " + snapshot.getChildrenCount() + " observations");
-                if(snapshot.getValue() == null)
+                if (snapshot.getValue() == null)
                 {
                     System.out.println("No Scroll Fling data available. ");
                     // display a Toast letting the user know that there is no training data available.
                     Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                }
-                else
+                } else
                 {
-                    for (DataSnapshot obsSnapshot: snapshot.getChildren())
+                    for (DataSnapshot obsSnapshot : snapshot.getChildren())
                     {
                         //System.out.println("data: " + obsSnapshot.toString());
                         Observation obs = obsSnapshot.getValue(Observation.class);
@@ -124,10 +123,10 @@ public class CrossValidationActivity extends Activity
                     }
 
                     // Built the SVM model for Scroll/Fling Observations if training data exists.
-                    if(trainScrollFlingObservations.size() > 0)
+                    if (trainScrollFlingObservations.size() > 0)
                     {
                         //initialise scrollFlingSVM
-                        scrollFlingSVM =  SVM.create();
+                        scrollFlingSVM = SVM.create();
                         scrollFlingSVM.setKernel(SVM.RBF);
 
                         //scrollFlingSVM.setType(SVM.C_SVC);
@@ -163,7 +162,7 @@ public class CrossValidationActivity extends Activity
 
         //get Tap Observations from Firebase
         Firebase tapRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/tap");
-        tapRef.addValueEventListener(new ValueEventListener()
+        tapRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot snapshot)
@@ -226,22 +225,21 @@ public class CrossValidationActivity extends Activity
     private void getTrainDataFromOtherUsersFirebase()
     {
         final Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData");
-        scrollFlingRef.addValueEventListener(new ValueEventListener()
+        scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot snapshot)
             {
-                if(snapshot.getValue() == null)
+                if (snapshot.getValue() == null)
                 {
                     System.out.println("No Scroll Fling data available. ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                }
-                else
+                } else
                 {
                     for (DataSnapshot usrSnapshot : snapshot.getChildren())
                     {
-                        if(!usrSnapshot.getKey().equals(userID))
+                        if (!usrSnapshot.getKey().equals(userID))
                         {
                             //System.out.println("usrSnapshot: " + usrSnapshot.child("scrollFling"));
 
@@ -284,20 +282,19 @@ public class CrossValidationActivity extends Activity
     {
         //get Scroll Fling Observations from Firebase
         Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID + "/scrollFling");
-        scrollFlingRef.addValueEventListener(new ValueEventListener()
+        scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot snapshot)
             {
-                if(snapshot.getValue() == null)
+                if (snapshot.getValue() == null)
                 {
                     System.out.println("No Scroll Fling data available. ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                }
-                else
+                } else
                 {
-                    for (DataSnapshot obsSnapshot: snapshot.getChildren())
+                    for (DataSnapshot obsSnapshot : snapshot.getChildren())
                     {
                         //System.out.println("data: " + obsSnapshot.toString());
                         Observation obs = obsSnapshot.getValue(Observation.class);
@@ -311,12 +308,12 @@ public class CrossValidationActivity extends Activity
 
                     scrollFlingSVM.predict(testDataMat, resultMat, 0);
 
-                    int counter=0;
+                    int counter = 0;
                     out += "Scroll/Fling:\n";
-                    for(int i = 0; i < resultMat.rows(); i++)
+                    for (int i = 0; i < resultMat.rows(); i++)
                     {
                         out += "\tpredicted" + i + ": " + resultMat.get(i, 0)[0];
-                        if(resultMat.get(i, 0)[0] == 1) counter++;
+                        if (resultMat.get(i, 0)[0] == 1) counter++;
                     }
 
                     out += "\nOwners: " + counter + " out of " + scrollFlingObservations.size();
@@ -336,7 +333,7 @@ public class CrossValidationActivity extends Activity
 
         //get Tap Observations from Firebase
         Firebase tapRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID + "/tap");
-        tapRef.addValueEventListener(new ValueEventListener()
+        tapRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot snapshot)

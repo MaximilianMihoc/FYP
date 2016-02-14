@@ -107,7 +107,7 @@ public class RegisterUser extends AppCompatActivity
 
                                     Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users/" + authData.getUid());
 
-                                    userRef.addValueEventListener(new ValueEventListener()
+                                    userRef.addListenerForSingleValueEvent(new ValueEventListener()
                                     {
                                         @Override
                                         public void onDataChange(DataSnapshot snapshot)

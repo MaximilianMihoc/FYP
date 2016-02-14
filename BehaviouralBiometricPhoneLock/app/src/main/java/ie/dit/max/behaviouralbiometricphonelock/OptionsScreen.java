@@ -66,16 +66,31 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(checkIfTrainingDataExists() || trained)
+                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
+                scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                 {
-                    Intent trainIntent = new Intent(OptionsScreen.this, StackOverflowHomeScreen.class);
-                    startActivity(trainIntent);
-                }
-                else
-                {
-                    Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
+
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        if(dataSnapshot.getValue() == null)
+                        {
+                            Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                        else
+                        {
+                            Intent trainIntent = new Intent(OptionsScreen.this, StackOverflowHomeScreen.class);
+                            startActivity(trainIntent);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError)
+                    {
+
+                    }
+                });
             }
         });
 
@@ -94,37 +109,39 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(OptionsScreen.this, NonEuropeanCountryPick.class);
-                startActivity(trainIntent);
+                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
+                scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
+                {
+
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        if (dataSnapshot.getValue() == null)
+                        {
+                            Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                        else
+                        {
+                            Intent trainIntent = new Intent(OptionsScreen.this, NonEuropeanCountryPick.class);
+                            startActivity(trainIntent);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError)
+                    {
+
+                    }
+                });
+
             }
         });
     }
 
     private boolean checkIfTrainingDataExists()
     {
-        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
-        scrollFlingRef.addValueEventListener(new ValueEventListener()
-        {
 
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                if(dataSnapshot.getValue() == null)
-                {
-                    trained = false;
-                }
-                else
-                {
-                    trained = true;
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError)
-            {
-
-            }
-        });
 
         return trained;
     }

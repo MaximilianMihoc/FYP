@@ -25,6 +25,8 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
 {
     Button endButton;
     Button OKbutton;
+    Button exitButton;
+
     RelativeLayout trainLayout;
     TextView activityTitle;
     TextView centerText;
@@ -58,7 +60,10 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
         OKbutton = (Button)findViewById(R.id.OKbutton);
         OKbutton.setOnTouchListener(gestureListener);
 
-        endButton = (Button) findViewById(R.id.startTrainingFirstActivity);
+        exitButton = (Button)findViewById(R.id.exitButton);
+        exitButton.setOnTouchListener(gestureListener);
+
+        endButton = (Button) findViewById(R.id.quitButton);
         endButton.setOnTouchListener(gestureListener);
 
         centerText.setText("In this game you are required to find the NON European country from a list." +
@@ -74,7 +79,9 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
             @Override
             public void onClick(View v)
             {
-                iterations = 10; goodAttempts = 0; badAttempts = 0;
+                iterations = 10;
+                goodAttempts = 0;
+                badAttempts = 0;
 
                 trainLayout.addView(activityTitle);
                 trainLayout.addView(endButton);
@@ -82,6 +89,7 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
 
                 trainLayout.removeView(centerText);
                 trainLayout.removeView(OKbutton);
+                trainLayout.removeView(exitButton);
 
                 activityTitle.setText("Find the NON European Country" +
                         "\nAttempts: " + attempts + " Good: " + goodAttempts + " Wrong: " + badAttempts);
@@ -99,6 +107,26 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
         });
 
         endButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                centerText.setText("Results: "+
+                        "\nAttempts: " + attempts + " Good: " + goodAttempts + " Wrong: " + badAttempts);
+
+                OKbutton.setText("Retry");
+
+                trainLayout.removeView(activityTitle);
+                trainLayout.removeView(endButton);
+                trainLayout.removeView(listViewCountryList);
+
+                trainLayout.addView(centerText);
+                trainLayout.addView(OKbutton);
+                trainLayout.addView(exitButton);
+            }
+        });
+
+        exitButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -158,6 +186,7 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
 
                     trainLayout.addView(centerText);
                     trainLayout.addView(OKbutton);
+                    trainLayout.addView(exitButton);
                 }
 
             }
