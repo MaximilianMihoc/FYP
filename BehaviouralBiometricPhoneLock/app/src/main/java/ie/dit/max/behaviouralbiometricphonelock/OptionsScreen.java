@@ -26,6 +26,7 @@ public class OptionsScreen extends AppCompatActivity
     Button goToTrainFirstActivity;
     Button goToCrossValidation;
     Button goToCountryListGame;
+    Button logOutButton;
 
     Firebase ref;
     SharedPreferences sharedpreferences;
@@ -50,6 +51,7 @@ public class OptionsScreen extends AppCompatActivity
         goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
         goToCrossValidation = (Button) findViewById(R.id.goToCrossValidation);
         goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
+        logOutButton = (Button) findViewById(R.id.logOutButton);
 
         goToTrainFirstActivity.setOnClickListener(new View.OnClickListener()
         {
@@ -73,12 +75,11 @@ public class OptionsScreen extends AppCompatActivity
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot)
                     {
-                        if(dataSnapshot.getValue() == null)
+                        if (dataSnapshot.getValue() == null)
                         {
                             Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
                             toast.show();
-                        }
-                        else
+                        } else
                         {
                             Intent trainIntent = new Intent(OptionsScreen.this, StackOverflowHomeScreen.class);
                             startActivity(trainIntent);
@@ -120,8 +121,7 @@ public class OptionsScreen extends AppCompatActivity
                         {
                             Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
                             toast.show();
-                        }
-                        else
+                        } else
                         {
                             Intent trainIntent = new Intent(OptionsScreen.this, NonEuropeanCountryPick.class);
                             startActivity(trainIntent);
@@ -135,6 +135,17 @@ public class OptionsScreen extends AppCompatActivity
                     }
                 });
 
+            }
+        });
+
+        logOutButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ref.unauth();
+                Intent trainIntent = new Intent(OptionsScreen.this, LogIn.class);
+                startActivity(trainIntent);
             }
         });
     }
