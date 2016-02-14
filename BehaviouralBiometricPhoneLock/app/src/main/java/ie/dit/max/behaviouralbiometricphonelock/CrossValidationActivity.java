@@ -6,6 +6,7 @@ package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -18,7 +19,10 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +50,8 @@ public class CrossValidationActivity extends Activity
 
     private static final String DEBUG_TAG = "Test Activity";
 
+    Spinner spinner;
+
     ArrayList<Point> points = new ArrayList<>();
     ArrayList<Observation> trainScrollFlingObservations;
     ArrayList<Observation> scrollFlingObservations;
@@ -60,6 +66,9 @@ public class CrossValidationActivity extends Activity
     TextView outputData;
     String out = "";
 
+    String[] userKeys;
+    String[] userNames;
+
     private SharedPreferences sharedpreferences;
 
     @Override
@@ -73,10 +82,14 @@ public class CrossValidationActivity extends Activity
 
         // get User ID details
         //userID = "7796e45a-8310-48e9-9cca-5f9d4ce3f83a"; // - maximilian.mihoc@yahoo.com
-        userID = "6cae8406-d86b-4d56-bc1d-0e86324962c5";
+        //userID = "6cae8406-d86b-4d56-bc1d-0e86324962c5";    // Sanita T
+        //userID = "2b38c8f2-9dc8-4c85-94b8-2dec5e31681d";    // EDy
+        //userID = "617c6be8-240c-47bd-ae80-146e77c87576";    // Ciaran
+        //userID = "966562f0-8c33-4d5f-ba1d-73925eee377d";    // Bogdan
+        userID = "eb3197dd-4b01-44e2-acd3-9c4b86ac3729";    // Michael
 
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
+        //if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
 
         scrollFlingObservations = new ArrayList<>();
         trainScrollFlingObservations = new ArrayList<>();
@@ -86,10 +99,73 @@ public class CrossValidationActivity extends Activity
 
         outputData = (TextView) findViewById(R.id.predictions);
 
-        /* Get user training data from Firebase */
-        getTrainDataFromOtherUsersFirebase();
+        spinner = (Spinner)findViewById(R.id.spinner);
+        populateSpinner();
 
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                userID = userKeys[position];
+
+                scrollFlingObservations = new ArrayList<>();
+                trainScrollFlingObservations = new ArrayList<>();
+                tapOnlyObservations = new ArrayList<>();
+                trainTapOnlyObservations = new ArrayList<>();
+                points = new ArrayList<>();
+
+                out = "";
+                outputData.setText("Waiting for Data");
+
+                /* Get user training data from Firebase */
+                getTrainDataFromOtherUsersFirebase();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
     }
+
+    private void populateSpinner()
+    {
+        Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users");
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot snapshot)
+            {
+                userKeys = new String[(int)snapshot.getChildrenCount()];
+                userNames = new String[(int)snapshot.getChildrenCount()];
+                int i = 0;
+                for (DataSnapshot usrSnapshot : snapshot.getChildren())
+                {
+                    System.out.println(" teststststst:  " + usrSnapshot);
+
+                    User u = usrSnapshot.getValue(User.class);
+
+                    userKeys[i] = u.getUserID();
+                    userNames[i++] = u.getUserName();
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, userNames);
+                spinner.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError)
+            {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+    }
+
 
     private void getTrainingDataFromFirebase()
     {
@@ -357,12 +433,12 @@ public class CrossValidationActivity extends Activity
                     Mat resultMat = new Mat(tapOnlyObservations.size(), 1, CvType.CV_32S);
                     tapSVM.predict(testDataMat, resultMat, 0);
 
-                    int counter=0;
+                    int counter = 0;
                     out += "\n\nTaps:\n";
-                    for(int i = 0; i < resultMat.rows(); i++)
+                    for (int i = 0; i < resultMat.rows(); i++)
                     {
                         out += "\tpredicted" + i + ": " + resultMat.get(i, 0)[0];
-                        if(resultMat.get(i, 0)[0] == 1) counter++;
+                        if (resultMat.get(i, 0)[0] == 1) counter++;
                     }
 
                     out += "\nOwners: " + counter + " out of " + tapOnlyObservations.size();
@@ -418,17 +494,19 @@ public class CrossValidationActivity extends Activity
 
             tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
             //tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
-            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
-            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
-            tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
 
             // linear accelerations are part of the observation - get average
             tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
 
             // angular Velocity are part of the observation - get average
             tempMat.put(i, j, listObservations.get(i).calculateAVGAngularVelocity());
+
+            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
+            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
+            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
+            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
+            tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
+
         }
 
         return tempMat;
@@ -443,6 +521,12 @@ public class CrossValidationActivity extends Activity
             Tap tapInteraction = new Tap(listObservations.get(i).getTouch());
             int j = 0;
 
+            // linear accelerations are part of the observation - get average
+            tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
+
+            // angular Velocity are part of the observation - get average
+            tempMat.put(i, j, listObservations.get(i).calculateAVGAngularVelocity());
+
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);
             tempMat.put(i, j++, tapInteraction.getScaledEndPoint().x);
@@ -450,11 +534,7 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, tapInteraction.getScaledDuration());
             tempMat.put(i, j++, tapInteraction.calculateFingerArea());
 
-            // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
 
-            // angular Velocity are part of the observation - get average
-            tempMat.put(i, j, listObservations.get(i).calculateAVGAngularVelocity());
         }
 
         return tempMat;
