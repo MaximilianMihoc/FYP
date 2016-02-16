@@ -390,7 +390,7 @@ public class TestBehaviouralBiometrics extends Activity implements
             int j = 0;
 
             tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
-            tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
+            //tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);

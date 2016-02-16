@@ -210,8 +210,8 @@ public class CrossValidationActivity extends Activity
                     Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
                     Mat labelsScrollFlingMat = buildLabelsMat(trainScrollFlingObservations);
 
-                    //System.out.println("Train Matrix is:\n");
-                    //displayMatrix(trainScrollFlingMat);
+                    System.out.println("Train Matrix is:\n");
+                    displayMatrix(trainScrollFlingMat);
 
                     scrollFlingSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
                     // end training scrollFlingSNM
@@ -476,10 +476,12 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
 
             // angular Velocity are part of the observation - get average
-            tempMat.put(i, j, listObservations.get(i).calculateAVGAngularVelocity());
+            tempMat.put(i, j++, listObservations.get(i).calculateAVGAngularVelocity());
 
             tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
             //tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
+            tempMat.put(i, j++, scrollFlingObs.calculateDirectEndToEndDistance());
+
 
             // Stop x
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
@@ -490,12 +492,14 @@ public class CrossValidationActivity extends Activity
             // Stroke Duration
             tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
 
+            tempMat.put(i, j++, scrollFlingObs.calculateAngleBetweenStartAndEndVectorsInRad());
+
+
             // Start y
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
 
             // Stop y
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
-
         }
 
         return tempMat;
@@ -514,7 +518,7 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
 
             // angular Velocity are part of the observation - get average
-            tempMat.put(i, j, listObservations.get(i).calculateAVGAngularVelocity());
+            tempMat.put(i, j++, listObservations.get(i).calculateAVGAngularVelocity());
 
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);

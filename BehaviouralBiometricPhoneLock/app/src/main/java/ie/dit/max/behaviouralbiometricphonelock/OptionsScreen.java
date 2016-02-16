@@ -26,12 +26,12 @@ public class OptionsScreen extends AppCompatActivity
     Button goToTrainFirstActivity;
     Button goToCrossValidation;
     Button goToCountryListGame;
+    Button goToSettings;
     Button logOutButton;
 
     Firebase ref;
     SharedPreferences sharedpreferences;
     private String userID;
-    boolean trained;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,8 +42,6 @@ public class OptionsScreen extends AppCompatActivity
         ref = new Firebase("https://fyp-max.firebaseio.com");
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
-        trained = checkIfTrainingDataExists();
-
         // get User details
         userID = sharedpreferences.getString("UserID", "");
 
@@ -51,6 +49,7 @@ public class OptionsScreen extends AppCompatActivity
         goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
         goToCrossValidation = (Button) findViewById(R.id.goToCrossValidation);
         goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
+        goToSettings = (Button) findViewById(R.id.settingsButton);
         logOutButton = (Button) findViewById(R.id.logOutButton);
 
         goToTrainFirstActivity.setOnClickListener(new View.OnClickListener()
@@ -138,6 +137,17 @@ public class OptionsScreen extends AppCompatActivity
             }
         });
 
+        goToSettings.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Firebase dataRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
+                //dataRef.removeValue();
+
+            }
+        });
+
         logOutButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -148,13 +158,6 @@ public class OptionsScreen extends AppCompatActivity
                 startActivity(trainIntent);
             }
         });
-    }
-
-    private boolean checkIfTrainingDataExists()
-    {
-
-
-        return trained;
     }
 
     @Override

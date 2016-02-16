@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class ScrollFling extends Touch
 {
-    public static final int numberOfFeatures = 9;
+    public static final int numberOfFeatures = 10;
     public ScrollFling()
     {
         super();
@@ -87,15 +87,45 @@ public class ScrollFling extends Touch
         return midStrokeArea;
     }
 
-    public double calculateDirectionOfEndToEndLine()
+    // Return mean direction of stroke using the Mean Resultant Length
+    public double calculateMeanDirectionOfStroke()
     {
-        double direction;
-        direction = (endPoint.y - startPoint.y)/(endPoint.x - startPoint.x);
+        double directionsSum = 0;
+        for(Point p : points)
+        {
+            double angle = Math.atan(p.y / p.x);
+            directionsSum += Math.exp(angle);
+        }
 
-        //System.out.println("Direction angle: " + 1/Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x)) ;
-
-        return Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
+        return 0.0;
     }
+
+    public double calculateDirectEndToEndDistance()
+    {
+        // Apply Pitagora's theorem to find direct end to end distance.
+        // Do this for the scaled values of the coordinates so that the distance would be normalised straight away.
+        return Math.sqrt(Math.pow(scaledEndPoint.x - scaledStartPoint.x, 2) + Math.pow(scaledEndPoint.y - scaledStartPoint.y, 2));
+    }
+
+    public double calculateAngleBetweenStartAndEndVectorsInRad()
+    {
+        double dotProduct = startPoint.x * endPoint.x + startPoint.y * endPoint.y;
+        double lengthStart = Math.sqrt( startPoint.x*startPoint.x + startPoint.y*startPoint.y);
+        double lengthEnd = Math.sqrt( endPoint.x*endPoint.x + endPoint.y*endPoint.y);
+        double angle = Math.acos(dotProduct / (lengthStart * lengthEnd));
+
+        // Convert Degrees to Radians (180 degrees = PI rad)
+        return (angle * Math.PI) / 180;
+    }
+
+
+    public double calculateStrokeSpeed()
+    {
+
+
+        return Math.sqrt(-1);
+    }
+
 
     @Override
     public String toString()
@@ -106,7 +136,6 @@ public class ScrollFling extends Touch
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
                 ", midStrokeArea= " + calculateMidStrokeAreaCovered() +
-                ",direction= " + calculateDirectionOfEndToEndLine() +
                 '}';
     }
 }
