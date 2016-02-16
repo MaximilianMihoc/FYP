@@ -131,7 +131,7 @@ public class TrainActivity extends Activity implements
                             scrollFling.setDuration(duration);
                             scrollFling.setPressure(event.getPressure());
 
-                            Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
+                            //Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
                             //tempObs.setScrollFling(scrollFling);
                             tempObs.setTouch(scrollFling);
                         }
@@ -145,7 +145,7 @@ public class TrainActivity extends Activity implements
                             tap.setDuration(duration);
                             tap.setPressure(event.getPressure());
 
-                            Log.d(DEBUG_TAG, "Tap: " + tap.toString());
+                            //Log.d(DEBUG_TAG, "Tap: " + tap.toString());
                             //tempObs.setTap(tap);
                             tempObs.setTouch(tap);
 

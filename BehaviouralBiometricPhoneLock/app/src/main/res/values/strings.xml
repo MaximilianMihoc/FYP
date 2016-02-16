@@ -20,77 +20,73 @@
     <string name="title_activity_train_activity_first_screen">TrainActivityFirstScreen</string>
 
     <string-array name="europeanCountries">
-        <item>Albania</item>
-        <item>Andorra</item>
-        <item>Armenia</item>
-        <item>Austria</item>
-        <item>Azerbaijan</item>
         <item>Belarus</item>
-        <item>Belgium</item>
-        <item>Bosnia and Herzegovina</item>
         <item>Bulgaria</item>
-        <item>Croatia</item>
-        <item>Cyprus</item>
         <item>Czech Republic</item>
-        <item>Denmark</item>
-        <item>Estonia</item>
-        <item>Finland</item>
-        <item>France</item>
-        <item>Georgia</item>
-        <item>Germany</item>
-        <item>Greece</item>
         <item>Hungary</item>
-        <item>Iceland</item>
-        <item>Ireland</item>
-        <item>Italy</item>
-        <item>Kosovo</item>
-        <item>Latvia</item>
-        <item>Liechtenstein</item>
-        <item>Lithuania</item>
-        <item>Luxembourg</item>
-        <item>Macedonia</item>
-        <item>Malta</item>
         <item>Moldova</item>
-        <item>Monaco</item>
-        <item>Montenegro</item>
-        <item>Netherlands</item>
-        <item>Norway</item>
         <item>Poland</item>
-        <item>Portugal</item>
         <item>Romania</item>
         <item>Russia</item>
+        <item>Slovakia</item>
+        <item>Ukraine</item>
+        <item>Denmark</item>
+        <item>Estonia</item>
+        <item>Faroe Islands (DK)</item>
+        <item>Finland</item>
+        <item>Greenland (DK)</item>
+        <item>Iceland</item>
+        <item>Ireland</item>
+        <item>Latvia</item>
+        <item>Lithuania</item>
+        <item>Northern Ireland (UK)</item>
+        <item>Norway</item>
+        <item>Scotland (UK)</item>
+        <item>Sweden</item>
+        <item>United Kingdom</item>
+        <item>Wales (UK)</item>
+        <item>Albania</item>
+        <item>Andorra</item>
+        <item>Bosnia and Herzegovina</item>
+        <item>Croatia (Hrvatska)</item>
+        <item>Cyprus</item>
+        <item>Gibraltar (UK)</item>
+        <item>Greece</item>
+        <item>Vatican City State</item>
+        <item>Italy</item>
+        <item>Macedonia</item>
+        <item>Malta</item>
+        <item>Montenegro</item>
+        <item>Portugal</item>
         <item>San Marino</item>
         <item>Serbia</item>
-        <item>Slovakia</item>
         <item>Slovenia</item>
         <item>Spain</item>
-        <item>Sweden</item>
-        <item>Switzerland</item>
         <item>Turkey</item>
-        <item>Ukraine</item>
-        <item>United Kingdom</item>
-        <item>Vatican</item>
+        <item>Austria</item>
+        <item>Belgium</item>
+        <item>France</item>
+        <item>Germany</item>
+        <item>Liechtenstein</item>
+        <item>Luxembourg</item>
+        <item>Monaco</item>
+        <item>Netherlands</item>
+        <item>Switzerland</item>
     </string-array>
 
     <string-array name="nonEuropeCountries">
         <item>Afghanistan</item>
-        <item>Armenia</item>
-        <item>Azerbaijan</item>
         <item>Bahrain</item>
         <item>Bangladesh</item>
         <item>Bhutan</item>
-        <item>Brunei</item>
         <item>Cambodia</item>
         <item>China</item>
-        <item>Cyprus</item>
-        <item>Georgia</item>
         <item>India</item>
         <item>Indonesia</item>
         <item>Iran</item>
         <item>Iraq</item>
         <item>Israel</item>
         <item>Japan</item>
-        <item>Jordan</item>
         <item>Kazakhstan</item>
         <item>Kuwait</item>
         <item>Kyrgyzstan</item>
@@ -99,7 +95,6 @@
         <item>Malaysia</item>
         <item>Maldives</item>
         <item>Mongolia</item>
-        <item>Myanmar (Burma)</item>
         <item>Nepal</item>
         <item>North Korea</item>
         <item>Oman</item>
@@ -107,7 +102,6 @@
         <item>Palestine</item>
         <item>Philippines</item>
         <item>Qatar</item>
-        <item>Russia</item>
         <item>Saudi Arabia</item>
         <item>Singapore</item>
         <item>South Korea</item>
@@ -117,18 +111,13 @@
         <item>Tajikistan</item>
         <item>Thailand</item>
         <item>Timor-Leste</item>
-        <item>Turkey</item>
         <item>Turkmenistan</item>
         <item>United Arab Emirates</item>
         <item>Uzbekistan</item>
         <item>Vietnam</item>
         <item>Yemen</item>
-        <item>Algeria</item>
-        <item>Angola</item>
-        <item>Benin</item>
         <item>Botswana</item>
         <item>Burkina Faso</item>
-        <item>Burundi</item>
         <item>Cabo Verde</item>
         <item>Cameroon</item>
         <item>Central African Republic</item>
@@ -183,23 +172,9 @@
         <item>New Zealand</item>
         <item>Palau</item>
         <item>Papua New Guinea</item>
-        <item>Samoa</item>
-        <item>Solomon Islands</item>
-        <item>Tonga</item>
-        <item>Tuvalu</item>
-        <item>Vanuatu</item>
-        <item>Bahamas</item>
-        <item>Barbados</item>
-        <item>Belize</item>
-        <item>Canada</item>
         <item>Costa Rica</item>
         <item>Cuba</item>
-        <item>Dominica</item>
-        <item>Dominican Republic</item>
-        <item>El Salvador</item>
-        <item>Grenada</item>
         <item>Guatemala</item>
-        <item>Haiti</item>
         <item>Honduras</item>
         <item>Jamaica</item>
         <item>Mexico</item>
@@ -217,10 +192,6 @@
         <item>Colombia</item>
         <item>Ecuador</item>
         <item>Guyana</item>
-        <item>Paraguay</item>
-        <item>Peru</item>
-        <item>Suriname</item>
-        <item>Uruguay</item>
         <item>Venezuela</item>
     </string-array>
     <string name="title_activity_non_european_country_pick">NonEuropeanCountryPick</string>

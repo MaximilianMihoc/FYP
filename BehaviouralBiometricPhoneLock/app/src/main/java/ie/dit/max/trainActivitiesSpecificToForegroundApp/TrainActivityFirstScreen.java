@@ -91,7 +91,7 @@ public class TrainActivityFirstScreen extends TrainActivity
                         trainLayout.removeView(centerText);
 
                         europeCountries = Randomize(europeCountries);
-                        int pos = getRandomNumber(nonEuropeCountries.length);
+                        int pos = getRandomNumber(nonEuropeCountries.length-1);
                         correctValue = nonEuropeCountries[pos];
                         newArray = addNonEuropeanCountry(europeCountries, correctValue);
                         System.out.println("correctValue: " + correctValue);
@@ -126,7 +126,7 @@ public class TrainActivityFirstScreen extends TrainActivity
                         toast.show();
 
                         europeCountries = Randomize(europeCountries);
-                        int pos = getRandomNumber(nonEuropeCountries.length);
+                        int pos = getRandomNumber(nonEuropeCountries.length-1);
                         correctValue = nonEuropeCountries[pos];
                         newArray = addNonEuropeanCountry(europeCountries, correctValue);
                         System.out.println("correctValue: " + correctValue);
@@ -170,7 +170,7 @@ public class TrainActivityFirstScreen extends TrainActivity
     private String[] addNonEuropeanCountry(String[] array, String element)
     {
         String[] newArray = new String[array.length + 1];
-        int position = getRandomNumber(array.length);
+        int position = getRandomNumber(array.length-1);
         for (int i = 0; i < array.length; i++)
         {
             newArray[i] = array[i];
@@ -181,7 +181,6 @@ public class TrainActivityFirstScreen extends TrainActivity
 
         return newArray;
     }
-
 
     // Reference: http://superuser.com/questions/687119/random-shuffling-of-string-array
     private String[] Randomize(String[] arr) {
