@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class ScrollFling extends Touch
 {
-    public static final int numberOfFeatures = 10;
+    public static final int numberOfFeatures = 11;
     public ScrollFling()
     {
         super();
@@ -97,7 +97,7 @@ public class ScrollFling extends Touch
             directionsSum += Math.exp(angle);
         }
 
-        return 0.0;
+        return Math.atan( (1 / points.size()-1) * directionsSum );
     }
 
     public double calculateDirectEndToEndDistance()

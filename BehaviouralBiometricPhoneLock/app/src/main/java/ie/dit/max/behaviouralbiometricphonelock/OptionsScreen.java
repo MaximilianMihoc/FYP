@@ -137,13 +137,14 @@ public class OptionsScreen extends AppCompatActivity
             }
         });
 
+        goToSettings.setText("Delete Test Data");
         goToSettings.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 Firebase dataRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
-                //dataRef.removeValue();
+                dataRef.removeValue();
 
             }
         });

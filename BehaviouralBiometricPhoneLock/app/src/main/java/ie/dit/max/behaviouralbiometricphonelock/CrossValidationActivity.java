@@ -479,9 +479,14 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, listObservations.get(i).calculateAVGAngularVelocity());
 
             tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
-            //tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
+
+            // Angle between start and end vectors
+            tempMat.put(i, j++, scrollFlingObs.calculateAngleBetweenStartAndEndVectorsInRad());
+
             tempMat.put(i, j++, scrollFlingObs.calculateDirectEndToEndDistance());
 
+            // Mean Direction
+            tempMat.put(i, j++, scrollFlingObs.calculateMeanDirectionOfStroke());
 
             // Stop x
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
@@ -491,9 +496,6 @@ public class CrossValidationActivity extends Activity
 
             // Stroke Duration
             tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
-
-            tempMat.put(i, j++, scrollFlingObs.calculateAngleBetweenStartAndEndVectorsInRad());
-
 
             // Start y
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
@@ -526,8 +528,6 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, tapInteraction.getScaledEndPoint().y);
             tempMat.put(i, j++, tapInteraction.getScaledDuration());
             tempMat.put(i, j++, tapInteraction.calculateFingerArea());
-
-
         }
 
         return tempMat;

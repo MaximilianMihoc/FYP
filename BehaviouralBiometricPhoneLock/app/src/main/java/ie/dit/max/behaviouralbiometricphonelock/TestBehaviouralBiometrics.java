@@ -382,7 +382,7 @@ public class TestBehaviouralBiometrics extends Activity implements
 
     private Mat buildTrainOrTestMatForScrollFling(ArrayList<Observation> listObservations)
     {
-        Mat tempMat = new Mat(listObservations.size(), ScrollFling.numberOfFeatures, CvType.CV_32FC1);
+        Mat tempMat = new Mat(listObservations.size(), 8, CvType.CV_32FC1); //ScrollFling.numberOfFeatures, CvType.CV_32FC1);
 
         for(int i = 0; i < listObservations.size(); i++)
         {
