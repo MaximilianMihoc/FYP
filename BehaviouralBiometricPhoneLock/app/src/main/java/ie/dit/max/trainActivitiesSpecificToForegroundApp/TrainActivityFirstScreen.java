@@ -31,9 +31,14 @@ public class TrainActivityFirstScreen extends TrainActivity
 
     private int count;
     Button startButton;
+    Button OKbutton;
+    Button exitButton;
+
     RelativeLayout trainLayout;
     TextView trainActivityTitle;
     TextView centerText;
+    TextView centerText2;
+
     String[] europeCountries;
     String[] newArray;
     String[] nonEuropeCountries;
@@ -41,7 +46,7 @@ public class TrainActivityFirstScreen extends TrainActivity
     ListView listViewTrainScreen;
     ArrayAdapter<String> adapter;
     String correctValue;
-    int trainIterations;
+    int trainIterations, attempts, goodAttempts, badAttempts;
     boolean endTraining;
 
     @Override
@@ -52,8 +57,22 @@ public class TrainActivityFirstScreen extends TrainActivity
 
         europeCountries = getResources().getStringArray(R.array.europeanCountries);
         nonEuropeCountries = getResources().getStringArray(R.array.nonEuropeCountries);
-        trainIterations = 10;
+        trainIterations = 10; attempts = 10; goodAttempts = 0; badAttempts = 0;
         endTraining = false;
+
+        //
+        centerText2 = (TextView)findViewById(R.id.textInCenter2);
+
+        OKbutton = (Button)findViewById(R.id.OKbutton);
+        OKbutton.setOnTouchListener(gestureListener);
+
+        exitButton = (Button)findViewById(R.id.exitButton);
+        exitButton.setOnTouchListener(gestureListener);
+
+        centerText2.setText("Now please play a small game where you are required to find the NON European country from a list." +
+                "\n\nWhen the correct country is found, the list will be regenerated and a new country needs to be found." +
+                "\n\nYou have 10 attempts. \n\nClick the Start button to enter the game.");
+        //
 
         listViewTrainScreen = (ListView) findViewById(android.R.id.list);
         //trainLayout.removeView(listViewTrainScreen);
@@ -68,13 +87,18 @@ public class TrainActivityFirstScreen extends TrainActivity
         startButton.setText("Tap me " + count + " times");
         centerText.setText("" + count);
 
+        trainLayout.removeView(centerText2);
+        trainLayout.removeView(OKbutton);
+        trainLayout.removeView(exitButton);
+        trainLayout.removeView(listViewTrainScreen);
+
         startButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 count -= 1;
-                if(!endTraining)
+                if (!endTraining)
                 {
                     if (count > 1)
                     {
@@ -86,21 +110,17 @@ public class TrainActivityFirstScreen extends TrainActivity
                         centerText.setText("" + count);
                     } else
                     {
-                        trainActivityTitle.setText("Try to find the NON-European country from the list and click on it.");
-                        trainLayout.removeView(startButton);
                         trainLayout.removeView(centerText);
+                        trainLayout.removeView(OKbutton);
+                        trainLayout.removeView(exitButton);
+                        trainLayout.removeView(trainActivityTitle);
+                        trainLayout.removeView(startButton);
 
-                        europeCountries = Randomize(europeCountries);
-                        int pos = getRandomNumber(nonEuropeCountries.length-1);
-                        correctValue = nonEuropeCountries[pos];
-                        newArray = addNonEuropeanCountry(europeCountries, correctValue);
-                        System.out.println("correctValue: " + correctValue);
-
-                        adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.row_layout_train_activity_firstscreen, newArray);
-                        listViewTrainScreen.setAdapter(adapter);
+                        trainLayout.addView(centerText2);
+                        trainLayout.addView(OKbutton);
+                        trainLayout.addView(exitButton);
                     }
-                }
-                else
+                } else
                 {
                     //exit
                     Intent trainIntent = new Intent(TrainActivityFirstScreen.this, OptionsScreen.class);
@@ -108,6 +128,51 @@ public class TrainActivityFirstScreen extends TrainActivity
 
                 }
 
+            }
+        });
+
+        OKbutton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                trainIterations = 10;
+                goodAttempts = 0;
+                badAttempts = 0;
+
+                trainLayout.addView(trainActivityTitle);
+                trainLayout.addView(listViewTrainScreen);
+
+                trainLayout.removeView(centerText);
+                trainLayout.removeView(centerText2);
+                trainLayout.removeView(OKbutton);
+                trainLayout.removeView(exitButton);
+
+                trainActivityTitle.setText("Find the NON European Country" +
+                        "\nAttempts: " + attempts + " Good: " + goodAttempts + " Wrong: " + badAttempts);
+
+                // set initial list of values
+                trainLayout.removeView(startButton);
+                trainLayout.removeView(centerText);
+
+                europeCountries = Randomize(europeCountries);
+                int pos = getRandomNumber(nonEuropeCountries.length - 1);
+                correctValue = nonEuropeCountries[pos];
+                newArray = addNonEuropeanCountry(europeCountries, correctValue);
+                System.out.println("correctValue: " + correctValue);
+
+                adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.row_layout_train_activity_firstscreen, newArray);
+                listViewTrainScreen.setAdapter(adapter);
+            }
+        });
+
+        exitButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(TrainActivityFirstScreen.this, OptionsScreen.class);
+                startActivity(intent);
             }
         });
 
@@ -126,7 +191,7 @@ public class TrainActivityFirstScreen extends TrainActivity
                         toast.show();
 
                         europeCountries = Randomize(europeCountries);
-                        int pos = getRandomNumber(nonEuropeCountries.length-1);
+                        int pos = getRandomNumber(nonEuropeCountries.length - 1);
                         correctValue = nonEuropeCountries[pos];
                         newArray = addNonEuropeanCountry(europeCountries, correctValue);
                         System.out.println("correctValue: " + correctValue);
@@ -135,6 +200,9 @@ public class TrainActivityFirstScreen extends TrainActivity
                         listViewTrainScreen.setAdapter(adapter);
 
                         trainIterations --;
+                        goodAttempts ++;
+                        trainActivityTitle.setText("Find the NON European Country" +
+                                "\nAttempts: " + trainIterations + " Good: " + goodAttempts + " Wrong: " + badAttempts);
                     }
                     else
                     {
@@ -142,6 +210,9 @@ public class TrainActivityFirstScreen extends TrainActivity
                         toast.show();
 
                         trainIterations --;
+                        badAttempts ++;
+                        trainActivityTitle.setText("Find the NON European Country" +
+                                "\nAttempts: " + trainIterations + " Good: " + goodAttempts + " Wrong: " + badAttempts);
                     }
 
                 }

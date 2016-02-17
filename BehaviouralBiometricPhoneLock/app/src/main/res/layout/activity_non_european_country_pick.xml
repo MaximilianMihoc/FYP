@@ -3,6 +3,7 @@
                 android:id="@+id/relativeLayoutTraiFirstScreenID"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/black"
                 tools:context="ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScreen">
 
 
@@ -11,6 +12,7 @@
         android:text="Find the NON European Country"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/green"
         android:textSize="20sp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -22,10 +24,9 @@
         android:layout_height="wrap_content"
         android:text="Quit"
         android:id="@+id/quitButton"
+        android:background="@drawable/bg_button"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
 
     <ListView
@@ -40,10 +41,11 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Text"
+        android:textColor="@color/green"
         android:padding="10dp"
         android:id="@+id/textInCenter"
         android:textSize="15sp"
-        android:layout_marginTop="134dp"
+        android:layout_marginTop="60dp"
         android:layout_alignTop="@android:id/list"
         android:layout_centerHorizontal="true"/>
 
@@ -53,8 +55,10 @@
         android:layout_height="wrap_content"
         android:text="Start"
         android:id="@+id/OKbutton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:background="@drawable/bg_button"
+        android:layout_marginTop="57dp"
+        android:layout_below="@+id/textInCenter"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"/>
 
     <Button
@@ -63,10 +67,11 @@
         android:layout_height="wrap_content"
         android:text="Exit"
         android:id="@+id/exitButton"
-        android:layout_alignTop="@+id/OKbutton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        />
+        android:background="@drawable/bg_button"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/OKbutton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"/>
 
 
 </RelativeLayout>

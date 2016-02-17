@@ -3,9 +3,8 @@
                 android:id="@+id/relativeLayoutTraiFirstScreenID"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/black"
                 tools:context="ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScreen">
-
-
 
     <TextView
         android:text="Please tap the button below."
@@ -13,25 +12,23 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:textColor="@color/green"
         android:id="@+id/trainActivityTitle"/>
-
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tap me 5 times to start"
         android:id="@+id/startTrainingFirstActivity"
+        android:background="@drawable/bg_button"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@android:id/list"
-        android:layout_alignLeft="@+id/startTrainingFirstActivity"
         android:layout_alignStart="@+id/startTrainingFirstActivity"
         android:layout_below="@+id/trainActivityTitle"
         android:layout_alignParentBottom="true"/>
@@ -41,10 +38,48 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
+        android:textColor="@color/green"
         android:id="@+id/textInCenter"
         android:textSize="45sp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Text"
+        android:textColor="@color/green"
+        android:padding="10dp"
+        android:id="@+id/textInCenter2"
+        android:textSize="15sp"
+        android:layout_marginTop="60dp"
+        android:layout_alignTop="@android:id/list"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        android:id="@+id/OKbutton"
+        android:background="@drawable/bg_button"
+        android:layout_marginTop="57dp"
+        android:layout_below="@+id/textInCenter2"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Exit"
+        android:id="@+id/exitButton"
+        android:background="@drawable/bg_button"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/OKbutton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"/>
 
 
 </RelativeLayout>

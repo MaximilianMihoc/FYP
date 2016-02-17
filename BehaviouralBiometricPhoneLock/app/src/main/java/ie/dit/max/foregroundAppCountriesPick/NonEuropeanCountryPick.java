@@ -67,8 +67,8 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
         endButton.setOnTouchListener(gestureListener);
 
         centerText.setText("In this game you are required to find the NON European country from a list." +
-                "\n\nWhen the correct country is found, the list will be updated and a new country needs to be regenerated." +
-                "\n\nClick the Start button to start the game.");
+                "\n\nWhen the correct country is found, the list will be regenerated and a new country needs to be found." +
+                "\n\nYou have 10 attempts. \n\nClick the Start button to enter the game.");
 
         trainLayout.removeView(activityTitle);
         trainLayout.removeView(endButton);
