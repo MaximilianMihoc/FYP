@@ -146,6 +146,9 @@ public class OptionsScreen extends AppCompatActivity
                 Firebase dataRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
                 dataRef.removeValue();
 
+                Toast toast = Toast.makeText(getApplicationContext(), "Test data has been deleted.", Toast.LENGTH_SHORT);
+                toast.show();
+
             }
         });
 

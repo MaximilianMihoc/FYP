@@ -14,6 +14,8 @@
         android:layout_height="wrap_content"
         android:textColor="@color/orange"
         android:textSize="20sp"
+        android:paddingStart="30dp"
+        android:paddingEnd="1dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/trainActivityTitle"/>
@@ -75,6 +77,15 @@
         android:layout_below="@+id/OKbutton"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/helpButton"
+        android:background="@color/black"
+        android:layout_toStartOf="@+id/trainActivityTitle"
+        android:layout_above="@+id/textInCenter"/>
 
 
 </RelativeLayout>

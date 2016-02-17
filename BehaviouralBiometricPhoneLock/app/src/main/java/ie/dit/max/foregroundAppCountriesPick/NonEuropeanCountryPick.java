@@ -26,6 +26,7 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
     Button endButton;
     Button OKbutton;
     Button exitButton;
+    Button helpButton;
 
     RelativeLayout trainLayout;
     TextView activityTitle;
@@ -59,6 +60,8 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
 
         OKbutton = (Button)findViewById(R.id.OKbutton);
         OKbutton.setOnTouchListener(gestureListener);
+
+        helpButton = (Button)findViewById(R.id.helpButton);
 
         exitButton = (Button)findViewById(R.id.exitButton);
         exitButton.setOnTouchListener(gestureListener);
@@ -111,7 +114,7 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
             @Override
             public void onClick(View v)
             {
-                centerText.setText("Results: "+
+                centerText.setText("Results: " +
                         "\nAttempts: " + attempts + " Good: " + goodAttempts + " Wrong: " + badAttempts);
 
                 OKbutton.setText("Retry");
@@ -133,6 +136,16 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
             {
                 Intent intent = new Intent(NonEuropeanCountryPick.this, OptionsScreen.class);
                 startActivity(intent);
+            }
+        });
+
+        helpButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Toast toast = Toast.makeText(getApplicationContext(), "Correct Value is: " + correctValue, Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
 

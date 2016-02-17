@@ -33,6 +33,7 @@ public class TrainActivityFirstScreen extends TrainActivity
     Button startButton;
     Button OKbutton;
     Button exitButton;
+    Button helpButton;
 
     RelativeLayout trainLayout;
     TextView trainActivityTitle;
@@ -62,6 +63,8 @@ public class TrainActivityFirstScreen extends TrainActivity
 
         //
         centerText2 = (TextView)findViewById(R.id.textInCenter2);
+
+        helpButton = (Button)findViewById(R.id.helpButton);
 
         OKbutton = (Button)findViewById(R.id.OKbutton);
         OKbutton.setOnTouchListener(gestureListener);
@@ -173,6 +176,16 @@ public class TrainActivityFirstScreen extends TrainActivity
             {
                 Intent intent = new Intent(TrainActivityFirstScreen.this, OptionsScreen.class);
                 startActivity(intent);
+            }
+        });
+
+        helpButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Toast toast = Toast.makeText(getApplicationContext(), "Correct Value is: " + correctValue, Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
 
