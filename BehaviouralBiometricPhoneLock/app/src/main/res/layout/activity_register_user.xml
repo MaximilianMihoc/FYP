@@ -1,7 +1,8 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/black"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
@@ -10,87 +11,91 @@
                 android:scrollbars="none"
                 tools:context="ie.dit.max.behaviouralbiometricphonelock.RegisterUser">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:hint="UserName"
-        android:ems="10"
-        android:id="@+id/userNameRegister"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="42dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="UserName"
+            android:textColor="@color/ligthBlue"
+            android:textColorHint="@color/ligthBlue"
+            android:backgroundTint="@color/ligthBlue"
+            android:id="@+id/userNameRegister"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="42dp"
+            android:layout_alignParentEnd="true"/>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:hint="E-mail"
-        android:ems="10"
-        android:id="@+id/emailRegister"
-        android:layout_below="@+id/userNameRegister"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/userNameRegister"
-        android:layout_alignEnd="@+id/userNameRegister"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:hint="E-mail"
+            android:textColor="@color/ligthBlue"
+            android:textColorHint="@color/ligthBlue"
+            android:backgroundTint="@color/ligthBlue"
+            android:id="@+id/emailRegister"
+            android:layout_below="@+id/userNameRegister"
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@+id/userNameRegister"/>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:hint="Confirm E-mail"
-        android:ems="10"
-        android:id="@+id/confirmEmail"
-        android:layout_below="@+id/emailRegister"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/emailRegister"
-        android:layout_alignEnd="@+id/emailRegister"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:hint="Confirm E-mail"
+            android:textColor="@color/ligthBlue"
+            android:textColorHint="@color/ligthBlue"
+            android:backgroundTint="@color/ligthBlue"
+            android:id="@+id/confirmEmail"
+            android:layout_below="@+id/emailRegister"
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@+id/emailRegister"/>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/passwordRegister"
-        android:hint="Password"
-        android:layout_below="@+id/confirmEmail"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:textColor="@color/ligthBlue"
+            android:textColorHint="@color/ligthBlue"
+            android:backgroundTint="@color/ligthBlue"
+            android:id="@+id/passwordRegister"
+            android:hint="Password"
+            android:layout_below="@+id/confirmEmail"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"/>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/confirmPassword"
-        android:hint="Confirm Password"
-        android:layout_below="@+id/passwordRegister"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:textColor="@color/ligthBlue"
+            android:textColorHint="@color/ligthBlue"
+            android:backgroundTint="@color/ligthBlue"
+            android:id="@+id/confirmPassword"
+            android:hint="Confirm Password"
+            android:layout_below="@+id/passwordRegister"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        android:id="@+id/registerButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/confirmPassword"
-        android:layout_alignRight="@+id/confirmPassword"
-        android:layout_alignEnd="@+id/confirmPassword"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Register"
+            android:id="@+id/registerButton"
+            android:background="@drawable/bg_button"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/confirmPassword"
+            android:layout_alignEnd="@+id/confirmPassword"/>
 
-    </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
 
-</ScrollView>
+</RelativeLayout>

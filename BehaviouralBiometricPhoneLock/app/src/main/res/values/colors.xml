@@ -4,4 +4,5 @@
     <color name="blue">#004F81</color>
     <color name="ligthBlue">#89cbee</color>
     <color name="blue2">#4aa5d4</color>
+    <color name="accent">#4aa5d4</color>
 </resources>

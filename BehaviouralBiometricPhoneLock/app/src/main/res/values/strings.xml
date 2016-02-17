@@ -5,19 +5,19 @@
     <string name="login">Log In Screen</string>
     <string name="register">Register Screen</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_train">TrainActivity</string>
+    <string name="title_activity_train">Train Activity</string>
     <string name="instruction1">Type .tie5Roanl in the following box.</string>
-    <string name="title_activity_my_view_group">MyViewGroupActivity</string>
-    <string name="title_activity_test">TestActivity</string>
-    <string name="title_activity_test_touch_only">TestTouchOnly</string>
-    <string name="title_activity_log_in">LogIn</string>
-    <string name="title_activity_register_user">RegisterUser</string>
+    <string name="title_activity_my_view_group">My View Group Activity</string>
+    <string name="title_activity_test">Test Activity</string>
+    <string name="title_activity_test_touch_only">Test Touch Only</string>
+    <string name="title_activity_log_in">Log In</string>
+    <string name="title_activity_register_user">Register User</string>
     <string name="title_activity_home">Home</string>
     <string name="noData">Sorry, No Questions on the searched items. \nPlease try something else.</string>
-    <string name="title_activity_answers_screen">AnswersScreen</string>
-    <string name="title_activity_question_body_screen">QuestionBodyScreen</string>
-    <string name="title_activity_options_screen">OptionsScreen</string>
-    <string name="title_activity_train_activity_first_screen">TrainActivityFirstScreen</string>
+    <string name="title_activity_answers_screen">Answers Screen</string>
+    <string name="title_activity_question_body_screen">Question Body Screen</string>
+    <string name="title_activity_options_screen">Options Screen</string>
+    <string name="title_activity_train_activity_first_screen">Train Activity First Screen</string>
 
     <string-array name="europeanCountries">
         <item>Belarus</item>
