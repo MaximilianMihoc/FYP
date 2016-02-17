@@ -6,4 +6,6 @@
     <color name="blue2">#4aa5d4</color>
     <color name="accent">#4aa5d4</color>
     <color name="green">#05CD05</color>
+    <color name="orange">#FF7400</color>
+    <color name="red">#E60000</color>
 </resources>

@@ -12,7 +12,7 @@
         android:text="Find the NON European Country"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/green"
+        android:textColor="@color/orange"
         android:textSize="20sp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -34,7 +34,10 @@
         android:layout_height="wrap_content"
         android:id="@android:id/list"
         android:layout_below="@+id/trainActivityTitle"
-        android:layout_above="@+id/quitButton"/>
+        android:layout_above="@+id/quitButton"
+        android:listSelector="@color/red"
+        android:divider="#FFF800"
+        android:dividerHeight="2dp"/>
 
     <TextView
         android:layout_width="wrap_content"
