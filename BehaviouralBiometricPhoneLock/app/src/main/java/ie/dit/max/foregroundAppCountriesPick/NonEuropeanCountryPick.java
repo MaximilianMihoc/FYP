@@ -76,6 +76,18 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
         trainLayout.removeView(activityTitle);
         trainLayout.removeView(endButton);
         trainLayout.removeView(listViewCountryList);
+        trainLayout.removeView(OKbutton);
+        trainLayout.removeView(exitButton);
+
+        try
+        {
+            Thread.sleep(5000);
+            trainLayout.addView(OKbutton);
+            trainLayout.addView(exitButton);
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
 
         OKbutton.setOnClickListener(new View.OnClickListener()
         {

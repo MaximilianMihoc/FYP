@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
@@ -29,6 +31,8 @@ public class OptionsScreen extends AppCompatActivity
     Button goToSettings;
     Button logOutButton;
 
+    ProgressBar loadingPanel;
+
     Firebase ref;
     SharedPreferences sharedpreferences;
     private String userID;
@@ -44,6 +48,9 @@ public class OptionsScreen extends AppCompatActivity
 
         // get User details
         userID = sharedpreferences.getString("UserID", "");
+
+        loadingPanel = (ProgressBar) findViewById(R.id.loadingPanel);
+        loadingPanel.setVisibility(View.GONE);
 
         goToStackOverflow = (Button) findViewById(R.id.goToStackOverflowApp);
         goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
@@ -67,6 +74,7 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
+                loadingPanel.setVisibility(View.VISIBLE);
                 Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
                 scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                 {
@@ -74,6 +82,7 @@ public class OptionsScreen extends AppCompatActivity
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot)
                     {
+                        loadingPanel.setVisibility(View.GONE);
                         if (dataSnapshot.getValue() == null)
                         {
                             Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
@@ -109,6 +118,7 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
+                loadingPanel.setVisibility(View.VISIBLE);
                 Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
                 scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                 {
@@ -116,6 +126,7 @@ public class OptionsScreen extends AppCompatActivity
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot)
                     {
+                        loadingPanel.setVisibility(View.GONE);
                         if (dataSnapshot.getValue() == null)
                         {
                             Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
