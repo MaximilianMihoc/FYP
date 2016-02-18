@@ -19,6 +19,7 @@ public class QuestionBodyScreen extends TestBehaviouralBiometrics
 
     Question questionSelected;
     Button goToAnswers;
+    Button backHomeScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,6 +43,7 @@ public class QuestionBodyScreen extends TestBehaviouralBiometrics
         questionOwner.setText("asked: " + questionSelected.getCreation_date() + "\nBy: " + questionSelected.getOwner().getDisplay_name());
 
         goToAnswers = (Button) findViewById(R.id.goToAnswers);
+        backHomeScreen = (Button) findViewById(R.id.backHomeScreen);
 
         if (questionSelected.getAnswer_count() == 1) goToAnswers.setText("View " + questionSelected.getAnswer_count() + " Answer");
         else goToAnswers.setText("View " + questionSelected.getAnswer_count() + " Answers");
@@ -58,6 +60,16 @@ public class QuestionBodyScreen extends TestBehaviouralBiometrics
                 bundle.putSerializable("selectedQuestion", questionSelected);
                 goToAnswersIntent.putExtras(bundle);
 
+                startActivity(goToAnswersIntent);
+            }
+        });
+
+        backHomeScreen.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent goToAnswersIntent = new Intent(QuestionBodyScreen.this, StackOverflowHomeScreen.class);
                 startActivity(goToAnswersIntent);
             }
         });

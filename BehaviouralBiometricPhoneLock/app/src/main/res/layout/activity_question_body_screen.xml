@@ -18,9 +18,17 @@
         android:weightSum="1">
 
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:background="@drawable/bg_button"
+            android:id="@+id/backHomeScreen"/>
+
+        <Button
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="View Answers"
+            android:background="@drawable/bg_button"
             android:id="@+id/goToAnswers"/>
 
     </LinearLayout>

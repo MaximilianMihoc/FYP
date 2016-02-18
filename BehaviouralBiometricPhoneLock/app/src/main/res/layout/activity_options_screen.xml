@@ -36,7 +36,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stack Overflow"
+        android:text="Stack Overflow App"
         android:background="@drawable/bg_button"
         android:id="@+id/goToStackOverflowApp"
         android:layout_below="@+id/goToCountryListGame"

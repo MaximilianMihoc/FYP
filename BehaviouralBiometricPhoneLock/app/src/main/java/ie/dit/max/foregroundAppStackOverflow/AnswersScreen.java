@@ -1,6 +1,7 @@
 package ie.dit.max.foregroundAppStackOverflow;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -9,6 +10,8 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,6 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ie.dit.max.behaviouralbiometricphonelock.LogIn;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
@@ -31,6 +35,8 @@ public class AnswersScreen extends TestBehaviouralBiometrics
     AnswerListAdapter answerListAdapter;
     Question questionSelected;
 
+    Button backToQuestionBody;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -42,6 +48,22 @@ public class AnswersScreen extends TestBehaviouralBiometrics
 
         Bundle bundle = getIntent().getExtras();
         questionSelected = (Question) bundle.getSerializable("selectedQuestion");
+
+        backToQuestionBody = (Button) findViewById(R.id.backToQuestionBody);
+        backToQuestionBody.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent trainIntent = new Intent(AnswersScreen.this, QuestionBodyScreen.class);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("questionSelected", questionSelected);
+                trainIntent.putExtras(bundle);
+
+                startActivity(trainIntent);
+            }
+        });
 
         TextView questionTitle = (TextView)findViewById(R.id.questionBody);
         questionTitle.setText(Html.fromHtml("<b>" + questionSelected.getTitle() + "</b>"));
