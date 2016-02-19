@@ -28,10 +28,6 @@
             android:label="@string/title_activity_test" >
         </activity>
         <activity
-            android:name=".TestTapOnly"
-            android:label="@string/title_activity_test_touch_only" >
-        </activity>
-        <activity
             android:name=".LogIn"
             android:label="@string/title_activity_log_in" >
         </activity>
