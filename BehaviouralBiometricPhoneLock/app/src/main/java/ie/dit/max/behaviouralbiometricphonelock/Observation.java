@@ -10,26 +10,23 @@ import java.util.List;
 public class Observation
 {
     private Touch touch;
-    private ArrayList<Float> linearAccelerations;
-    private ArrayList<Float> angularVelocities;
+
     private int judgement;
+    private Float averageLinearAcceleration;
+    private Float averageAngularVelocity;
 
     public Observation(Touch touch, ArrayList<Float> linearAccelerations, ArrayList<Float> angularVelocities)
     {
         this.touch = touch;
-        this.linearAccelerations = linearAccelerations;
-        this.angularVelocities = angularVelocities;
     }
 
     public Observation()
     {
         touch = new Touch();
-        linearAccelerations = new ArrayList<>();
-        angularVelocities = new ArrayList<>();
         judgement = 0;
     }
 
-    public float calculateAVGLinearAcc()
+    public static float calculateAVGLinearAcc(ArrayList<Float> linearAccelerations)
     {
         float sum = 0;
         float avg = 0;
@@ -46,7 +43,7 @@ public class Observation
         return avg;
     }
 
-    public float calculateAVGAngularVelocity()
+    public static float calculateAVGAngularVelocity(ArrayList<Float> angularVelocities)
     {
         float sum = 0;
         float avg = 0;
@@ -69,28 +66,28 @@ public class Observation
         return "Observation: " +
                 //"tap: " + tap.toString() +
                 //"scrollFling: " + scrollFling.toString() +
-                "linearAccelerations: " + linearAccelerations.toString() +
-                "angularVelocities: " + angularVelocities.toString();
+                "linearAccelerations: " + getAverageLinearAcceleration() +
+                "angularVelocities: " + getAverageAngularVelocity();
     }
 
-    public ArrayList<Float> getLinearAccelerations()
+    public Float getAverageLinearAcceleration()
     {
-        return linearAccelerations;
+        return averageLinearAcceleration;
     }
 
-    public void setLinearAccelerations(ArrayList<Float> linearAccelerations)
+    public void setAverageLinearAcceleration(Float averageLinearAcceleration)
     {
-        this.linearAccelerations = linearAccelerations;
+        this.averageLinearAcceleration = averageLinearAcceleration;
     }
 
-    public ArrayList<Float> getAngularVelocities()
+    public Float getAverageAngularVelocity()
     {
-        return angularVelocities;
+        return averageAngularVelocity;
     }
 
-    public void setAngularVelocities(ArrayList<Float> angularVelocities)
+    public void setAverageAngularVelocity(Float averageAngularVelocity)
     {
-        this.angularVelocities = angularVelocities;
+        this.averageAngularVelocity = averageAngularVelocity;
     }
 
     public Touch getTouch()

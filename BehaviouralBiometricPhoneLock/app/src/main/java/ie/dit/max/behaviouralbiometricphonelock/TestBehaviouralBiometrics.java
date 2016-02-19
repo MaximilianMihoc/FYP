@@ -171,8 +171,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                         }
 
                         //adding the lists of linearAccelerations and AngularVelocity to the Observation
-                        tempObs.setAngularVelocities(angularVelocities);
-                        tempObs.setLinearAccelerations(linearAccelerations);
+                        tempObs.setAverageAngularVelocity(Observation.calculateAVGAngularVelocity(angularVelocities));
+                        tempObs.setAverageLinearAcceleration(Observation.calculateAVGLinearAcc(linearAccelerations));
 
                         //In this section check each observation, one at a time and assign a judgement to it.
                         if(!isFling && !isScroll)
@@ -398,10 +398,10 @@ public class TestBehaviouralBiometrics extends Activity implements
             tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
 
             // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
+            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
 
             // angular Velocity are part of the observation - get average
-            tempMat.put(i, j, listObservations.get(i).calculateAVGAngularVelocity());
+            tempMat.put(i, j, listObservations.get(i).getAverageAngularVelocity());
         }
 
         return tempMat;
@@ -424,10 +424,10 @@ public class TestBehaviouralBiometrics extends Activity implements
             tempMat.put(i, j++, tapInteraction.calculateFingerArea());
 
             // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
+            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
 
             // angular Velocity are part of the observation - get average
-            tempMat.put(i, j, listObservations.get(i).calculateAVGAngularVelocity());
+            tempMat.put(i, j, listObservations.get(i).getAverageAngularVelocity());
         }
 
         return tempMat;

@@ -152,8 +152,8 @@ public class TrainActivity extends Activity implements
                         }
 
                         //adding the lists of linearAccelerations and AngularVelocity to the Observation
-                        tempObs.setAngularVelocities(angularVelocities);
-                        tempObs.setLinearAccelerations(linearAccelerations);
+                        tempObs.setAverageAngularVelocity(Observation.calculateAVGAngularVelocity(angularVelocities));
+                        tempObs.setAverageLinearAcceleration(Observation.calculateAVGLinearAcc(linearAccelerations));
 
                         //all Observations from Training are owner observations
                         tempObs.setJudgement(1);

@@ -473,10 +473,10 @@ public class CrossValidationActivity extends Activity
             int j = 0;
 
             // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
+            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
 
             // angular Velocity are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).calculateAVGAngularVelocity());
+            tempMat.put(i, j++, listObservations.get(i).getAverageAngularVelocity());
 
             tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
 
@@ -517,10 +517,10 @@ public class CrossValidationActivity extends Activity
             int j = 0;
 
             // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).calculateAVGLinearAcc());
+            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
 
             // angular Velocity are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).calculateAVGAngularVelocity());
+            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
 
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);
