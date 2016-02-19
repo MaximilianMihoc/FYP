@@ -11,6 +11,8 @@ import java.util.ArrayList;
 public class ScrollFling extends Touch
 {
     public static final int numberOfFeatures = 11;
+
+
     public ScrollFling()
     {
         super();
@@ -26,6 +28,8 @@ public class ScrollFling extends Touch
         points = t.points;
         duration = t.duration;
         scaledDuration = t.scaledDuration;
+        midStrokeAreaCovered = t.midStrokeAreaCovered;
+        meanDirectionOfStroke = t.meanDirectionOfStroke;
     }
 
     // This method will create a list with all the points on the stroke, including start and end points
@@ -126,16 +130,13 @@ public class ScrollFling extends Touch
         return Math.sqrt(-1);
     }
 
-
     @Override
     public String toString()
     {
         return "ScrollFling{" +
                 "startPoint= " + startPoint +
-                ", points= " + points +
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
-                ", midStrokeArea= " + calculateMidStrokeAreaCovered() +
                 '}';
     }
 }

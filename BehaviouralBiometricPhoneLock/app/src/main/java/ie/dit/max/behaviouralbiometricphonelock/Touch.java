@@ -19,6 +19,8 @@ public class Touch
     protected Point scaledStartPoint;
     protected Point scaledEndPoint;
     protected double scaledDuration;
+    protected Double midStrokeAreaCovered;
+    protected Double meanDirectionOfStroke;
 
     public Touch()
     {
@@ -26,7 +28,7 @@ public class Touch
         endPoint = new Point();
         scaledStartPoint = new Point();
         scaledEndPoint = new Point();
-        points = new ArrayList<Point>();
+        points = new ArrayList<>();
         duration = 0;
         scaledDuration = 0;
     }
@@ -65,6 +67,26 @@ public class Touch
         return scaledDuration;
     }
 
+    public Double getMidStrokeAreaCovered()
+    {
+        return midStrokeAreaCovered;
+    }
+
+    public void setMidStrokeAreaCovered(Double midStrokeAreaCovered)
+    {
+        this.midStrokeAreaCovered = midStrokeAreaCovered;
+    }
+
+    public Double getMeanDirectionOfStroke()
+    {
+        return meanDirectionOfStroke;
+    }
+
+    public void setMeanDirectionOfStroke(Double meanDirectionOfStroke)
+    {
+        this.meanDirectionOfStroke = meanDirectionOfStroke;
+    }
+
     public void setScaledStartPoint(Point scaledStartPoint)
     {
         this.scaledStartPoint = scaledStartPoint;
@@ -78,16 +100,6 @@ public class Touch
     public void setScaledDuration(double scaledDuration)
     {
         this.scaledDuration = scaledDuration;
-    }
-
-    public void addPoint(Point p)
-    {
-        this.points.add(p);
-    }
-
-    public void clearPoints()
-    {
-        points.clear();
     }
 
     public double getDuration()
@@ -120,12 +132,12 @@ public class Touch
         this.startPoint = startPoint;
     }
 
-    public ArrayList<Point> getPoints()
+    public ArrayList<Point> retrievePoints()
     {
         return points;
     }
 
-    public void setPoints(ArrayList<Point> points)
+    public void initialisePoints(ArrayList<Point> points)
     {
         this.points = points;
     }

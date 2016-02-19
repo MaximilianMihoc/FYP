@@ -478,7 +478,7 @@ public class CrossValidationActivity extends Activity
             // angular Velocity are part of the observation - get average
             tempMat.put(i, j++, listObservations.get(i).getAverageAngularVelocity());
 
-            tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
+            tempMat.put(i, j++, scrollFlingObs.getMidStrokeAreaCovered());
 
             // Angle between start and end vectors
             tempMat.put(i, j++, scrollFlingObs.calculateAngleBetweenStartAndEndVectorsInRad());
@@ -486,7 +486,7 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, scrollFlingObs.calculateDirectEndToEndDistance());
 
             // Mean Direction
-            tempMat.put(i, j++, scrollFlingObs.calculateMeanDirectionOfStroke());
+            tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
 
             // Stop x
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);

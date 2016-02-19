@@ -146,9 +146,12 @@ public class TestBehaviouralBiometrics extends Activity implements
                             ScrollFling scrollFling = new ScrollFling();
                             scrollFling.setStartPoint(startPoint);
                             scrollFling.setEndPoint(endPoint);
-                            scrollFling.setPoints(points);
+                            scrollFling.initialisePoints(points);
                             scrollFling.setDuration(duration);
                             scrollFling.setPressure(event.getPressure());
+
+                            scrollFling.setMidStrokeAreaCovered(scrollFling.calculateMidStrokeAreaCovered());
+                            scrollFling.setMeanDirectionOfStroke(scrollFling.calculateMeanDirectionOfStroke());
 
                             Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
                             //tempObs.setScrollFling(scrollFling);
@@ -160,7 +163,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             Tap tap = new Tap();
                             tap.setStartPoint(startPoint);
                             tap.setEndPoint(endPoint);
-                            tap.setPoints(points);
+                            tap.initialisePoints(points);
                             tap.setDuration(duration);
                             tap.setPressure(event.getPressure());
 

@@ -119,7 +119,7 @@ public class TrainActivity extends Activity implements
                     {
                         endPoint = new Point(event.getX(), event.getY());
                         duration = event.getEventTime() - event.getDownTime();
-                        Observation tempObs = new Observation(new Touch(), new ArrayList<Float>(), new ArrayList<Float>());
+                        Observation tempObs = new Observation();
 
                         if(isFling || isScroll)
                         {
@@ -127,9 +127,12 @@ public class TrainActivity extends Activity implements
                             ScrollFling scrollFling = new ScrollFling();
                             scrollFling.setStartPoint(startPoint);
                             scrollFling.setEndPoint(endPoint);
-                            scrollFling.setPoints(points);
+                            scrollFling.initialisePoints(points);
                             scrollFling.setDuration(duration);
                             scrollFling.setPressure(event.getPressure());
+
+                            scrollFling.setMidStrokeAreaCovered(scrollFling.calculateMidStrokeAreaCovered());
+                            scrollFling.setMeanDirectionOfStroke(scrollFling.calculateMeanDirectionOfStroke());
 
                             //Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
                             //tempObs.setScrollFling(scrollFling);
@@ -141,7 +144,7 @@ public class TrainActivity extends Activity implements
                             Tap tap = new Tap();
                             tap.setStartPoint(startPoint);
                             tap.setEndPoint(endPoint);
-                            tap.setPoints(points);
+                            tap.initialisePoints(points);
                             tap.setDuration(duration);
                             tap.setPressure(event.getPressure());
 

@@ -15,9 +15,11 @@ public class Observation
     private Float averageLinearAcceleration;
     private Float averageAngularVelocity;
 
-    public Observation(Touch touch, ArrayList<Float> linearAccelerations, ArrayList<Float> angularVelocities)
+    public Observation(Touch touch, Float linearAccelerations, Float angularVelocities)
     {
         this.touch = touch;
+        this.averageLinearAcceleration = linearAccelerations;
+        this.averageAngularVelocity = angularVelocities;
     }
 
     public Observation()
