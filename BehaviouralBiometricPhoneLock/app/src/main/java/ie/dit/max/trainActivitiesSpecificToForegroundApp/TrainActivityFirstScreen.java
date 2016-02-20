@@ -235,12 +235,12 @@ public class TrainActivityFirstScreen extends TrainActivity
                     endTraining = true;
 
                     centerText.setText("Train model is complete. Please exit.");
-                    trainActivityTitle.setText("Well done, training has been completed");
                     startButton.setText("Exit");
                     trainLayout.addView(startButton);
                     trainLayout.addView(centerText);
 
                     trainLayout.removeView(listViewTrainScreen);
+                    trainLayout.removeView(trainActivityTitle);
 
                 }
 

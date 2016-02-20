@@ -6,8 +6,6 @@
                 android:background="@color/black"
                 tools:context="ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScreen">
 
-
-
     <TextView
         android:text="Find the NON European Country"
         android:layout_width="wrap_content"
@@ -19,7 +17,6 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/trainActivityTitle"/>
-
 
     <Button
         android:layout_width="wrap_content"
@@ -38,8 +35,8 @@
         android:layout_below="@+id/trainActivityTitle"
         android:layout_above="@+id/quitButton"
         android:listSelector="@color/red"
-        android:divider="#FFF800"
-        android:dividerHeight="2dp"/>
+        android:divider="@color/white"
+        android:dividerHeight="1dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -86,6 +83,5 @@
         android:background="@color/black"
         android:layout_toStartOf="@+id/trainActivityTitle"
         android:layout_above="@+id/textInCenter"/>
-
 
 </RelativeLayout>

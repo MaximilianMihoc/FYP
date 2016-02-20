@@ -37,8 +37,8 @@
         android:layout_below="@+id/trainActivityTitle"
         android:layout_alignParentBottom="true"
         android:listSelector="@color/red"
-        android:divider="#FFF800"
-        android:dividerHeight="2dp"/>
+        android:divider="@color/white"
+        android:dividerHeight="1dp"/>
 
     <TextView
         android:layout_width="wrap_content"
