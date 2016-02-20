@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
@@ -39,6 +42,9 @@ public class TrainActivityFirstScreen extends TrainActivity
     TextView trainActivityTitle;
     TextView centerText;
     TextView centerText2;
+
+    ImageView correctImage;
+    ImageView wrongImage;
 
     String[] europeCountries;
     String[] newArray;
@@ -61,7 +67,6 @@ public class TrainActivityFirstScreen extends TrainActivity
         trainIterations = 10; attempts = 10; goodAttempts = 0; badAttempts = 0;
         endTraining = false;
 
-        //
         centerText2 = (TextView)findViewById(R.id.textInCenter2);
 
         helpButton = (Button)findViewById(R.id.helpButton);
@@ -71,6 +76,9 @@ public class TrainActivityFirstScreen extends TrainActivity
 
         exitButton = (Button)findViewById(R.id.exitButton);
         exitButton.setOnTouchListener(gestureListener);
+
+        correctImage = (ImageView) findViewById(R.id.correctImage);
+        wrongImage = (ImageView) findViewById(R.id.wrongImage);
 
         centerText2.setText("Now please play a small game where you are required to find the NON European country from a list." +
                 "\n\nWhen the correct country is found, the list will be regenerated and a new country needs to be found." +
@@ -94,6 +102,9 @@ public class TrainActivityFirstScreen extends TrainActivity
         trainLayout.removeView(OKbutton);
         trainLayout.removeView(exitButton);
         trainLayout.removeView(listViewTrainScreen);
+
+        correctImage.setVisibility(View.INVISIBLE);
+        wrongImage.setVisibility(View.INVISIBLE);
 
         startButton.setOnClickListener(new View.OnClickListener()
         {
@@ -200,8 +211,9 @@ public class TrainActivityFirstScreen extends TrainActivity
                 {
                     if(correctValue == newArray[position])
                     {
-                        Toast toast = Toast.makeText(getApplicationContext(), "Well Done. Try another one.", Toast.LENGTH_SHORT);
-                        toast.show();
+                        correctImage.setVisibility(View.VISIBLE);
+                        Timer timer = new Timer();
+                        timer.schedule(new MyTimerTask(correctImage), 500);
 
                         europeCountries = Randomize(europeCountries);
                         int pos = getRandomNumber(nonEuropeCountries.length - 1);
@@ -219,8 +231,9 @@ public class TrainActivityFirstScreen extends TrainActivity
                     }
                     else
                     {
-                        Toast toast = Toast.makeText(getApplicationContext(), "That is an European country. \nPlease have another try.", Toast.LENGTH_SHORT);
-                        toast.show();
+                        wrongImage.setVisibility(View.VISIBLE);
+                        Timer timer = new Timer();
+                        timer.schedule(new MyTimerTask(wrongImage), 500);
 
                         trainIterations --;
                         badAttempts ++;
@@ -291,5 +304,25 @@ public class TrainActivityFirstScreen extends TrainActivity
         return r;
     }
 
+    private class MyTimerTask extends TimerTask
+    {
+        private ImageView correctImage;
+        public MyTimerTask(ImageView correctImage)
+        {
+            this.correctImage = correctImage;
+        }
 
+        @Override
+        public void run()
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    correctImage.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
+    }
 }

@@ -9,12 +9,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
@@ -40,6 +45,9 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
     String correctValue;
     int iterations, attempts, goodAttempts, badAttempts;
     boolean endTraining;
+
+    ImageView correctImage;
+    ImageView wrongImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -69,6 +77,9 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
         endButton = (Button) findViewById(R.id.quitButton);
         endButton.setOnTouchListener(gestureListener);
 
+        correctImage = (ImageView) findViewById(R.id.correctImage);
+        wrongImage = (ImageView) findViewById(R.id.wrongImage);
+
         centerText.setText("In this game you are required to find the NON European country from a list." +
                 "\n\nWhen the correct country is found, the list will be regenerated and a new country needs to be found." +
                 "\n\nYou have 10 attempts. \n\nClick the Start button to enter the game.");
@@ -78,6 +89,9 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
         trainLayout.removeView(listViewCountryList);
         trainLayout.removeView(OKbutton);
         trainLayout.removeView(exitButton);
+
+        correctImage.setVisibility(View.INVISIBLE);
+        wrongImage.setVisibility(View.INVISIBLE);
 
         try
         {
@@ -169,8 +183,11 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
             {
                 if(correctValue.equals(newArray[position]))
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Well Done. Try another one.", Toast.LENGTH_SHORT);
-                    toast.show();
+                    //Toast toast = Toast.makeText(getApplicationContext(), "Well Done. Try another one.", Toast.LENGTH_SHORT);
+                    //toast.show();
+                    correctImage.setVisibility(View.VISIBLE);
+                    Timer timer = new Timer();
+                    timer.schedule(new MyTimerTask(correctImage), 500);
 
                     europeCountries = Randomize(europeCountries);
                     int pos = getRandomNumber(nonEuropeCountries.length);
@@ -189,8 +206,11 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
                 }
                 else
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(), "That is an European country. \nPlease have another try.", Toast.LENGTH_SHORT);
-                    toast.show();
+                    //Toast toast = Toast.makeText(getApplicationContext(), "That is an European country. \nPlease have another try.", Toast.LENGTH_SHORT);
+                    //toast.show();
+                    wrongImage.setVisibility(View.VISIBLE);
+                    Timer timer = new Timer();
+                    timer.schedule(new MyTimerTask(wrongImage), 500);
 
                     badAttempts++;
                     iterations --;
@@ -262,5 +282,25 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
         return r;
     }
 
+    private class MyTimerTask extends TimerTask
+    {
+        private ImageView correctImage;
+        public MyTimerTask(ImageView correctImage)
+        {
+            this.correctImage = correctImage;
+        }
 
+        @Override
+        public void run()
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    correctImage.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
+    }
 }
