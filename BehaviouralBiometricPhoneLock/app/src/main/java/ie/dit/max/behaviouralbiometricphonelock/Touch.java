@@ -15,12 +15,13 @@ public class Touch
     protected Point endPoint;
     protected ArrayList<Point> points;
     protected double duration;
-    protected double pressure;
     protected Point scaledStartPoint;
     protected Point scaledEndPoint;
     protected double scaledDuration;
     protected Double midStrokeAreaCovered;
     protected Double meanDirectionOfStroke;
+    protected Double directEndToEndDistance;
+    protected Double angleBetweenStartAndEndVectorsInRad;
 
     public Touch()
     {
@@ -92,6 +93,26 @@ public class Touch
         this.scaledStartPoint = scaledStartPoint;
     }
 
+    public Double getDirectEndToEndDistance()
+    {
+        return directEndToEndDistance;
+    }
+
+    public void setDirectEndToEndDistance(Double directEndToEndDistance)
+    {
+        this.directEndToEndDistance = directEndToEndDistance;
+    }
+
+    public Double getAngleBetweenStartAndEndVectorsInRad()
+    {
+        return angleBetweenStartAndEndVectorsInRad;
+    }
+
+    public void setAngleBetweenStartAndEndVectorsInRad(Double angleBetweenStartAndEndVectorsInRad)
+    {
+        this.angleBetweenStartAndEndVectorsInRad = angleBetweenStartAndEndVectorsInRad;
+    }
+
     public void setScaledEndPoint(Point scaledEndPoint)
     {
         this.scaledEndPoint = scaledEndPoint;
@@ -140,15 +161,5 @@ public class Touch
     public void initialisePoints(ArrayList<Point> points)
     {
         this.points = points;
-    }
-
-    public double getPressure()
-    {
-        return pressure;
-    }
-
-    public void setPressure(double pressure)
-    {
-        this.pressure = pressure;
     }
 }

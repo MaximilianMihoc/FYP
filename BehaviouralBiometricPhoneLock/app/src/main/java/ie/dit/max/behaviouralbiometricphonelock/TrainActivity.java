@@ -129,10 +129,11 @@ public class TrainActivity extends Activity implements
                             scrollFling.setEndPoint(endPoint);
                             scrollFling.initialisePoints(points);
                             scrollFling.setDuration(duration);
-                            scrollFling.setPressure(event.getPressure());
 
                             scrollFling.setMidStrokeAreaCovered(scrollFling.calculateMidStrokeAreaCovered());
                             scrollFling.setMeanDirectionOfStroke(scrollFling.calculateMeanDirectionOfStroke());
+                            scrollFling.setDirectEndToEndDistance(scrollFling.calculateDirectEndToEndDistance());
+                            scrollFling.setAngleBetweenStartAndEndVectorsInRad(scrollFling.calculateAngleBetweenStartAndEndVectorsInRad());
 
                             //Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
                             //tempObs.setScrollFling(scrollFling);
@@ -146,7 +147,6 @@ public class TrainActivity extends Activity implements
                             tap.setEndPoint(endPoint);
                             tap.initialisePoints(points);
                             tap.setDuration(duration);
-                            tap.setPressure(event.getPressure());
 
                             //Log.d(DEBUG_TAG, "Tap: " + tap.toString());
                             //tempObs.setTap(tap);

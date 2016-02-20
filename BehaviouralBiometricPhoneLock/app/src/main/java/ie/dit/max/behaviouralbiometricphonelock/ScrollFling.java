@@ -12,7 +12,6 @@ public class ScrollFling extends Touch
 {
     public static final int numberOfFeatures = 11;
 
-
     public ScrollFling()
     {
         super();
@@ -25,11 +24,12 @@ public class ScrollFling extends Touch
         endPoint = t.endPoint;
         scaledStartPoint = t.scaledStartPoint;
         scaledEndPoint = t.scaledEndPoint;
-        points = t.points;
         duration = t.duration;
         scaledDuration = t.scaledDuration;
         midStrokeAreaCovered = t.midStrokeAreaCovered;
         meanDirectionOfStroke = t.meanDirectionOfStroke;
+        directEndToEndDistance = t.directEndToEndDistance;
+        angleBetweenStartAndEndVectorsInRad = t.angleBetweenStartAndEndVectorsInRad;
     }
 
     // This method will create a list with all the points on the stroke, including start and end points
@@ -101,7 +101,7 @@ public class ScrollFling extends Touch
             directionsSum += Math.exp(angle);
         }
 
-        return Math.atan( (1 / points.size()-1) * directionsSum );
+        return Math.atan((1 / points.size() - 1) * directionsSum);
     }
 
     public double calculateDirectEndToEndDistance()
@@ -120,14 +120,6 @@ public class ScrollFling extends Touch
 
         // Convert Degrees to Radians (180 degrees = PI rad)
         return (angle * Math.PI) / 180;
-    }
-
-
-    public double calculateStrokeSpeed()
-    {
-
-
-        return Math.sqrt(-1);
     }
 
     @Override

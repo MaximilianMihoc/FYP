@@ -32,7 +32,6 @@ public class Tap extends Touch
         endPoint = t.endPoint;
         scaledStartPoint = t.scaledStartPoint;
         scaledEndPoint = t.scaledEndPoint;
-        points = t.points;
         duration = t.duration;
         scaledDuration = t.scaledDuration;
     }
@@ -95,7 +94,6 @@ public class Tap extends Touch
                 ", points= " + points +
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
-                ", pressure= " + pressure +
                 ", fingerArea= " + calculateFingerArea() +
                 '}';
     }

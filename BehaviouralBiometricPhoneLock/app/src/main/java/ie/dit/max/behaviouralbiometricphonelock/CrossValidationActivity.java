@@ -481,9 +481,9 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, scrollFlingObs.getMidStrokeAreaCovered());
 
             // Angle between start and end vectors
-            tempMat.put(i, j++, scrollFlingObs.calculateAngleBetweenStartAndEndVectorsInRad());
+            tempMat.put(i, j++, scrollFlingObs.getAngleBetweenStartAndEndVectorsInRad());
 
-            tempMat.put(i, j++, scrollFlingObs.calculateDirectEndToEndDistance());
+            tempMat.put(i, j++, scrollFlingObs.getDirectEndToEndDistance());
 
             // Mean Direction
             tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());

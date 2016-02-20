@@ -148,16 +148,17 @@ public class TestBehaviouralBiometrics extends Activity implements
                             scrollFling.setEndPoint(endPoint);
                             scrollFling.initialisePoints(points);
                             scrollFling.setDuration(duration);
-                            scrollFling.setPressure(event.getPressure());
 
                             scrollFling.setMidStrokeAreaCovered(scrollFling.calculateMidStrokeAreaCovered());
                             scrollFling.setMeanDirectionOfStroke(scrollFling.calculateMeanDirectionOfStroke());
+                            scrollFling.setDirectEndToEndDistance(scrollFling.calculateDirectEndToEndDistance());
+                            scrollFling.setAngleBetweenStartAndEndVectorsInRad(scrollFling.calculateAngleBetweenStartAndEndVectorsInRad());
+
 
                             Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
                             //tempObs.setScrollFling(scrollFling);
                             tempObs.setTouch(scrollFling);
-                        }
-                        else
+                        } else
                         {
                             //touch = tap
                             Tap tap = new Tap();
@@ -165,7 +166,6 @@ public class TestBehaviouralBiometrics extends Activity implements
                             tap.setEndPoint(endPoint);
                             tap.initialisePoints(points);
                             tap.setDuration(duration);
-                            tap.setPressure(event.getPressure());
 
                             Log.d(DEBUG_TAG, "Tap: " + tap.toString());
                             //tempObs.setTap(tap);
@@ -392,7 +392,7 @@ public class TestBehaviouralBiometrics extends Activity implements
             ScrollFling scrollFlingObs = new ScrollFling(listObservations.get(i).getTouch());
             int j = 0;
 
-            tempMat.put(i, j++, scrollFlingObs.calculateMidStrokeAreaCovered());
+            tempMat.put(i, j++, scrollFlingObs.getMidStrokeAreaCovered());
             //tempMat.put(i, j++, scrollFlingObs.calculateDirectionOfEndToEndLine());
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
