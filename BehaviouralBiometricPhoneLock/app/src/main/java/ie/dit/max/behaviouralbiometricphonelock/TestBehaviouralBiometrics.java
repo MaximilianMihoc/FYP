@@ -167,6 +167,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                             tap.initialisePoints(points);
                             tap.setDuration(duration);
 
+                            tap.setMidStrokeAreaCovered(tap.calculateMidStrokeAreaCovered());
+
                             Log.d(DEBUG_TAG, "Tap: " + tap.toString());
                             //tempObs.setTap(tap);
                             tempObs.setTouch(tap);
@@ -327,7 +329,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                 }
 
                 // Tap information
-                DataSnapshot tapSnapshot = snapshot.child("scrollFling");
+                DataSnapshot tapSnapshot = snapshot.child("tap");
                 for (DataSnapshot obsSnapshot : tapSnapshot.getChildren())
                 {
                     Observation obs = obsSnapshot.getValue(Observation.class);
@@ -424,7 +426,7 @@ public class TestBehaviouralBiometrics extends Activity implements
             tempMat.put(i, j++, tapInteraction.getScaledEndPoint().x);
             tempMat.put(i, j++, tapInteraction.getScaledEndPoint().y);
             tempMat.put(i, j++, tapInteraction.getScaledDuration());
-            tempMat.put(i, j++, tapInteraction.calculateFingerArea());
+            tempMat.put(i, j++, tapInteraction.getMidStrokeAreaCovered());
 
             // linear accelerations are part of the observation - get average
             tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());

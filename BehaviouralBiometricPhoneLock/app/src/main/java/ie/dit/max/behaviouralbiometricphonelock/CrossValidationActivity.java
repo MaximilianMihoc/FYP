@@ -520,14 +520,26 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
 
             // angular Velocity are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
+            tempMat.put(i, j++, listObservations.get(i).getAverageAngularVelocity());
 
-            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
-            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);
+
+            tempMat.put(i, j++, tapInteraction.getMidStrokeAreaCovered());
+
+            //Stop x
             tempMat.put(i, j++, tapInteraction.getScaledEndPoint().x);
-            tempMat.put(i, j++, tapInteraction.getScaledEndPoint().y);
+
+            // Start x
+            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
+
+            //Duration
             tempMat.put(i, j++, tapInteraction.getScaledDuration());
-            tempMat.put(i, j++, tapInteraction.calculateFingerArea());
+
+            // Start y
+            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);
+
+            //Stop y
+            tempMat.put(i, j++, tapInteraction.getScaledEndPoint().y);
+
         }
 
         return tempMat;

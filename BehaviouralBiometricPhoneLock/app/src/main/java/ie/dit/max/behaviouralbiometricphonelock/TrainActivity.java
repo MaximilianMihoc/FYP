@@ -148,6 +148,8 @@ public class TrainActivity extends Activity implements
                             tap.initialisePoints(points);
                             tap.setDuration(duration);
 
+                            tap.setMidStrokeAreaCovered(tap.calculateMidStrokeAreaCovered());
+
                             //Log.d(DEBUG_TAG, "Tap: " + tap.toString());
                             //tempObs.setTap(tap);
                             tempObs.setTouch(tap);

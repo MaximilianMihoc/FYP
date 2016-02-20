@@ -17,12 +17,10 @@ import java.util.List;
 public class Tap extends Touch
 {
     public static final int numberOfFeatures = 8;
-    protected ArrayList<Point> scaledPoints;
 
     public Tap()
     {
         super();
-        scaledPoints = new ArrayList<>();
     }
 
     public Tap(Touch t)
@@ -34,56 +32,7 @@ public class Tap extends Touch
         scaledEndPoint = t.scaledEndPoint;
         duration = t.duration;
         scaledDuration = t.scaledDuration;
-    }
-
-    private void scalePoints(ArrayList<Point> points)
-    {
-        for(Point p : points)
-        {
-            Point scaledP = new Point();
-            double magnitudePointVector = Math.sqrt(p.x * p.x + p.y * p.y);
-            scaledP.x = p.x / magnitudePointVector;
-            scaledP.y = p.y / magnitudePointVector;
-
-            scaledPoints.add(scaledP);
-        }
-    }
-
-    public double calculateFingerArea()
-    {
-        double sum = 0;
-        double fingerArea = 0;
-
-        // calculate finger area using Shoelace formula
-
-        if (!points.isEmpty())
-        {
-            for(int i = 0; i < points.size() - 1; i++)
-            {
-                Point p = points.get(i);
-
-                if(i == 0)
-                {
-                    sum += ( (startPoint.x * p.y) - (startPoint.y * p.x) );
-                }
-                else
-                {
-                    Point nextP = points.get(i+1);
-                    sum += ( (p.x * nextP.y) - (p.y * nextP.x) );
-                }
-            }
-        }
-        sum += ( (endPoint.x * startPoint.y) - (endPoint.y * startPoint.x) );
-
-        //System.out.println("Points in Tap: " + points.toString());
-
-        if(sum < 0) sum = -1 * sum;
-        fingerArea = sum / 2;
-
-        //scale value in order to be between 0 and 1
-        if(fingerArea != 0) fingerArea = 100/fingerArea;
-
-        return fingerArea;
+        midStrokeAreaCovered = t.midStrokeAreaCovered;
     }
 
     @Override
@@ -94,7 +43,7 @@ public class Tap extends Touch
                 ", points= " + points +
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
-                ", fingerArea= " + calculateFingerArea() +
+                ", fingerArea= " + midStrokeAreaCovered +
                 '}';
     }
 }
