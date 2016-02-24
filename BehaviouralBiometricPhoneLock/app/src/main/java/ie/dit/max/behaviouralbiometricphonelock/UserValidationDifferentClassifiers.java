@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,8 +42,11 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     private SVM scrollFlingSVM;
     private SVM tapSVM;
 
-    TextView outputData;
+    TextView scrollSVMTextView;
+    TextView tapSVMTextView;
     String out = "";
+    ProgressBar progressBarScrollSVM;
+    ProgressBar progressBarTapSVM;
 
     String[] userKeys;
     String[] userNames;
@@ -64,7 +68,11 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         trainTapOnlyObservations = new ArrayList<>();
         points = new ArrayList<>();
 
-        outputData = (TextView) findViewById(R.id.predictions);
+        scrollSVMTextView = (TextView) findViewById(R.id.predictions);
+        tapSVMTextView = (TextView) findViewById(R.id.predictions2);
+
+        progressBarScrollSVM = (ProgressBar) findViewById(R.id.progressBar);
+        progressBarTapSVM = (ProgressBar) findViewById(R.id.progressBar2);
 
         spinner = (Spinner)findViewById(R.id.spinner);
         populateSpinner();
@@ -84,8 +92,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                 points = new ArrayList<>();
 
                 out = "";
-                outputData.setText("Waiting for Data");
-
+                scrollSVMTextView.setText("SVM Classifier Scroll/Fling");
+                tapSVMTextView.setText("SVM Classifier Taps");
                 /* Get user training data from Firebase */
                 getTrainDataFromUsersFirebase();
             }
@@ -236,7 +244,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     private void getTestDataFromFirebaseAndTestSystem()
     {
         //get Scroll Fling Observations from Firebase
-        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID + "/scrollFling");
+        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -244,87 +252,77 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             {
                 if (snapshot.getValue() == null)
                 {
-                    System.out.println("No Scroll Fling data available. ");
+                    System.out.println("No data available for this User ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
                     toast.show();
                 } else
                 {
-                    for (DataSnapshot obsSnapshot : snapshot.getChildren())
+                    // Scroll Fling Test Data
+                    DataSnapshot dpScroll = snapshot.child("scrollFling");
+                    for (DataSnapshot obsSnapshot : dpScroll.getChildren())
                     {
                         //System.out.println("data: " + obsSnapshot.toString());
                         Observation obs = obsSnapshot.getValue(Observation.class);
                         scrollFlingObservations.add(obs);
                     }
 
-                    Mat testDataMat = buildTrainOrTestMatForScrollFling(scrollFlingObservations);
-
-                    // create the result Mat
-                    Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
-
-                    scrollFlingSVM.predict(testDataMat, resultMat, 0);
-
-                    int counter = 0;
-                    out += "Scroll/Fling:\n";
-                    for (int i = 0; i < resultMat.rows(); i++)
+                    if(scrollFlingObservations.size() > 0)
                     {
-                        out += "\tpredicted" + i + ": " + resultMat.get(i, 0)[0];
-                        if (resultMat.get(i, 0)[0] == 1) counter++;
+                        Mat testDataMat = buildTrainOrTestMatForScrollFling(scrollFlingObservations);
+                        Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
+                        scrollFlingSVM.predict(testDataMat, resultMat, 0);
+
+                        int counter = 0;
+                        for (int i = 0; i < resultMat.rows(); i++)
+                        {
+                            if (resultMat.get(i, 0)[0] == 1) counter++;
+                        }
+                        scrollSVMTextView.setText("SVM Classifier Scroll/Fling -> " + + counter + " / " + scrollFlingObservations.size());
+                        progressBarScrollSVM.setMax(scrollFlingObservations.size());
+                        progressBarScrollSVM.setProgress(counter);
+
+                        //System.out.println("Scroll Fling Result Mat: ");
+                        //displayMatrix(resultMat);
+                    } else
+                    {
+                        System.out.println("No Scroll Fling data available. ");
+                        Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided for Scroll/Fling", Toast.LENGTH_SHORT);
+                        toast.show();
                     }
 
-                    out += "\nOwners: " + counter + " out of " + scrollFlingObservations.size();
-                    outputData.setText(out);
 
-                    //System.out.println("Scroll Fling Result Mat: ");
-                    //displayMatrix(resultMat);
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError)
-            {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
-
-        //get Tap Observations from Firebase
-        Firebase tapRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID + "/tap");
-        tapRef.addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot snapshot)
-            {
-                if (snapshot.getValue() == null)
-                {
-                    System.out.println("No Tap data available. ");
-                    Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided for Taps", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else
-                {
-                    for (DataSnapshot obsSnapshot : snapshot.getChildren())
+                    //Tap Test Data
+                    DataSnapshot dpTap = snapshot.child("tap");
+                    for (DataSnapshot obsSnapshot : dpTap.getChildren())
                     {
                         Observation obs = obsSnapshot.getValue(Observation.class);
                         tapOnlyObservations.add(obs);
                     }
 
-                    Mat testDataMat = buildTrainOrTestMatForTaps(tapOnlyObservations);
-
-                    // create the result Mat
-                    Mat resultMat = new Mat(tapOnlyObservations.size(), 1, CvType.CV_32S);
-                    tapSVM.predict(testDataMat, resultMat, 0);
-
-                    int counter = 0;
-                    out += "\n\nTaps:\n";
-                    for (int i = 0; i < resultMat.rows(); i++)
+                    if(tapOnlyObservations.size() > 0)
                     {
-                        out += "\tpredicted" + i + ": " + resultMat.get(i, 0)[0];
-                        if (resultMat.get(i, 0)[0] == 1) counter++;
+                        Mat testTapDataMat = buildTrainOrTestMatForTaps(tapOnlyObservations);
+                        Mat resultTapMat = new Mat(tapOnlyObservations.size(), 1, CvType.CV_32S);
+                        tapSVM.predict(testTapDataMat, resultTapMat, 0);
+
+                        int counter = 0;
+                        for (int i = 0; i < resultTapMat.rows(); i++)
+                        {
+                            if (resultTapMat.get(i, 0)[0] == 1) counter++;
+                        }
+                        tapSVMTextView.setText("SVM Classifier Taps -> " + + counter + " / " + tapOnlyObservations.size());
+                        progressBarTapSVM.setMax(tapOnlyObservations.size());
+                        progressBarTapSVM.setProgress(counter);
+
+                        //System.out.println("Tap Result Mat: ");
+                        //displayMatrix(resultMat);
+                    }else
+                    {
+                        System.out.println("No Tap data available. ");
+                        Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided for Taps", Toast.LENGTH_SHORT);
+                        toast.show();
                     }
 
-                    out += "\nOwners: " + counter + " out of " + tapOnlyObservations.size();
-                    outputData.setText(out);
-
-                    //System.out.println("Tap Result Mat: ");
-                    //displayMatrix(resultMat);
                 }
             }
 
