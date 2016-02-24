@@ -59,6 +59,10 @@
             android:name="ie.dit.max.foregroundAppCountriesPick.NonEuropeanCountryPick"
             android:label="@string/title_activity_non_european_country_pick" >
         </activity>
+        <activity
+            android:name=".UserValidationDifferentClassifiers"
+            android:label="@string/title_activity_user_validation_different_classifiers" >
+        </activity>
     </application>
 
 </manifest>

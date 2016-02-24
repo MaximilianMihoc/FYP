@@ -195,4 +195,7 @@
         <item>Venezuela</item>
     </string-array>
     <string name="title_activity_non_european_country_pick">NonEuropeanCountryPick</string>
+    <string name="title_activity_user_validation_different_classifiers">
+        UserValidationDifferentClassifiers
+    </string>
 </resources>

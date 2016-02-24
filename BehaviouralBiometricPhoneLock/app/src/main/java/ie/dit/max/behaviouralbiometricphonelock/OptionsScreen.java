@@ -108,7 +108,7 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(OptionsScreen.this, CrossValidationActivity.class);
+                Intent trainIntent = new Intent(OptionsScreen.this, UserValidationDifferentClassifiers.class);
                 startActivity(trainIntent);
             }
         });
