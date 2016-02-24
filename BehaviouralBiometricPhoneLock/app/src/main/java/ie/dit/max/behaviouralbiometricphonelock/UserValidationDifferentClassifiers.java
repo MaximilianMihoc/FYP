@@ -22,6 +22,7 @@ import com.firebase.client.ValueEventListener;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.ml.KNearest;
 import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
 
@@ -42,11 +43,18 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     private SVM scrollFlingSVM;
     private SVM tapSVM;
 
+    private KNearest scrollKNN;
+    private KNearest tapKNN;
+
     TextView scrollSVMTextView;
     TextView tapSVMTextView;
-    String out = "";
+    TextView scrollKNNTextView;
+    TextView tapKNNTextView;
+
     ProgressBar progressBarScrollSVM;
     ProgressBar progressBarTapSVM;
+    ProgressBar progressBarScrollKNN;
+    ProgressBar progressBarTapKNN;
 
     String[] userKeys;
     String[] userNames;
@@ -70,9 +78,13 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
         scrollSVMTextView = (TextView) findViewById(R.id.predictions);
         tapSVMTextView = (TextView) findViewById(R.id.predictions2);
+        scrollKNNTextView = (TextView) findViewById(R.id.predictions3);
+        tapKNNTextView = (TextView) findViewById(R.id.predictions4);
 
         progressBarScrollSVM = (ProgressBar) findViewById(R.id.progressBar);
         progressBarTapSVM = (ProgressBar) findViewById(R.id.progressBar2);
+        progressBarScrollKNN = (ProgressBar) findViewById(R.id.progressBar3);
+        progressBarTapKNN = (ProgressBar) findViewById(R.id.progressBar4);
 
         spinner = (Spinner)findViewById(R.id.spinner);
         populateSpinner();
@@ -91,9 +103,12 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                 trainTapOnlyObservations = new ArrayList<>();
                 points = new ArrayList<>();
 
-                out = "";
-                scrollSVMTextView.setText("SVM Classifier Scroll/Fling");
-                tapSVMTextView.setText("SVM Classifier Taps");
+                scrollSVMTextView.setText("SVM Scroll/Fling");
+                tapSVMTextView.setText("SVM Taps");
+
+                scrollKNNTextView.setText("kNNScroll/Fling");
+                tapKNNTextView.setText("kNN Taps");
+
                 /* Get user training data from Firebase */
                 getTrainDataFromUsersFirebase();
             }
@@ -205,6 +220,9 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     if (trainScrollFlingObservations.size() > 0)
                     {
                         scrollFlingSVM = createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
+
+                        scrollKNN = createAndTrainScrollFlingKNNClassifier(trainScrollFlingObservations);
+
                         // end training scrollFlingSNM
                     }else
                     {
@@ -218,6 +236,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     if (trainTapOnlyObservations.size() > 0)
                     {
                         tapSVM = createAndTrainTapSVMClassifier(trainTapOnlyObservations);
+
+                        tapKNN = createAndTrainTapKNNClassifier(trainTapOnlyObservations);
                         // end training TapSVM
                     }else
                     {
@@ -268,19 +288,27 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
                     if(scrollFlingObservations.size() > 0)
                     {
+                        //create train and test Martices
                         Mat testDataMat = buildTrainOrTestMatForScrollFling(scrollFlingObservations);
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
-                        scrollFlingSVM.predict(testDataMat, resultMat, 0);
 
-                        int counter = 0;
-                        for (int i = 0; i < resultMat.rows(); i++)
-                        {
-                            if (resultMat.get(i, 0)[0] == 1) counter++;
-                        }
+                        // SVM
+                        scrollFlingSVM.predict(testDataMat, resultMat, 0);
+                        int counter = countOwnerResults(resultMat);
                         scrollSVMTextView.setText("SVM Classifier Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
-                                + " -> " + Math.round((counter*100)/scrollFlingObservations.size()) + "%");
+                                + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
                         progressBarScrollSVM.setMax(scrollFlingObservations.size());
                         progressBarScrollSVM.setProgress(counter);
+
+                        // kNN
+                        scrollKNN.predict(testDataMat, resultMat, 0);
+                        counter = countOwnerResults(resultMat);
+                        scrollKNNTextView.setText("kNN Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
+                                + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
+                        progressBarScrollKNN.setMax(scrollFlingObservations.size());
+                        progressBarScrollKNN.setProgress(counter);
+
+
 
                         //System.out.println("Scroll Fling Result Mat: ");
                         //displayMatrix(resultMat);
@@ -304,17 +332,22 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     {
                         Mat testTapDataMat = buildTrainOrTestMatForTaps(tapOnlyObservations);
                         Mat resultTapMat = new Mat(tapOnlyObservations.size(), 1, CvType.CV_32S);
-                        tapSVM.predict(testTapDataMat, resultTapMat, 0);
 
-                        int counter = 0;
-                        for (int i = 0; i < resultTapMat.rows(); i++)
-                        {
-                            if (resultTapMat.get(i, 0)[0] == 1) counter++;
-                        }
+                        // SVM
+                        tapSVM.predict(testTapDataMat, resultTapMat, 0);
+                        int counter = countOwnerResults(resultTapMat);
                         tapSVMTextView.setText("SVM Classifier Taps -> " + counter + " / " + tapOnlyObservations.size()
                                 + " -> " + Math.round((counter*100)/tapOnlyObservations.size()) + "%");
                         progressBarTapSVM.setMax(tapOnlyObservations.size());
                         progressBarTapSVM.setProgress(counter);
+
+                        //kNN
+                        tapKNN = createAndTrainTapKNNClassifier(tapOnlyObservations);
+                        counter = countOwnerResults(resultTapMat);
+                        tapKNNTextView.setText("kNN Taps -> " + counter + " / " + tapOnlyObservations.size()
+                                + " -> " + Math.round((counter * 100) / tapOnlyObservations.size()) + "%");
+                        progressBarTapKNN.setMax(tapOnlyObservations.size());
+                        progressBarTapKNN.setProgress(counter);
 
                         //System.out.println("Tap Result Mat: ");
                         //displayMatrix(resultMat);
@@ -334,6 +367,44 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
+    }
+
+    private int countOwnerResults(Mat mat)
+    {
+        int counter = 0;
+        for (int i = 0; i < mat.rows(); i++)
+        {
+            if (mat.get(i, 0)[0] == 1) counter++;
+        }
+
+        return counter;
+    }
+
+
+    private KNearest createAndTrainScrollFlingKNNClassifier(ArrayList<Observation> arrayListObservations)
+    {
+        KNearest kNN = KNearest.create();
+        System.out.println("K is: " + kNN.getDefaultK());
+
+        Mat kNNTrainMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
+        Mat kNNLabelsMat = buildLabelsMat(arrayListObservations);
+
+        kNN.train(kNNTrainMat, Ml.ROW_SAMPLE, kNNLabelsMat);
+
+        return kNN;
+    }
+
+    private KNearest createAndTrainTapKNNClassifier(ArrayList<Observation> arrayListObservations)
+    {
+        KNearest kNN = KNearest.create();
+        System.out.println("K is: " + kNN.getDefaultK());
+
+        Mat kNNTrainMat = buildTrainOrTestMatForTaps(arrayListObservations);
+        Mat kNNLabelsMat = buildLabelsMat(arrayListObservations);
+
+        kNN.train(kNNTrainMat, Ml.ROW_SAMPLE, kNNLabelsMat);
+
+        return kNN;
     }
 
     private SVM createAndTrainScrollFlingSVMClassifier(ArrayList<Observation> arrayListObservations)
