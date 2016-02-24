@@ -166,7 +166,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                if(i < 20) trainScrollFlingObservations.add(obs);
+                                if(i < 10) trainScrollFlingObservations.add(obs);
                                 i++;
                             }
 
@@ -177,7 +177,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                if(i < 20) trainTapOnlyObservations.add(obs);
+                                if(i < 10) trainTapOnlyObservations.add(obs);
                                 i++;
                             }
                         }
@@ -277,7 +277,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         {
                             if (resultMat.get(i, 0)[0] == 1) counter++;
                         }
-                        scrollSVMTextView.setText("SVM Classifier Scroll/Fling -> " + + counter + " / " + scrollFlingObservations.size());
+                        scrollSVMTextView.setText("SVM Classifier Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
+                                + " -> " + Math.round((counter*100)/scrollFlingObservations.size()) + "%");
                         progressBarScrollSVM.setMax(scrollFlingObservations.size());
                         progressBarScrollSVM.setProgress(counter);
 
@@ -310,7 +311,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         {
                             if (resultTapMat.get(i, 0)[0] == 1) counter++;
                         }
-                        tapSVMTextView.setText("SVM Classifier Taps -> " + + counter + " / " + tapOnlyObservations.size());
+                        tapSVMTextView.setText("SVM Classifier Taps -> " + counter + " / " + tapOnlyObservations.size()
+                                + " -> " + Math.round((counter*100)/tapOnlyObservations.size()) + "%");
                         progressBarTapSVM.setMax(tapOnlyObservations.size());
                         progressBarTapSVM.setProgress(counter);
 
@@ -343,8 +345,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
         //scrollFlingSVM.setType(SVM.C_SVC);
         tempSVM.setType(SVM.NU_SVC);
-        tempSVM.setC(1/Math.pow(2,7));
-        tempSVM.setNu(1/Math.pow(2,7));
+        tempSVM.setC(1/Math.pow(2,12));
+        tempSVM.setNu(1/Math.pow(2,13));
 
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
