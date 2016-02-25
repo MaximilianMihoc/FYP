@@ -295,7 +295,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         // SVM
                         scrollFlingSVM.predict(testDataMat, resultMat, 0);
                         int counter = countOwnerResults(resultMat);
-                        scrollSVMTextView.setText("SVM Classifier Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
+                        scrollSVMTextView.setText("SVM Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
                         progressBarScrollSVM.setMax(scrollFlingObservations.size());
                         progressBarScrollSVM.setProgress(counter);
@@ -336,13 +336,14 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         // SVM
                         tapSVM.predict(testTapDataMat, resultTapMat, 0);
                         int counter = countOwnerResults(resultTapMat);
-                        tapSVMTextView.setText("SVM Classifier Taps -> " + counter + " / " + tapOnlyObservations.size()
+                        tapSVMTextView.setText("SVM Taps -> " + counter + " / " + tapOnlyObservations.size()
                                 + " -> " + Math.round((counter*100)/tapOnlyObservations.size()) + "%");
                         progressBarTapSVM.setMax(tapOnlyObservations.size());
                         progressBarTapSVM.setProgress(counter);
 
                         //kNN
                         tapKNN = createAndTrainTapKNNClassifier(tapOnlyObservations);
+                        tapKNN.predict(testTapDataMat, resultTapMat, 0);
                         counter = countOwnerResults(resultTapMat);
                         tapKNNTextView.setText("kNN Taps -> " + counter + " / " + tapOnlyObservations.size()
                                 + " -> " + Math.round((counter * 100) / tapOnlyObservations.size()) + "%");
