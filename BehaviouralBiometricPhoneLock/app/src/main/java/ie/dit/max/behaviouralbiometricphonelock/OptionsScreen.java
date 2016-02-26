@@ -185,13 +185,7 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(saveDataCheckBox.isChecked())
-                {
-                    saveData = true;
-                }else
-                {
-                    saveData = false;
-                }
+                saveData = saveDataCheckBox.isChecked();
             }
         });
     }
