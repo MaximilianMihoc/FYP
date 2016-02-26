@@ -59,8 +59,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     ProgressBar progressBarTapSVM;
     ProgressBar progressBarScrollKNN;
     ProgressBar progressBarTapKNN;
-    ProgressBar progressBarscrollRTree;
-    ProgressBar progressBartapRTree;
+    ProgressBar progressBarScrollRTree;
+    ProgressBar progressBarTapRTree;
 
     String[] userKeys;
     String[] userNames;
@@ -93,8 +93,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         progressBarTapSVM = (ProgressBar) findViewById(R.id.progressBar2);
         progressBarScrollKNN = (ProgressBar) findViewById(R.id.progressBar3);
         progressBarTapKNN = (ProgressBar) findViewById(R.id.progressBar4);
-        progressBarscrollRTree = (ProgressBar) findViewById(R.id.progressBar5);
-        progressBartapRTree = (ProgressBar) findViewById(R.id.progressBar6);
+        progressBarScrollRTree = (ProgressBar) findViewById(R.id.progressBar5);
+        progressBarTapRTree = (ProgressBar) findViewById(R.id.progressBar6);
 
         spinner = (Spinner)findViewById(R.id.spinner);
         populateSpinner();
@@ -329,8 +329,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         counter = countOwnerResults(resultMat);
                         scrollRTreeTextView.setText("rTrees Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
-                        progressBarscrollRTree.setMax(scrollFlingObservations.size());
-                        progressBarscrollRTree.setProgress(counter);
+                        progressBarScrollRTree.setMax(scrollFlingObservations.size());
+                        progressBarScrollRTree.setProgress(counter);
 
                     } else
                     {
@@ -374,8 +374,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         counter = countOwnerResults(resultTapMat);
                         tapRTreeTextView.setText("rTrees Taps -> " + counter + " / " + tapOnlyObservations.size()
                                 + " -> " + Math.round((counter * 100) / tapOnlyObservations.size()) + "%");
-                        progressBartapRTree.setMax(tapOnlyObservations.size());
-                        progressBartapRTree.setProgress(counter);
+                        progressBarTapRTree.setMax(tapOnlyObservations.size());
+                        progressBarTapRTree.setProgress(counter);
 
                     }else
                     {
