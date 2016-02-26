@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -24,13 +25,15 @@ import ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScree
 
 public class OptionsScreen extends AppCompatActivity
 {
+    public static boolean saveData;
+
     Button goToStackOverflow;
     Button goToTrainFirstActivity;
     Button goToCrossValidation;
     Button goToCountryListGame;
     Button goToSettings;
     Button logOutButton;
-
+    CheckBox saveDataCheckBox;
     ProgressBar loadingPanel;
 
     Firebase ref;
@@ -58,6 +61,8 @@ public class OptionsScreen extends AppCompatActivity
         goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
         goToSettings = (Button) findViewById(R.id.settingsButton);
         logOutButton = (Button) findViewById(R.id.logOutButton);
+        saveDataCheckBox = (CheckBox) findViewById(R.id.saveDataCheckBox);
+        saveDataCheckBox.setChecked(true);
 
         goToTrainFirstActivity.setOnClickListener(new View.OnClickListener()
         {
@@ -171,6 +176,22 @@ public class OptionsScreen extends AppCompatActivity
                 ref.unauth();
                 Intent trainIntent = new Intent(OptionsScreen.this, LogIn.class);
                 startActivity(trainIntent);
+            }
+        });
+
+        saveData = true;
+        saveDataCheckBox.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if(saveDataCheckBox.isChecked())
+                {
+                    saveData = true;
+                }else
+                {
+                    saveData = false;
+                }
             }
         });
     }

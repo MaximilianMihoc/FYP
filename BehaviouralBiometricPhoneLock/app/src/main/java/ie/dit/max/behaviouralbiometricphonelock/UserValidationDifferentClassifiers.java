@@ -458,7 +458,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     {
         SVM tempSVM = SVM.create();
         //initialise scrollFlingSVM
-        tempSVM = SVM.create();
         tempSVM.setKernel(SVM.RBF);
 
         //scrollFlingSVM.setType(SVM.C_SVC);
@@ -481,7 +480,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     {
         SVM tempSVM = SVM.create();
         //initialise scrollFlingSVM
-        tempSVM = SVM.create();
         tempSVM.setKernel(SVM.RBF);
         //tapSVM.setType(SVM.C_SVC);
         tempSVM.setType(SVM.NU_SVC);
