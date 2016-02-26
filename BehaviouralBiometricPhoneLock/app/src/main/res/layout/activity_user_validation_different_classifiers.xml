@@ -22,12 +22,18 @@
                 android:id="@+id/spinner"
                 android:layout_alignParentTop="true"/>
 
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="30dp"
+                android:layout_below="@+id/spinner"
+                android:id="@+id/view0"/>
+
             <TextView
                 android:text="SVM Scroll/Fling"
                 android:id="@+id/predictions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/spinner"
+                android:layout_below="@+id/view0"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"/>
 
@@ -60,7 +66,7 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="20dp"
+                android:layout_height="30dp"
                 android:layout_below="@+id/progressBar2"
                 android:id="@+id/view1"/>
 
@@ -102,7 +108,7 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="20dp"
+                android:layout_height="30dp"
                 android:layout_below="@+id/progressBar4"
                 android:id="@+id/view2"/>
 
