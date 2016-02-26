@@ -45,22 +45,22 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     private SVM tapSVM;
     private KNearest scrollKNN;
     private KNearest tapKNN;
-    private RTrees scrollrTree;
-    private RTrees taprTree;
+    private RTrees scrollRTree;
+    private RTrees tapRTree;
 
     TextView scrollSVMTextView;
     TextView tapSVMTextView;
     TextView scrollKNNTextView;
     TextView tapKNNTextView;
-    TextView scrollrTreeTextView;
-    TextView taprTreeTextView;
+    TextView scrollRTreeTextView;
+    TextView tapRTreeTextView;
 
     ProgressBar progressBarScrollSVM;
     ProgressBar progressBarTapSVM;
     ProgressBar progressBarScrollKNN;
     ProgressBar progressBarTapKNN;
-    ProgressBar progressBarScrollrTree;
-    ProgressBar progressBarTaprTree;
+    ProgressBar progressBarscrollRTree;
+    ProgressBar progressBartapRTree;
 
     String[] userKeys;
     String[] userNames;
@@ -86,15 +86,15 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         tapSVMTextView = (TextView) findViewById(R.id.predictions2);
         scrollKNNTextView = (TextView) findViewById(R.id.predictions3);
         tapKNNTextView = (TextView) findViewById(R.id.predictions4);
-        scrollrTreeTextView = (TextView) findViewById(R.id.predictions5);
-        taprTreeTextView = (TextView) findViewById(R.id.predictions6);
+        scrollRTreeTextView = (TextView) findViewById(R.id.predictions5);
+        tapRTreeTextView = (TextView) findViewById(R.id.predictions6);
 
         progressBarScrollSVM = (ProgressBar) findViewById(R.id.progressBar);
         progressBarTapSVM = (ProgressBar) findViewById(R.id.progressBar2);
         progressBarScrollKNN = (ProgressBar) findViewById(R.id.progressBar3);
         progressBarTapKNN = (ProgressBar) findViewById(R.id.progressBar4);
-        progressBarScrollrTree = (ProgressBar) findViewById(R.id.progressBar5);
-        progressBarTaprTree = (ProgressBar) findViewById(R.id.progressBar6);
+        progressBarscrollRTree = (ProgressBar) findViewById(R.id.progressBar5);
+        progressBartapRTree = (ProgressBar) findViewById(R.id.progressBar6);
 
         spinner = (Spinner)findViewById(R.id.spinner);
         populateSpinner();
@@ -119,8 +119,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                 scrollKNNTextView.setText("kNN Scroll/Fling");
                 tapKNNTextView.setText("kNN Taps");
 
-                scrollrTreeTextView.setText("rTree Scroll/Fling");
-                taprTreeTextView.setText("rTree Taps");
+                scrollRTreeTextView.setText("rTree Scroll/Fling");
+                tapRTreeTextView.setText("rTree Taps");
 
                 /* Get user training data from Firebase */
                 getTrainDataFromUsersFirebase();
@@ -237,7 +237,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
                         scrollKNN = createAndTrainScrollFlingKNNClassifier(trainScrollFlingObservations);
 
-                        scrollrTree = createAndTrainScrollFlingrTreeClassifier(trainScrollFlingObservations);
+                        scrollRTree = createAndTrainScrollFlingrTreeClassifier(trainScrollFlingObservations);
 
                     }else
                     {
@@ -254,7 +254,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
                         tapKNN = createAndTrainTapKNNClassifier(trainTapOnlyObservations);
 
-                        taprTree = createAndTrainTaprTreeClassifier(trainTapOnlyObservations);
+                        tapRTree = createAndTraintapRTreeClassifier(trainTapOnlyObservations);
                     }else
                     {
                         System.out.println("No Tap data available. ");
@@ -325,12 +325,12 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         progressBarScrollKNN.setProgress(counter);
 
                         // rTrees
-                        scrollrTree.predict(testDataMat, resultMat, 0);
+                        scrollRTree.predict(testDataMat, resultMat, 0);
                         counter = countOwnerResults(resultMat);
-                        scrollrTreeTextView.setText("rTrees Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
+                        scrollRTreeTextView.setText("rTrees Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
-                        progressBarScrollrTree.setMax(scrollFlingObservations.size());
-                        progressBarScrollrTree.setProgress(counter);
+                        progressBarscrollRTree.setMax(scrollFlingObservations.size());
+                        progressBarscrollRTree.setProgress(counter);
 
                     } else
                     {
@@ -370,12 +370,12 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         progressBarTapKNN.setProgress(counter);
 
                         // rTrees
-                        taprTree.predict(testTapDataMat, resultTapMat, 0);
+                        tapRTree.predict(testTapDataMat, resultTapMat, 0);
                         counter = countOwnerResults(resultTapMat);
-                        taprTreeTextView.setText("rTrees Taps -> " + counter + " / " + tapOnlyObservations.size()
+                        tapRTreeTextView.setText("rTrees Taps -> " + counter + " / " + tapOnlyObservations.size()
                                 + " -> " + Math.round((counter * 100) / tapOnlyObservations.size()) + "%");
-                        progressBarTaprTree.setMax(tapOnlyObservations.size());
-                        progressBarTaprTree.setProgress(counter);
+                        progressBartapRTree.setMax(tapOnlyObservations.size());
+                        progressBartapRTree.setProgress(counter);
 
                     }else
                     {
@@ -417,7 +417,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         return rTree;
     }
 
-    private RTrees createAndTrainTaprTreeClassifier(ArrayList<Observation> arrayListObservations)
+    private RTrees createAndTraintapRTreeClassifier(ArrayList<Observation> arrayListObservations)
     {
         RTrees rTree = RTrees.create();
         Mat rTreeTrainMat = buildTrainOrTestMatForTaps(arrayListObservations);
