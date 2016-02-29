@@ -205,12 +205,12 @@ public class CrossValidationActivity extends Activity
                     //scrollFlingSVM.setC(1/Math.pow(2,4));
                     //scrollFlingSVM.setC(1/Math.pow(2,5));
                     //scrollFlingSVM.setC(1/Math.pow(2,6));
-                    scrollFlingSVM.setC(1/Math.pow(2,7));
+                    //scrollFlingSVM.setC(1/Math.pow(2,7));
                     //scrollFlingSVM.setC(1/Math.pow(2,8));
                     //scrollFlingSVM.setC(1/Math.pow(2,9));
                     //scrollFlingSVM.setC(1/Math.pow(2,10));
                     //scrollFlingSVM.setC(1/Math.pow(2,11));
-                    //scrollFlingSVM.setC(1/Math.pow(2,12));
+                    scrollFlingSVM.setC(1/Math.pow(2,12));
                     //scrollFlingSVM.setC(1/Math.pow(2,12.5));
                     //scrollFlingSVM.setC(1/Math.pow(2,13));
 
@@ -220,11 +220,12 @@ public class CrossValidationActivity extends Activity
                     //scrollFlingSVM.setNu(1/Math.pow(2,2));
                     //scrollFlingSVM.setNu(1/Math.pow(2,5));
                     //scrollFlingSVM.setNu(1/Math.pow(2,6));
-                    scrollFlingSVM.setNu(1/Math.pow(2,7));
+                    //scrollFlingSVM.setNu(1/Math.pow(2,7));
                     //scrollFlingSVM.setNu(1/Math.pow(2,8));
                     //scrollFlingSVM.setNu(1/Math.pow(2,9));
                     //scrollFlingSVM.setNu(1/Math.pow(2,10));
                     //scrollFlingSVM.setNu(1/Math.pow(2,11));
+                    scrollFlingSVM.setNu(1/Math.pow(2,13));
 
                     Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
                     Mat labelsScrollFlingMat = buildLabelsMat(trainScrollFlingObservations);
@@ -342,7 +343,7 @@ public class CrossValidationActivity extends Activity
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                if(i < 20) trainScrollFlingObservations.add(obs);
+                                if(i < 10) trainScrollFlingObservations.add(obs);
                                 i++;
                             }
 
@@ -353,7 +354,8 @@ public class CrossValidationActivity extends Activity
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                if(i < 20) trainTapOnlyObservations.add(obs);
+                                //if(i < 20)
+                                    trainTapOnlyObservations.add(obs);
                                 i++;
                             }
                         }

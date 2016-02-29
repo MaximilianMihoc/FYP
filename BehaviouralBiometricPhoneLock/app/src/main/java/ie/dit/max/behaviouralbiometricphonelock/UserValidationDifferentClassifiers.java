@@ -317,6 +317,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         progressBarScrollSVM.setProgress(counter);
 
                         // kNN
+                        resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
                         scrollKNN.predict(testDataMat, resultMat, 0);
                         counter = countOwnerResults(resultMat);
                         scrollKNNTextView.setText("kNN Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
@@ -325,6 +326,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         progressBarScrollKNN.setProgress(counter);
 
                         // rTrees
+                        resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
                         scrollRTree.predict(testDataMat, resultMat, 0);
                         counter = countOwnerResults(resultMat);
                         scrollRTreeTextView.setText("rTrees Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
@@ -460,10 +462,42 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         //initialise scrollFlingSVM
         tempSVM.setKernel(SVM.RBF);
 
-        //scrollFlingSVM.setType(SVM.C_SVC);
+        //tempSVM.setType(SVM.C_SVC);
         tempSVM.setType(SVM.NU_SVC);
-        tempSVM.setC(1/Math.pow(2,12));
-        tempSVM.setNu(1/Math.pow(2,13));
+
+        //tempSVM.setP(1);
+        //tempSVM.setC(1/Math.pow(2,1));
+        //tempSVM.setC(1/Math.pow(2,2));
+        //tempSVM.setC(1/Math.pow(2,3));
+        //tempSVM.setC(1/Math.pow(2,4));
+        //tempSVM.setC(1/Math.pow(2,5));
+        //tempSVM.setC(1/Math.pow(2,6));
+        //tempSVM.setC(1/Math.pow(2,7));
+        //tempSVM.setC(1/Math.pow(2,8));
+        //tempSVM.setC(1/Math.pow(2,9));
+        //tempSVM.setC(1/Math.pow(2,10));
+        //tempSVM.setC(1/Math.pow(2,11));
+        //tempSVM.setC(1/Math.pow(2,12));
+        //tempSVM.setC(1/Math.pow(2,12.5));
+        //tempSVM.setC(1/Math.pow(2,13));
+
+        //tempSVM.setNu(0.99);
+        //tempSVM.setNu(1/Math.pow(2,1.1));
+        //tempSVM.setNu(1/Math.pow(2,1.5));
+        //tempSVM.setNu(1/Math.pow(2,1.7));
+        //tempSVM.setNu(1/Math.pow(2,1.9));
+        //tempSVM.setNu(1/Math.pow(2,2));
+        //tempSVM.setNu(1/Math.pow(2,5));
+        //tempSVM.setNu(1/Math.pow(2,6));
+        //tempSVM.setNu(1/Math.pow(2,7));
+        //tempSVM.setNu(1/Math.pow(2,8));
+        //tempSVM.setNu(1/Math.pow(2,9));
+        //tempSVM.setNu(1/Math.pow(2,10));
+        //tempSVM.setNu(1/Math.pow(2,11));
+        //tempSVM.setNu(1/Math.pow(2,13));
+        tempSVM.setNu(1/Math.pow(2,18.1));
+        //tempSVM.setNu(1/Math.pow(2,18.5));
+        //tempSVM.setNu(1/Math.pow(2,28));
 
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
