@@ -88,6 +88,20 @@
         android:layout_below="@+id/logOutButton"
         android:layout_marginTop="15dp"/>
 
+    <TextView
+        android:id="@+id/changePassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ChangePassword"
+        android:textColor="@color/green"
+        android:textSize="15sp"
+        android:layout_below="@id/logOutButton"
+        android:layout_alignEnd="@id/logOutButton"
+        android:layout_marginTop="15dp"
+        android:selectAllOnFocus="true"
+        android:linksClickable="true"
+        android:clickable="true"/>
+
         <ProgressBar
             android:id="@+id/loadingPanel"
             android:layout_width="wrap_content"

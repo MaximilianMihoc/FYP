@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
@@ -35,6 +36,7 @@ public class OptionsScreen extends AppCompatActivity
     Button logOutButton;
     CheckBox saveDataCheckBox;
     ProgressBar loadingPanel;
+    TextView changePassword;
 
     Firebase ref;
     SharedPreferences sharedpreferences;
@@ -61,6 +63,7 @@ public class OptionsScreen extends AppCompatActivity
         goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
         goToSettings = (Button) findViewById(R.id.settingsButton);
         logOutButton = (Button) findViewById(R.id.logOutButton);
+        changePassword = (TextView) findViewById(R.id.changePassword);
         saveDataCheckBox = (CheckBox) findViewById(R.id.saveDataCheckBox);
         saveDataCheckBox.setChecked(true);
 
@@ -186,6 +189,16 @@ public class OptionsScreen extends AppCompatActivity
             public void onClick(View v)
             {
                 saveData = saveDataCheckBox.isChecked();
+            }
+        });
+
+        changePassword.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
+                startActivity(trainIntent);
             }
         });
     }

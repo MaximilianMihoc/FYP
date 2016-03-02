@@ -63,6 +63,10 @@
             android:name=".UserValidationDifferentClassifiers"
             android:label="@string/title_activity_user_validation_different_classifiers" >
         </activity>
+        <activity
+            android:name=".ChangePassword"
+            android:label="@string/title_activity_change_password" >
+        </activity>
     </application>
 
 </manifest>

@@ -71,7 +71,8 @@ public class LogIn extends Activity
 
                                 SharedPreferences.Editor editor = sharedpreferences.edit();
                                 editor.putString("UserID", usrObj.getUserID());
-                                editor.commit();
+                                editor.putString("UserEmail", usrObj.getEmail());
+                                editor.apply();
 
                                 Intent trainIntent = new Intent(LogIn.this, OptionsScreen.class);
                                 startActivity(trainIntent);

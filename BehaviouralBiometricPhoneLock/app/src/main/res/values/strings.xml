@@ -198,4 +198,5 @@
     <string name="title_activity_user_validation_different_classifiers">
         UserValidationDifferentClassifiers
     </string>
+    <string name="title_activity_change_password">ChangePassword</string>
 </resources>
