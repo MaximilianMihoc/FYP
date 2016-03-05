@@ -10,23 +10,52 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:id="@+id/scrollView">
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
-
-            <Spinner
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Test Data"
+                android:id="@+id/textView2"
+                android:paddingStart="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignStart="@+id/spinner2"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Train Data"
+                android:paddingStart="30dp"
+                android:id="@+id/textView3"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignEnd="@+id/spinner"/>
+
+            <Spinner
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
                 android:id="@+id/spinner"
-                android:layout_alignParentTop="true"/>
+                android:layout_below="@id/textView2"/>
+
+            <Spinner
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner2"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@+id/spinner"
+                android:layout_below="@+id/textView3"/>
 
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="30dp"
+                android:id="@+id/view0"
                 android:layout_below="@+id/spinner"
-                android:id="@+id/view0"/>
+                android:layout_alignParentStart="true"/>
 
             <TextView
                 android:text="SVM Scroll/Fling"
@@ -150,5 +179,14 @@
 
         </RelativeLayout>
     </ScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/textView"
+        android:layout_above="@+id/scrollView"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/scrollView"/>
 
 </RelativeLayout>

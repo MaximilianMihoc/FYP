@@ -33,8 +33,10 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 {
     Firebase ref;
     private static final String DEBUG_TAG = "Classifiers";
-    Spinner spinner;
-    ArrayList<Point> points = new ArrayList<>();
+
+    Spinner trainSpinner;
+    Spinner testSpinner;
+
     ArrayList<Observation> trainScrollFlingObservations;
     ArrayList<Observation> scrollFlingObservations;
     ArrayList<Observation> tapOnlyObservations;
@@ -80,7 +82,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         trainScrollFlingObservations = new ArrayList<>();
         tapOnlyObservations = new ArrayList<>();
         trainTapOnlyObservations = new ArrayList<>();
-        points = new ArrayList<>();
 
         scrollSVMTextView = (TextView) findViewById(R.id.predictions);
         tapSVMTextView = (TextView) findViewById(R.id.predictions2);
@@ -96,22 +97,23 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         progressBarScrollRTree = (ProgressBar) findViewById(R.id.progressBar5);
         progressBarTapRTree = (ProgressBar) findViewById(R.id.progressBar6);
 
-        spinner = (Spinner)findViewById(R.id.spinner);
-        populateSpinner();
+        trainSpinner = (Spinner)findViewById(R.id.spinner);
+        testSpinner = (Spinner)findViewById(R.id.spinner2);
+        populateSpinners();
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        trainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
                 userID = userKeys[position];
+                testSpinner.setSelection(position);
 
                 scrollFlingObservations = new ArrayList<>();
                 trainScrollFlingObservations = new ArrayList<>();
                 tapOnlyObservations = new ArrayList<>();
                 trainTapOnlyObservations = new ArrayList<>();
-                points = new ArrayList<>();
 
                 scrollSVMTextView.setText("SVM Scroll/Fling");
                 tapSVMTextView.setText("SVM Taps");
@@ -132,9 +134,45 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
             }
         });
+
+        testSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                String newUserID = userKeys[position];
+
+                // if the same user is selected in the test spinner, Do nothing
+                // if another user is selected, recalculate percentages
+                if(!userID.equals(newUserID))
+                {
+                    scrollFlingObservations = new ArrayList<>();
+                    tapOnlyObservations = new ArrayList<>();
+
+                    scrollSVMTextView.setText("SVM Scroll/Fling");
+                    tapSVMTextView.setText("SVM Taps");
+
+                    scrollKNNTextView.setText("kNN Scroll/Fling");
+                    tapKNNTextView.setText("kNN Taps");
+
+                    scrollRTreeTextView.setText("rTree Scroll/Fling");
+                    tapRTreeTextView.setText("rTree Taps");
+
+                    /* Get user testing data from Firebase and compare it with other user train data*/
+                    getTestDataFromFirebaseAndTestSystem(newUserID);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
     }
 
-    private void populateSpinner()
+    private void populateSpinners()
     {
         Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users");
 
@@ -153,8 +191,9 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     userNames[i++] = u.getUserName();
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, userNames);
-                spinner.setAdapter(adapter);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, userNames);
+                trainSpinner.setAdapter(adapter);
+                testSpinner.setAdapter(adapter);
 
             }
 
@@ -264,7 +303,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     }
 
                     /* Get test data from firebase and return predictions. */
-                    getTestDataFromFirebaseAndTestSystem();
+                    getTestDataFromFirebaseAndTestSystem(userID);
 
                 }
             }
@@ -277,7 +316,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         });
     }
 
-    private void getTestDataFromFirebaseAndTestSystem()
+    private void getTestDataFromFirebaseAndTestSystem(String userID)
     {
         //get Scroll Fling Observations from Firebase
         Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
