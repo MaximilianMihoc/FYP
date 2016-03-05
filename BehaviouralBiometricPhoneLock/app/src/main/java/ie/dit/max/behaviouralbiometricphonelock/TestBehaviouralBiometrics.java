@@ -37,6 +37,10 @@ public class TestBehaviouralBiometrics extends Activity implements
     Firebase ref;
 
     private static final String DEBUG_TAG = "Test Activity";
+    private final float threshold1 = 30;
+    private final float threshold2 = 50;
+    private final float threshold3 = 70;
+
     private GestureDetectorCompat mDetector;
 
     //to be used for assigning listener to different views.
@@ -196,6 +200,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                                     Toast toast = Toast.makeText(getApplicationContext(), "SVM Taps -> " + counter + " / " + tapOnlyObservations.size()
                                             + " -> " + Math.round((counter * 100) / tapOnlyObservations.size()) + "%", Toast.LENGTH_SHORT);
                                     toast.show();
+
+
                                 }
                             }
 
@@ -215,7 +221,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             // add all observations to a list.
                             scrollFlingObservations.add(tempObs);
 
-                            if(scrollFlingObservations.size() % 6 == 0)
+                            //if(scrollFlingObservations.size() % 6 == 0)
                             {
                                 Mat testDataMat = buildTrainOrTestMatForScrollFling(scrollFlingObservations);
 
@@ -236,6 +242,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                                     Toast toast = Toast.makeText(getApplicationContext(), "SVM Scrolls -> " + counter + " / " + scrollFlingObservations.size()
                                             + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%", Toast.LENGTH_SHORT);
                                     toast.show();
+
+                                    //scrollFlingSVM.
 
                                     /*if(tempObs.getJudgement() == 1)
                                     {

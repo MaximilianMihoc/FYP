@@ -1,6 +1,7 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -78,6 +79,9 @@ public class ChangePassword extends AppCompatActivity
                                 public void onSuccess()
                                 {
                                     Toast.makeText(getApplicationContext(), "Password successfully changed", Toast.LENGTH_SHORT).show();
+
+                                    Intent trainIntent = new Intent(ChangePassword.this, OptionsScreen.class);
+                                    startActivity(trainIntent);
                                 }
 
                                 @Override

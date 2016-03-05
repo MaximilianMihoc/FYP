@@ -316,6 +316,10 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         progressBarScrollSVM.setMax(scrollFlingObservations.size());
                         progressBarScrollSVM.setProgress(counter);
 
+                        System.out.println("Result Mat:");
+                        displayMatrix(resultMat);
+                        //System.out.println("TermCriteria: " + scrollFlingSVM.get);
+
                         // kNN
                         resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
                         scrollKNN.predict(testDataMat, resultMat, 0);
