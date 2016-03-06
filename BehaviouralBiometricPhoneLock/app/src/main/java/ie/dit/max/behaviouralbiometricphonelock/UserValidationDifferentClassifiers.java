@@ -1,6 +1,7 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -64,6 +66,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     ProgressBar progressBarScrollRTree;
     ProgressBar progressBarTapRTree;
 
+    Button goToAllUsersValidationScreen;
+
     String[] userKeys;
     String[] userNames;
 
@@ -96,6 +100,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         progressBarTapKNN = (ProgressBar) findViewById(R.id.progressBar4);
         progressBarScrollRTree = (ProgressBar) findViewById(R.id.progressBar5);
         progressBarTapRTree = (ProgressBar) findViewById(R.id.progressBar6);
+
+        goToAllUsersValidationScreen = (Button) findViewById(R.id.goToAllUsersValidationScreen);
 
         trainSpinner = (Spinner)findViewById(R.id.spinner);
         testSpinner = (Spinner)findViewById(R.id.spinner2);
@@ -168,6 +174,16 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             public void onNothingSelected(AdapterView<?> parent)
             {
 
+            }
+        });
+
+        goToAllUsersValidationScreen.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(UserValidationDifferentClassifiers.this, AllUsersValidation.class);
+                startActivity(intent);
             }
         });
     }
@@ -348,7 +364,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
 
                         // SVM
-                        scrollFlingSVM.predict(testDataMat, resultMat, 0);
+                        scrollFlingSVM.predict(testDataMat, resultMat, 1);
                         int counter = countOwnerResults(resultMat);
                         scrollSVMTextView.setText("SVM Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
@@ -445,7 +461,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         int counter = 0;
         for (int i = 0; i < mat.rows(); i++)
         {
-            if (mat.get(i, 0)[0] == 1) counter++;
+            if (mat.get(i, 0)[0] < 0) counter++;
         }
 
         return counter;

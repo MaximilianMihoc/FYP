@@ -67,6 +67,10 @@
             android:name=".ChangePassword"
             android:label="@string/title_activity_change_password" >
         </activity>
+        <activity
+            android:name=".AllUsersValidation"
+            android:label="@string/title_activity_all_users_validation" >
+        </activity>
     </application>
 
 </manifest>
