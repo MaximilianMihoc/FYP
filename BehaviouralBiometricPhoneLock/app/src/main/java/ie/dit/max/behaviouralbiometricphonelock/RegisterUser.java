@@ -117,6 +117,7 @@ public class RegisterUser extends AppCompatActivity
 
                                             SharedPreferences.Editor editor = sharedpreferences.edit();
                                             editor.putString("UserID", usrObj.getUserID());
+                                            editor.putString("UserEmail", usrObj.getEmail());
                                             editor.commit();
 
                                             Intent trainIntent = new Intent(RegisterUser.this, OptionsScreen.class);

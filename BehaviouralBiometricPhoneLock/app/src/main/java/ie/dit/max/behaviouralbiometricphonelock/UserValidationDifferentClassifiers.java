@@ -71,6 +71,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     String[] userKeys;
     String[] userNames;
 
+    SharedPreferences sharedpreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -79,7 +81,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         Firebase.setAndroidContext(this);
         ref = new Firebase("https://fyp-max.firebaseio.com");
 
-        SharedPreferences sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
 
         scrollFlingObservations = new ArrayList<>();
@@ -183,6 +185,12 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             public void onClick(View v)
             {
                 Intent intent = new Intent(UserValidationDifferentClassifiers.this, AllUsersValidation.class);
+
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString("ValidateDataForUserID", userKeys[trainSpinner.getSelectedItemPosition()]);
+                editor.putString("ValidateDataForUserName", userNames[trainSpinner.getSelectedItemPosition()]);
+                editor.apply();
+                
                 startActivity(intent);
             }
         });
@@ -249,7 +257,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                if(i < 10) trainScrollFlingObservations.add(obs);
+                                if(i < 25) trainScrollFlingObservations.add(obs);
                                 i++;
                             }
 
@@ -364,7 +372,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
 
                         // SVM
-                        scrollFlingSVM.predict(testDataMat, resultMat, 1);
+                        scrollFlingSVM.predict(testDataMat, resultMat, 0);
                         int counter = countOwnerResults(resultMat);
                         scrollSVMTextView.setText("SVM Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
@@ -461,7 +469,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         int counter = 0;
         for (int i = 0; i < mat.rows(); i++)
         {
-            if (mat.get(i, 0)[0] < 0) counter++;
+            if (mat.get(i, 0)[0] == 1) counter++;
         }
 
         return counter;

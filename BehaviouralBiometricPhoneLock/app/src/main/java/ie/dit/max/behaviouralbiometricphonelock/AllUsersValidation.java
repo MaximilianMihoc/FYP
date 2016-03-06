@@ -43,6 +43,7 @@ public class AllUsersValidation extends AppCompatActivity
     Map<String, ArrayList<Observation>> testDataMapScrollFling;
 
     private String userID;
+    private String userName;
 
     String[] userKeys;
     String[] userNames;
@@ -58,7 +59,8 @@ public class AllUsersValidation extends AppCompatActivity
         ref = new Firebase("https://fyp-max.firebaseio.com");
 
         SharedPreferences sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
+        if(sharedpreferences.contains("ValidateDataForUserID")) userID = sharedpreferences.getString("ValidateDataForUserID", "");
+        if(sharedpreferences.contains("ValidateDataForUserName")) userName = sharedpreferences.getString("ValidateDataForUserName", "");
 
         validationText = (TextView) findViewById(R.id.validationText);
 
@@ -192,7 +194,44 @@ public class AllUsersValidation extends AppCompatActivity
                     }
 
                     //TODO: Call the validation method here
-                    computeValidationForOneUserAgainstAllOthers(userID, "Maximilian");
+                    //calculate the best number of Observations needed from other users.
+                    float min = 100, max = 0;
+                    int bestValueForObsNumbers = 1;
+                    int nrObsAtMaxOwnerPercent = 1;
+
+
+                    ReturnValues retValuesValidation;
+
+                    for(int i = 1; i <= 26; i++)
+                    {
+                        retValuesValidation = computeValidationForOneUserAgainstAllOthers(userID, userName, i, false);
+                        System.out.println("Average: " + retValuesValidation.average);
+
+                        if(retValuesValidation.average < min)
+                        {
+                            min = retValuesValidation.average;
+                            bestValueForObsNumbers = i;
+                        }
+
+                        if(retValuesValidation.ownerPercent > max)
+                        {
+                            max = retValuesValidation.ownerPercent;
+                            nrObsAtMaxOwnerPercent = i;
+                        }
+                    }
+
+                    // calculate the average for the max Owner Percent
+                    ReturnValues tempRV = computeValidationForOneUserAgainstAllOthers(userID, userName, nrObsAtMaxOwnerPercent, false);
+
+                    System.out.println("MinAvg: " + min + " #obs: " + bestValueForObsNumbers);
+
+                    System.out.println("Avg: " + tempRV.average + " #obs: " + nrObsAtMaxOwnerPercent + " MaxOwnerPercent: " + tempRV.ownerPercent);
+
+                    //TODO: find best value to be used between bestValueForObsNumbers and nrObsAtMaxOwnerPercent
+
+                    // display results for best value here
+                    computeValidationForOneUserAgainstAllOthers(userID, userName, bestValueForObsNumbers, true);
+
                 }
             }
 
@@ -204,7 +243,13 @@ public class AllUsersValidation extends AppCompatActivity
         });
     }
 
-    private void computeValidationForOneUserAgainstAllOthers(String forUserID, String forUserName)
+    final class ReturnValues
+    {
+        float average;
+        float ownerPercent;
+    }
+
+    private ReturnValues computeValidationForOneUserAgainstAllOthers(String forUserID, String forUserName, int numberObsNeededFromOtherUsers, boolean displayOutput)
     {
         ArrayList<Observation> trainScrollFlingDataForUserID = new ArrayList<>();
 
@@ -221,10 +266,11 @@ public class AllUsersValidation extends AppCompatActivity
                 ArrayList<Observation> tempList = changeJudgements(trainDataEntry.getValue(), 0);
                 if(tempList.size() > 0)
                 {
+                    //trainScrollFlingDataForUserID.addAll(tempList);
                     // add 10 observations from each other user in the train list
                     for (int i = 0; i <= tempList.size(); i++)
                     {
-                        if (i < 10)
+                        if (i < numberObsNeededFromOtherUsers)
                         {
                             trainScrollFlingDataForUserID.add(tempList.get(i));
                         }
@@ -236,15 +282,18 @@ public class AllUsersValidation extends AppCompatActivity
         //create and train the SVM model
         SVM tempScrollFlingSVM = createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
 
-        String output = "For " + forUserName + "\n";
+        int numberOfUsersWithTestData = 0;
+        float sumOfPercentages = 0;
+        float ownerPercent = 0;
+
+        ReturnValues rV = new ReturnValues();
+
+        String output = "For " + forUserName + "\n # of Observations From Other users needed: " + numberObsNeededFromOtherUsers +"\n";
 
         // test the new SVM model with the test data
-        //for( HashMap.Entry<String, ArrayList<Observation>> testDataEntry : testDataMapScrollFling.entrySet())
         for(int i = 0; i < userKeys.length; i++)
         {
             ArrayList<Observation> testData = testDataMapScrollFling.get(userKeys[i]);
-
-            System.out.println(testDataMapScrollFling.get(userKeys[i]));
 
             if(testData != null)
             {
@@ -254,13 +303,30 @@ public class AllUsersValidation extends AppCompatActivity
                 tempScrollFlingSVM.predict(testDataMat, resultMat, 0);
                 int counter = countOwnerResults(resultMat);
 
-                output += userNames[i] + ": SVM Scroll/Fling -> " + counter + " / " + testData.size() + " -> " + Math.round((counter * 100) / testData.size()) + "%\n";
-            }
+                if(!userKeys[i].equals(forUserID))
+                {
+                    sumOfPercentages += (counter * 100) / testData.size();
+                    numberOfUsersWithTestData++;
+                }
+                else
+                {
+                    if(ownerPercent < ((counter * 100) / testData.size()))
+                    {
+                        ownerPercent = (counter * 100) / testData.size();
+                    }
+                }
 
+                if(displayOutput)
+                    output += (i+1) + ". " + userNames[i] + ": SVM Scroll/Fling -> " + counter + " / " + testData.size() + " -> " + Math.round((counter * 100) / testData.size()) + "%\n";
+            }
         }
 
-        validationText.setText(output);
+        if(displayOutput) validationText.setText(output);
 
+        rV.average = sumOfPercentages/numberOfUsersWithTestData;
+        rV.ownerPercent = ownerPercent;
+
+        return rV;
     }
 
     private ArrayList<Observation> changeJudgements(ArrayList<Observation> obsList, int judgementValue)
