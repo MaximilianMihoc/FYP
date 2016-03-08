@@ -195,25 +195,26 @@ public class AllUsersValidation extends AppCompatActivity
 
                     //TODO: Call the validation method here
                     //calculate the best number of Observations needed from other users.
-                    float min = 100, max = 0;
+                    float min = 100, max = 0, percentOnMinAvg = 0;
                     int bestValueForObsNumbers = 1;
                     int nrObsAtMaxOwnerPercent = 1;
 
 
                     ReturnValues retValuesValidation;
 
-                    for(int i = 1; i <= 26; i++)
+                    for (int i = 10; i <= 100; i++)
                     {
                         retValuesValidation = computeValidationForOneUserAgainstAllOthers(userID, userName, i, false);
                         System.out.println("Average: " + retValuesValidation.average);
 
-                        if(retValuesValidation.average < min)
+                        if (retValuesValidation.average < min) //&& retValuesValidation.ownerPercent >= 70)
                         {
                             min = retValuesValidation.average;
                             bestValueForObsNumbers = i;
+                            percentOnMinAvg = retValuesValidation.ownerPercent;
                         }
 
-                        if(retValuesValidation.ownerPercent > max)
+                        if (retValuesValidation.ownerPercent > max && retValuesValidation.average < 50) //average error less than 50%
                         {
                             max = retValuesValidation.ownerPercent;
                             nrObsAtMaxOwnerPercent = i;
@@ -223,7 +224,7 @@ public class AllUsersValidation extends AppCompatActivity
                     // calculate the average for the max Owner Percent
                     ReturnValues tempRV = computeValidationForOneUserAgainstAllOthers(userID, userName, nrObsAtMaxOwnerPercent, false);
 
-                    System.out.println("MinAvg: " + min + " #obs: " + bestValueForObsNumbers);
+                    System.out.println("MinAvg: " + min + " #obs: " + bestValueForObsNumbers + " PercentOnMinAvg: " + percentOnMinAvg);
 
                     System.out.println("Avg: " + tempRV.average + " #obs: " + nrObsAtMaxOwnerPercent + " MaxOwnerPercent: " + tempRV.ownerPercent);
 
@@ -268,7 +269,7 @@ public class AllUsersValidation extends AppCompatActivity
                 {
                     //trainScrollFlingDataForUserID.addAll(tempList);
                     // add 10 observations from each other user in the train list
-                    for (int i = 0; i <= tempList.size(); i++)
+                    for (int i = 0; i < tempList.size(); i++)
                     {
                         if (i < numberObsNeededFromOtherUsers)
                         {
@@ -388,7 +389,7 @@ public class AllUsersValidation extends AppCompatActivity
     private KNearest createAndTrainTapKNNClassifier(ArrayList<Observation> arrayListObservations)
     {
         KNearest kNN = KNearest.create();
-        System.out.println("K is: " + kNN.getDefaultK());
+        //System.out.println("K is: " + kNN.getDefaultK());
 
         Mat kNNTrainMat = buildTrainOrTestMatForTaps(arrayListObservations);
         Mat kNNLabelsMat = buildLabelsMat(arrayListObservations);
@@ -460,7 +461,7 @@ public class AllUsersValidation extends AppCompatActivity
         //tapSVM.setType(SVM.C_SVC);
         tempSVM.setType(SVM.NU_SVC);
         tempSVM.setC(1/Math.pow(2,13));
-        tempSVM.setNu(1/Math.pow(2,11));
+        tempSVM.setNu(1 / Math.pow(2, 11));
 
         Mat trainTapMat = buildTrainOrTestMatForTaps(arrayListObservations);
         Mat labelsTapMat = buildLabelsMat(arrayListObservations);
@@ -539,7 +540,7 @@ public class AllUsersValidation extends AppCompatActivity
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
         }
 
-        return tempMat;
+        return normalizeMat(tempMat);
     }
 
     private Mat buildTrainOrTestMatForTaps(ArrayList<Observation> listObservations)
@@ -578,5 +579,52 @@ public class AllUsersValidation extends AppCompatActivity
         }
 
         return tempMat;
+    }
+
+    private Mat normalizeMat(Mat toNormalize)
+    {
+        Mat tempMat = toNormalize.clone();
+
+        for(int col = 0; col < toNormalize.cols(); col++)
+        {
+            // only normalize data from 2 features that are not properly normalised
+            if(col == 5 || col == 8)
+            {
+                double min = getMinValueOFColumn(toNormalize, col);
+                double max = getMaxValueOFColumn(toNormalize, col);
+
+                for (int row = 0; row < toNormalize.rows(); row++)
+                {
+                    double[] element = toNormalize.get(row, col);
+                    tempMat.put(row, col, (element[0] - min) / (max - min));
+                }
+            }
+        }
+
+        return tempMat;
+    }
+
+    private double getMinValueOFColumn(Mat mat, int col)
+    {
+        double min = Double.MAX_VALUE;
+        for(int i = 0; i < mat.rows(); i++)
+        {
+            double [] temp = mat.get(i,col);
+            if(temp[0] < min ) min = temp[0];
+        }
+
+        return min;
+    }
+
+    private double getMaxValueOFColumn(Mat mat, int col)
+    {
+        double max = Double.MIN_VALUE;
+        for(int i = 0; i < mat.rows(); i++)
+        {
+            double [] temp = mat.get(i,col);
+            if(temp[0] > max ) max = temp[0];
+        }
+
+        return max;
     }
 }

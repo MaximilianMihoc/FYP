@@ -190,7 +190,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                 editor.putString("ValidateDataForUserID", userKeys[trainSpinner.getSelectedItemPosition()]);
                 editor.putString("ValidateDataForUserName", userNames[trainSpinner.getSelectedItemPosition()]);
                 editor.apply();
-                
+
                 startActivity(intent);
             }
         });
@@ -257,7 +257,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                if(i < 25) trainScrollFlingObservations.add(obs);
+                                if (i < 14) trainScrollFlingObservations.add(obs);
                                 i++;
                             }
 
@@ -269,11 +269,10 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
                                 //if(i < 10)
-                                    trainTapOnlyObservations.add(obs);
+                                trainTapOnlyObservations.add(obs);
                                 i++;
                             }
-                        }
-                        else // Current user Data
+                        } else // Current user Data
                         {
                             DataSnapshot scrollSnapshot = usrSnapshot.child("scrollFling");
                             for (DataSnapshot obsSnapshot : scrollSnapshot.getChildren())
@@ -302,7 +301,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
                         scrollRTree = createAndTrainScrollFlingrTreeClassifier(trainScrollFlingObservations);
 
-                    }else
+                    } else
                     {
                         System.out.println("No Scroll Fling data available. ");
                         // display a Toast letting the user know that there is no training data available.
@@ -318,7 +317,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         tapKNN = createAndTrainTapKNNClassifier(trainTapOnlyObservations);
 
                         tapRTree = createAndTraintapRTreeClassifier(trainTapOnlyObservations);
-                    }else
+                    } else
                     {
                         System.out.println("No Tap data available. ");
                         // display a Toast letting the user know that there is no training data available.
@@ -365,7 +364,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         scrollFlingObservations.add(obs);
                     }
 
-                    if(scrollFlingObservations.size() > 0)
+                    if (scrollFlingObservations.size() > 0)
                     {
                         //create train and test Martices
                         Mat testDataMat = buildTrainOrTestMatForScrollFling(scrollFlingObservations);
@@ -417,7 +416,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         tapOnlyObservations.add(obs);
                     }
 
-                    if(tapOnlyObservations.size() > 0)
+                    if (tapOnlyObservations.size() > 0)
                     {
                         Mat testTapDataMat = buildTrainOrTestMatForTaps(tapOnlyObservations);
                         Mat resultTapMat = new Mat(tapOnlyObservations.size(), 1, CvType.CV_32S);
@@ -446,7 +445,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         progressBarTapRTree.setMax(tapOnlyObservations.size());
                         progressBarTapRTree.setProgress(counter);
 
-                    }else
+                    } else
                     {
                         System.out.println("No Tap data available. ");
                         Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided for Taps", Toast.LENGTH_SHORT);
@@ -569,8 +568,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
 
-        //System.out.println("Train Matrix is:\n");
-        //displayMatrix(trainScrollFlingMat);
+        //System.out.println("Normalised Matrix is:\n");
+        //displayMatrix(normalisedTrainMat);
 
         tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
 
@@ -664,7 +663,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
         }
 
-        return tempMat;
+        return normalizeMat(tempMat);
     }
 
     private Mat buildTrainOrTestMatForTaps(ArrayList<Observation> listObservations)
@@ -703,5 +702,52 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         }
 
         return tempMat;
+    }
+
+    private Mat normalizeMat(Mat toNormalize)
+    {
+        Mat tempMat = toNormalize.clone();
+
+        for(int col = 0; col < toNormalize.cols(); col++)
+        {
+            // only normalize data from 2 features that are not properly normalised
+            if(col == 5 || col == 8)
+            {
+                double min = getMinValueOFColumn(toNormalize, col);
+                double max = getMaxValueOFColumn(toNormalize, col);
+
+                for (int row = 0; row < toNormalize.rows(); row++)
+                {
+                    double[] element = toNormalize.get(row, col);
+                    tempMat.put(row, col, (element[0] - min) / (max - min));
+                }
+            }
+        }
+
+        return tempMat;
+    }
+
+    private double getMinValueOFColumn(Mat mat, int col)
+    {
+        double min = Double.MAX_VALUE;
+        for(int i = 0; i < mat.rows(); i++)
+        {
+            double [] temp = mat.get(i,col);
+            if(temp[0] < min ) min = temp[0];
+        }
+
+        return min;
+    }
+
+    private double getMaxValueOFColumn(Mat mat, int col)
+    {
+        double max = Double.MIN_VALUE;
+        for(int i = 0; i < mat.rows(); i++)
+        {
+            double [] temp = mat.get(i,col);
+            if(temp[0] > max ) max = temp[0];
+        }
+
+        return max;
     }
 }
