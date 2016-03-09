@@ -38,9 +38,11 @@ public class TestBehaviouralBiometrics extends Activity implements
     Firebase ref;
 
     private static final String DEBUG_TAG = "Test Activity";
-    private final double threshold = 79; //Max
+    private final static double threshold = 70; //Max
     private int guestsObservationsNeeded = 14;
-    private double userConfidence;
+    private double high = 15; // Max Reword or Penalty
+    private double low = 0;   // Min Reward or Penalty
+    private double userTrust;
 
     private GestureDetectorCompat mDetector;
 
@@ -86,7 +88,7 @@ public class TestBehaviouralBiometrics extends Activity implements
 
         linearAcceleration = 0.0f;
         angularVelocity = 0.0f;
-        userConfidence = 100;
+        userTrust = 100;
 
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -238,29 +240,33 @@ public class TestBehaviouralBiometrics extends Activity implements
                                     if(observationConfidenceFromSVM < 0)
                                     {
                                         //Owner Observation
-                                        if(userConfidence + Math.abs(observationConfidenceFromSVM) > 100)
-                                            userConfidence = 100;
+                                        double newConf = normalizeOwnerConfidence(Math.abs(observationConfidenceFromSVM), 0, 50, high, low);
+                                        if(userTrust + newConf > 100)
+                                            userTrust = 100;
                                         else
-                                            userConfidence += Math.abs(observationConfidenceFromSVM);
+                                            userTrust += newConf;
                                     }
                                     else
                                     {
                                         // guest Observation
-                                        if(userConfidence - observationConfidenceFromSVM < 0)
-                                            userConfidence = 0;
+                                        double newConf = normalizeOwnerConfidence(Math.abs(observationConfidenceFromSVM), 0, 50, high, low);
+                                        if(userTrust - newConf < 0)
+                                            userTrust = 0;
                                         else
-                                            userConfidence -= observationConfidenceFromSVM;
+                                            userTrust -= newConf;
                                     }
-                                    Toast toast = Toast.makeText(getApplicationContext(), "" + userConfidence, Toast.LENGTH_SHORT);
-                                    toast.show();
+                                    //Toast toast = Toast.makeText(getApplicationContext(), "" + userTrust, Toast.LENGTH_SHORT);
+                                    //toast.show();
 
-                                    /*if(userConfidence < threshold)
+                                    System.out.println("Confidence Normalized: " + normalizeOwnerConfidence(Math.abs(observationConfidenceFromSVM), 0, 50, high, low));
+
+                                    if(userTrust < threshold)
                                     {
                                         //lock the phone
                                         Intent intent = new Intent(TestBehaviouralBiometrics.this, LogIn.class);
-                                        startActivity(intent);
+                                        //startActivity(intent);
 
-                                    }*/
+                                    }
 
                                     //int counter = countOwnerResults(resultMat);
                                     /*Toast toast = Toast.makeText(getApplicationContext(), "SVM Scrolls -> " + counter + " / " + scrollFlingObservations.size()
@@ -289,6 +295,19 @@ public class TestBehaviouralBiometrics extends Activity implements
                 return mDetector.onTouchEvent(event);
             }
         };
+    }
+
+    /**
+     * Normalize the confidentiality returned by the clasifier in order to be used
+     * in the trust model.
+     * Owner confidence should be between 10 and 0, 10 being the max reward and 0 min reward
+     * Guest confidence between 10 and 0, 10 being the max penalty and 0 being the min penalty
+     *
+     * */
+    private double normalizeOwnerConfidence(double value, double min, double max, double high, double low)
+    {
+        //normalization formula
+        return ((value - min)/(max - min)) * (high - low) + low;
     }
 
     private int countOwnerResults(Mat mat)
