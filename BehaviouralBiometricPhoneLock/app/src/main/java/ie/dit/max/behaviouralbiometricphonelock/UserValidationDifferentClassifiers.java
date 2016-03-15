@@ -212,7 +212,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                 {
                     User u = usrSnapshot.getValue(User.class);
                     userKeys[i] = u.getUserID();
-                    userNames[i++] = u.getUserName();
+                    userNames[i++] = "User " + i ; //u.getUserName();
                 }
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, userNames);
@@ -534,8 +534,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         //initialise scrollFlingSVM
         tempSVM.setKernel(SVM.RBF);
 
-        //tempSVM.setType(SVM.C_SVC);
-        tempSVM.setType(SVM.NU_SVC);
+        tempSVM.setType(SVM.C_SVC);
+        //tempSVM.setType(SVM.NU_SVC);
 
         //tempSVM.setP(1);
         //tempSVM.setC(1/Math.pow(2,1));
@@ -652,7 +652,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             tempMat.put(i, j++, scrollFlingObs.getDirectEndToEndDistance());
 
             // Mean Direction
-            tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
+            //tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
 
             // Stop x
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
@@ -661,16 +661,16 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
 
             // Stroke Duration
-            tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
+            tempMat.put(i, j++, scrollFlingObs.getScaledDuration()/10);
 
             // Start y
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
 
             // Stop y
-            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
+            tempMat.put(i, j, scrollFlingObs.getScaledEndPoint().y);
         }
 
-        return normalizeMat(tempMat);
+        return tempMat;
     }
 
     private Mat buildTrainOrTestMatForTaps(ArrayList<Observation> listObservations)

@@ -72,8 +72,8 @@ public class TestBehaviouralBiometrics extends Activity implements
     SharedPreferences sharedpreferences;
     private String userID;
 
-    private SVM scrollFlingSVM;
-    private SVM tapSVM;
+    private static SVM scrollFlingSVM;
+    private static SVM tapSVM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -255,8 +255,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                                         else
                                             userTrust -= newConf;
                                     }
-                                    //Toast toast = Toast.makeText(getApplicationContext(), "" + userTrust, Toast.LENGTH_SHORT);
-                                    //toast.show();
+                                    Toast toast = Toast.makeText(getApplicationContext(), "" + userTrust, Toast.LENGTH_SHORT);
+                                    toast.show();
 
                                     System.out.println("Confidence Normalized: " + normalizeOwnerConfidence(Math.abs(observationConfidenceFromSVM), 0, 50, high, low));
 
@@ -264,7 +264,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                                     {
                                         //lock the phone
                                         Intent intent = new Intent(TestBehaviouralBiometrics.this, LogIn.class);
-                                        //startActivity(intent);
+                                        startActivity(intent);
 
                                     }
 
@@ -421,10 +421,10 @@ public class TestBehaviouralBiometrics extends Activity implements
         SVM tempSVM = SVM.create();
         tempSVM.setKernel(SVM.RBF);
 
-        //scrollFlingSVM.setType(SVM.C_SVC);
+        //tempSVM.setType(SVM.C_SVC);
         tempSVM.setType(SVM.NU_SVC);
         tempSVM.setC(1/Math.pow(2,12));
-        tempSVM.setNu(1/Math.pow(2,13));
+        tempSVM.setNu(1/Math.pow(2,18.1));
 
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
@@ -445,7 +445,7 @@ public class TestBehaviouralBiometrics extends Activity implements
         //tapSVM.setType(SVM.C_SVC);
         tempSVM.setType(SVM.NU_SVC);
         tempSVM.setC(1/Math.pow(2,13));
-        tempSVM.setNu(1/Math.pow(2,11));
+        tempSVM.setNu(1/Math.pow(2,18.1));
 
         Mat trainTapMat = buildTrainOrTestMatForTaps(arrayListObservations);
         Mat labelsTapMat = buildLabelsMat(arrayListObservations);
@@ -493,7 +493,7 @@ public class TestBehaviouralBiometrics extends Activity implements
             tempMat.put(i, j++, scrollFlingObs.getDirectEndToEndDistance());
 
             // Mean Direction
-            tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
+            //tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
 
             // Stop x
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
@@ -502,7 +502,7 @@ public class TestBehaviouralBiometrics extends Activity implements
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
 
             // Stroke Duration
-            tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
+            tempMat.put(i, j++, scrollFlingObs.getScaledDuration()/10);
 
             // Start y
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
@@ -510,7 +510,8 @@ public class TestBehaviouralBiometrics extends Activity implements
             // Stop y
             tempMat.put(i, j, scrollFlingObs.getScaledEndPoint().y);
         }
-        System.out.println("Normalise Mat: " + normalizeMat(tempMat));
+        System.out.println("Normalise Mat: " );
+        displayMatrix(tempMat);
         return tempMat;
     }
 

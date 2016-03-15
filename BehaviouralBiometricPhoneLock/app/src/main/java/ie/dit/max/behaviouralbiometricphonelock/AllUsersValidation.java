@@ -87,7 +87,7 @@ public class AllUsersValidation extends AppCompatActivity
                 {
                     User u = usrSnapshot.getValue(User.class);
                     userKeys[i] = u.getUserID();
-                    userNames[i++] = u.getUserName();
+                    userNames[i++] = "User " + i; //u.getUserName();
                 }
 
                 getTrainDataFromUsersFirebase();
@@ -522,7 +522,7 @@ public class AllUsersValidation extends AppCompatActivity
             tempMat.put(i, j++, scrollFlingObs.getDirectEndToEndDistance());
 
             // Mean Direction
-            tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
+            //tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
 
             // Stop x
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
@@ -540,7 +540,7 @@ public class AllUsersValidation extends AppCompatActivity
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
         }
 
-        return normalizeMat(tempMat);
+        return tempMat;
     }
 
     private Mat buildTrainOrTestMatForTaps(ArrayList<Observation> listObservations)

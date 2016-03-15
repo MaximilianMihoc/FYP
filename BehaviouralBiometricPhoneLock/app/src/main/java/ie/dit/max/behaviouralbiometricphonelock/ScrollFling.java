@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class ScrollFling extends Touch
 {
-    public static final int numberOfFeatures = 11;
+    public static final int numberOfFeatures = 10;
 
     public ScrollFling()
     {

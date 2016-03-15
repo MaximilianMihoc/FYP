@@ -147,7 +147,7 @@ public class CrossValidationActivity extends Activity
                 {
                     User u = usrSnapshot.getValue(User.class);
                     userKeys[i] = u.getUserID();
-                    userNames[i++] = u.getUserName();
+                    userNames[i++] = "User " + i; //u.getUserName();
                 }
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, userNames);
@@ -528,7 +528,7 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, scrollFlingObs.getDirectEndToEndDistance());
 
             // Mean Direction
-            tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
+            //tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
 
             // Stop x
             tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
@@ -537,7 +537,7 @@ public class CrossValidationActivity extends Activity
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
 
             // Stroke Duration
-            tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
+            tempMat.put(i, j++, scrollFlingObs.getScaledDuration()/10);
 
             // Start y
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
