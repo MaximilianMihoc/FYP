@@ -2,9 +2,7 @@ package ie.dit.max.behaviouralbiometricphonelock;
 
 import org.opencv.core.Point;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Maximilian on 31/10/2015.

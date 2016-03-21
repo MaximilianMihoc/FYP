@@ -212,7 +212,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                 {
                     User u = usrSnapshot.getValue(User.class);
                     userKeys[i] = u.getUserID();
-                    userNames[i++] = "User " + i ; //u.getUserName();
+                    userNames[i++] = u.getUserName();//"User " + i ; //
                 }
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, userNames);
@@ -257,7 +257,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                if (i < 14) trainScrollFlingObservations.add(obs);
+                                if (i < 5) trainScrollFlingObservations.add(obs);
                                 i++;
                             }
 
@@ -275,12 +275,15 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         } else // Current user Data
                         {
                             DataSnapshot scrollSnapshot = usrSnapshot.child("scrollFling");
+                            int trainObsOwnerCount = 0;
                             for (DataSnapshot obsSnapshot : scrollSnapshot.getChildren())
                             {
                                 //System.out.println("data: " + obsSnapshot.toString());
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 trainScrollFlingObservations.add(obs);
+                                trainObsOwnerCount ++;
                             }
+                            System.out.println("Number Of Train Observations - Owner: " + trainObsOwnerCount);
 
                             // Tap Information
                             DataSnapshot tapSnapshot = usrSnapshot.child("tap");
@@ -370,8 +373,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         Mat testDataMat = buildTrainOrTestMatForScrollFling(scrollFlingObservations);
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
 
-                        System.out.println("Scroll Fling Test Data Mat: ");
-                        displayMatrix(buildTrainOrTestMatForScrollFling(scrollFlingObservations));
+                        //System.out.println("Scroll Fling Test Data Mat: ");
+                        //displayMatrix(buildTrainOrTestMatForScrollFling(scrollFlingObservations));
 
                         // SVM
                         scrollFlingSVM.predict(testDataMat, resultMat, 0);
@@ -381,8 +384,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         progressBarScrollSVM.setMax(scrollFlingObservations.size());
                         progressBarScrollSVM.setProgress(counter);
 
-                        System.out.println("Class Weights Mat:");
-                        displayMatrix(scrollFlingSVM.getClassWeights());
+                        //System.out.println("Class Weights Mat:");
+                        //displayMatrix(scrollFlingSVM.getClassWeights());
 
                         //System.out.println("Result Mat:");
                         //displayMatrix(resultMat);
@@ -551,7 +554,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         //tempSVM.setC(1/Math.pow(2,11));
         //tempSVM.setC(1/Math.pow(2,12));
         //tempSVM.setC(1/Math.pow(2,12.5));
-        //tempSVM.setC(1/Math.pow(2,13));
+        tempSVM.setC(10000);
 
         //tempSVM.setNu(0.99);
         //tempSVM.setNu(1/Math.pow(2,1.1));
@@ -575,11 +578,11 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
 
-        System.out.println("Train Mat for ScrollFling is:\n");
-        displayMatrix(trainScrollFlingMat);
+        //System.out.println("Train Mat for ScrollFling is:\n");
+        //displayMatrix(trainScrollFlingMat);
 
-        System.out.println("Train Labels Mat for ScrollFling is:\n");
-        displayMatrix(labelsScrollFlingMat);
+        //System.out.println("Train Labels Mat for ScrollFling is:\n");
+        //displayMatrix(labelsScrollFlingMat);
 
         tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
 
@@ -698,13 +701,13 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
 
             //Duration
-            tempMat.put(i, j++, tapInteraction.getScaledDuration());
+            tempMat.put(i, j++, tapInteraction.getScaledDuration()/10);
 
             // Start y
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);
 
             //Stop y
-            tempMat.put(i, j++, tapInteraction.getScaledEndPoint().y);
+            tempMat.put(i, j, tapInteraction.getScaledEndPoint().y);
 
         }
 

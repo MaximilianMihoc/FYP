@@ -540,7 +540,7 @@ public class TestBehaviouralBiometrics extends Activity implements
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
 
             //Duration
-            tempMat.put(i, j++, tapInteraction.getScaledDuration());
+            tempMat.put(i, j++, tapInteraction.getScaledDuration()/10);
 
             // Start y
             tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);

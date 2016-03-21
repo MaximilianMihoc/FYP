@@ -47,7 +47,7 @@ public class ScrollFling extends Touch
 
     public double calculateDirectEndToEndDistance()
     {
-        // Apply Pitagora's theorem to find direct end to end distance.
+        // Apply Euclidean distance to find direct end to end distance.
         // Do this for the scaled values of the coordinates so that the distance would be normalised straight away.
         return Math.sqrt(Math.pow(scaledEndPoint.x - scaledStartPoint.x, 2) + Math.pow(scaledEndPoint.y - scaledStartPoint.y, 2));
     }

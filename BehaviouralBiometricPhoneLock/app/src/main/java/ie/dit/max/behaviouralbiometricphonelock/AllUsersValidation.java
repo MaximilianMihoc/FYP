@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,6 +28,8 @@ import org.opencv.ml.Ml;
 import org.opencv.ml.RTrees;
 import org.opencv.ml.SVM;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -49,6 +52,7 @@ public class AllUsersValidation extends AppCompatActivity
     String[] userNames;
 
     TextView validationText;
+    Button buttonChange;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -63,11 +67,21 @@ public class AllUsersValidation extends AppCompatActivity
         if(sharedpreferences.contains("ValidateDataForUserName")) userName = sharedpreferences.getString("ValidateDataForUserName", "");
 
         validationText = (TextView) findViewById(R.id.validationText);
+        buttonChange = (Button) findViewById(R.id.buttonChange);
 
         trainDataMapScrollFling = new HashMap<>();
         testDataMapScrollFling = new HashMap<>();
 
         populateUserArrays();
+
+        buttonChange.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                computeValidationForOneUserAgainstAllOthers(userID, userName, 14, true);
+            }
+        });
 
     }
 
@@ -140,6 +154,9 @@ public class AllUsersValidation extends AppCompatActivity
 
                     }
 
+                    /* Print all train data */
+                    displayTrainMatrixForEachUser();
+
                     /* Get test data from firebase and return predictions. */
                     getTestDataFromFirebaseAndTestSystem();
 
@@ -192,8 +209,9 @@ public class AllUsersValidation extends AppCompatActivity
                         }*/
 
                     }
+                    /* Display Test Data on screen*/
+                    displayTestMatrixForEachUser();
 
-                    //TODO: Call the validation method here
                     //calculate the best number of Observations needed from other users.
                     float min = 100, max = 0, percentOnMinAvg = 0;
                     int bestValueForObsNumbers = 1;
@@ -250,6 +268,33 @@ public class AllUsersValidation extends AppCompatActivity
         float ownerPercent;
     }
 
+    private void displayTrainMatrixForEachUser()
+    {
+        for( HashMap.Entry<String, ArrayList<Observation>> trainDataEntry : trainDataMapScrollFling.entrySet())
+        {
+            ArrayList<Observation> tempList = trainDataEntry.getValue();
+
+            // print train matrix for all users, one at a time
+            System.out.println("Train data for UserID: " + trainDataEntry.getKey());
+            displayMatrix(buildTrainOrTestMatForScrollFling(tempList));
+
+        }
+    }
+
+    private void displayTestMatrixForEachUser()
+    {
+        for( HashMap.Entry<String, ArrayList<Observation>> trainDataEntry : testDataMapScrollFling.entrySet())
+        {
+            ArrayList<Observation> tempList = trainDataEntry.getValue();
+
+            // print train matrix for all users, one at a time
+            System.out.println("Test data for UserID: " + trainDataEntry.getKey());
+            displayMatrix(buildTrainOrTestMatForScrollFling(tempList));
+
+        }
+    }
+
+
     private ReturnValues computeValidationForOneUserAgainstAllOthers(String forUserID, String forUserName, int numberObsNeededFromOtherUsers, boolean displayOutput)
     {
         ArrayList<Observation> trainScrollFlingDataForUserID = new ArrayList<>();
@@ -289,7 +334,7 @@ public class AllUsersValidation extends AppCompatActivity
 
         ReturnValues rV = new ReturnValues();
 
-        String output = "For " + forUserName + "\n # of Observations From Other users needed: " + numberObsNeededFromOtherUsers +"\n";
+        String output = "For " + forUserName + "\n # of Observations From Other users needed: " + (numberObsNeededFromOtherUsers + 1) +"\n";
 
         // test the new SVM model with the test data
         for(int i = 0; i < userKeys.length; i++)
@@ -448,6 +493,15 @@ public class AllUsersValidation extends AppCompatActivity
         //System.out.println("Train Matrix is:\n");
         //displayMatrix(trainScrollFlingMat);
 
+        System.out.println("Coef0: " + tempSVM.getCoef0() );
+        System.out.println("C: " + tempSVM.getC());
+        System.out.println("TermCriteria: " + tempSVM.getTermCriteria().toString());
+        System.out.println("Degree: " + tempSVM.getDegree());
+        System.out.println("Gamma: " + tempSVM.getGamma());
+        System.out.println("Nu: " + tempSVM.getNu());
+        System.out.println("P: " + tempSVM.getP());
+        System.out.println("Type: " + tempSVM.getType());
+
         tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
 
         return tempSVM;
@@ -531,7 +585,7 @@ public class AllUsersValidation extends AppCompatActivity
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
 
             // Stroke Duration
-            tempMat.put(i, j++, scrollFlingObs.getScaledDuration());
+            tempMat.put(i, j++, scrollFlingObs.getScaledDuration()/10);
 
             // Start y
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);

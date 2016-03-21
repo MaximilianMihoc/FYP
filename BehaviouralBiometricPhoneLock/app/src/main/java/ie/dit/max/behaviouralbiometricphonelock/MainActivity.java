@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(MainActivity.this, CrossValidationActivity.class);
+                Intent trainIntent = new Intent(MainActivity.this, UserValidationDifferentClassifiers.class);
                 startActivity(trainIntent);
             }
         });
