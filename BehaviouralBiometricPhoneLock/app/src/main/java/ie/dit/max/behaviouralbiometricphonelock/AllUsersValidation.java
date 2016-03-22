@@ -79,7 +79,8 @@ public class AllUsersValidation extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                computeValidationForOneUserAgainstAllOthers(userID, userName, 14, true);
+                //computeValidationForOneUserAgainstAllOthers(userID, userName, 4, true);
+                buildAndDisplayConfidenceMatrix();
             }
         });
 
@@ -209,6 +210,7 @@ public class AllUsersValidation extends AppCompatActivity
                         }*/
 
                     }
+
                     /* Display Test Data on screen*/
                     displayTestMatrixForEachUser();
 
@@ -220,7 +222,7 @@ public class AllUsersValidation extends AppCompatActivity
 
                     ReturnValues retValuesValidation;
 
-                    for (int i = 10; i <= 100; i++)
+                    for (int i = 10; i <= 10; i++)
                     {
                         retValuesValidation = computeValidationForOneUserAgainstAllOthers(userID, userName, i, false);
                         System.out.println("Average: " + retValuesValidation.average);
@@ -245,8 +247,6 @@ public class AllUsersValidation extends AppCompatActivity
                     System.out.println("MinAvg: " + min + " #obs: " + bestValueForObsNumbers + " PercentOnMinAvg: " + percentOnMinAvg);
 
                     System.out.println("Avg: " + tempRV.average + " #obs: " + nrObsAtMaxOwnerPercent + " MaxOwnerPercent: " + tempRV.ownerPercent);
-
-                    //TODO: find best value to be used between bestValueForObsNumbers and nrObsAtMaxOwnerPercent
 
                     // display results for best value here
                     computeValidationForOneUserAgainstAllOthers(userID, userName, bestValueForObsNumbers, true);
@@ -294,6 +294,16 @@ public class AllUsersValidation extends AppCompatActivity
         }
     }
 
+    // this method builds a confidence matrix and displays it on console
+    private void buildAndDisplayConfidenceMatrix()
+    {
+        for(int i = 0; i < userKeys.length; i++)
+        {
+            computeValidationForOneUserAgainstAllOthers(userKeys[i], userNames[i], 4, false);
+        }
+
+    }
+
 
     private ReturnValues computeValidationForOneUserAgainstAllOthers(String forUserID, String forUserName, int numberObsNeededFromOtherUsers, boolean displayOutput)
     {
@@ -327,6 +337,12 @@ public class AllUsersValidation extends AppCompatActivity
 
         //create and train the SVM model
         SVM tempScrollFlingSVM = createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
+
+        //create and train kNN model
+        //KNearest tempScrollFlingSVM = createAndTrainScrollFlingKNNClassifier(trainScrollFlingDataForUserID);
+
+        //create and train RTrees model
+        //RTrees tempScrollFlingSVM = createAndTrainScrollFlingrTreeClassifier(trainScrollFlingDataForUserID);
 
         int numberOfUsersWithTestData = 0;
         float sumOfPercentages = 0;
@@ -362,12 +378,13 @@ public class AllUsersValidation extends AppCompatActivity
                     }
                 }
 
-                if(displayOutput)
+                //if(displayOutput)
                     output += (i+1) + ". " + userNames[i] + ": SVM Scroll/Fling -> " + counter + " / " + testData.size() + " -> " + Math.round((counter * 100) / testData.size()) + "%\n";
             }
         }
 
         if(displayOutput) validationText.setText(output);
+        System.out.println(output);
 
         rV.average = sumOfPercentages/numberOfUsersWithTestData;
         rV.ownerPercent = ownerPercent;
@@ -501,6 +518,8 @@ public class AllUsersValidation extends AppCompatActivity
         System.out.println("Nu: " + tempSVM.getNu());
         System.out.println("P: " + tempSVM.getP());
         System.out.println("Type: " + tempSVM.getType());
+        System.out.println("ClassWeights: " );
+        displayMatrix(tempSVM.getClassWeights());
 
         tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
 

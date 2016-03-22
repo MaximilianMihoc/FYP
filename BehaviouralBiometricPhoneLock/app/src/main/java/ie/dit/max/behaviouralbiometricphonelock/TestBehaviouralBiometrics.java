@@ -421,9 +421,9 @@ public class TestBehaviouralBiometrics extends Activity implements
         SVM tempSVM = SVM.create();
         tempSVM.setKernel(SVM.RBF);
 
-        //tempSVM.setType(SVM.C_SVC);
-        tempSVM.setType(SVM.NU_SVC);
-        tempSVM.setC(1/Math.pow(2,12));
+        tempSVM.setType(SVM.C_SVC);
+        //tempSVM.setType(SVM.NU_SVC);
+        //tempSVM.setC(1/Math.pow(2,12));
         tempSVM.setNu(1/Math.pow(2,18.1));
 
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);

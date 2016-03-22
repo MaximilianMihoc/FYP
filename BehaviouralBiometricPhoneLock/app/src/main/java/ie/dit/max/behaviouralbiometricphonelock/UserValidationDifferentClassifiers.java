@@ -373,8 +373,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         Mat testDataMat = buildTrainOrTestMatForScrollFling(scrollFlingObservations);
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
 
-                        //System.out.println("Scroll Fling Test Data Mat: ");
-                        //displayMatrix(buildTrainOrTestMatForScrollFling(scrollFlingObservations));
+                        System.out.println("Scroll Fling Test Data Mat: ");
+                        displayMatrix(buildTrainOrTestMatForScrollFling(scrollFlingObservations));
 
                         // SVM
                         scrollFlingSVM.predict(testDataMat, resultMat, 0);
@@ -554,7 +554,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         //tempSVM.setC(1/Math.pow(2,11));
         //tempSVM.setC(1/Math.pow(2,12));
         //tempSVM.setC(1/Math.pow(2,12.5));
-        tempSVM.setC(10000);
 
         //tempSVM.setNu(0.99);
         //tempSVM.setNu(1/Math.pow(2,1.1));
@@ -573,16 +572,15 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         tempSVM.setNu(1/Math.pow(2,18.1));
         //tempSVM.setNu(1/Math.pow(2,18.5));
         //tempSVM.setNu(1/Math.pow(2,28));
-        //tempSVM.setClassWeights();
 
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
 
-        //System.out.println("Train Mat for ScrollFling is:\n");
-        //displayMatrix(trainScrollFlingMat);
+        System.out.println("Train Mat for ScrollFling is:\n");
+        displayMatrix(trainScrollFlingMat);
 
-        //System.out.println("Train Labels Mat for ScrollFling is:\n");
-        //displayMatrix(labelsScrollFlingMat);
+        System.out.println("Train Labels Mat for ScrollFling is:\n");
+        displayMatrix(labelsScrollFlingMat);
 
         tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
 

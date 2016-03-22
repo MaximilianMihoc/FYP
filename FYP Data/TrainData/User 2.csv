@@ -1,4 +1,5 @@
 Train data for UserID: 7a9f222b-2e93-49eb-9497-7f0ffad8ac59,,,,,,,,,
+Average Linear Acceleration,Average Angular Velocity,Mid Stroke Area Covered,Angle Between Start And EndVectors,Direct End To End Distance,EndPoint x,Start Point x,Scaled Duration,Start Point y,End Point y
 0.46736538,0.0593942,8.91E-04,0.003849714,0.2201255,0.7465528,0.58290017,0.0601,0.8125438,0.6653262
 0.4671926,0.05269713,7.39E-05,0.001679177,0.09617265,0.75091463,0.68400306,0.0431,0.72947913,0.6603993
 0.5253002,0.11196853,1.96E-04,0.0023499,0.13453768,0.75821334,0.66383064,0.0231,0.74788296,0.6520065
