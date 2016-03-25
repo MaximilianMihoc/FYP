@@ -374,10 +374,10 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
 
                         System.out.println("Scroll Fling Test Data Mat: ");
-                        displayMatrix(buildTrainOrTestMatForScrollFling(scrollFlingObservations));
+                        //displayMatrix(buildTrainOrTestMatForScrollFling(scrollFlingObservations));
 
                         // SVM
-                        scrollFlingSVM.predict(testDataMat, resultMat, 0);
+                        scrollFlingSVM.predict(testDataMat, resultMat, 1);
                         int counter = countOwnerResults(resultMat);
                         scrollSVMTextView.setText("SVM Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
@@ -387,8 +387,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         //System.out.println("Class Weights Mat:");
                         //displayMatrix(scrollFlingSVM.getClassWeights());
 
-                        //System.out.println("Result Mat:");
-                        //displayMatrix(resultMat);
+                        System.out.println("Result Mat:");
+                        displayMatrix(resultMat);
                         //System.out.println("TermCriteria: " + scrollFlingSVM.get);
 
                         // kNN
@@ -477,7 +477,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         int counter = 0;
         for (int i = 0; i < mat.rows(); i++)
         {
-            if (mat.get(i, 0)[0] == 1) counter++;
+            if (mat.get(i, 0)[0] < 0) counter++;
         }
 
         return counter;
@@ -535,52 +535,21 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     {
         SVM tempSVM = SVM.create();
         //initialise scrollFlingSVM
-        tempSVM.setKernel(SVM.RBF);
+
+        tempSVM.setKernel(SVM.CHI2);
 
         tempSVM.setType(SVM.C_SVC);
-        //tempSVM.setType(SVM.NU_SVC);
-
-        //tempSVM.setP(1);
-        //tempSVM.setC(1/Math.pow(2,1));
-        //tempSVM.setC(1/Math.pow(2,2));
-        //tempSVM.setC(1/Math.pow(2,3));
-        //tempSVM.setC(1/Math.pow(2,4));
-        //tempSVM.setC(1/Math.pow(2,5));
-        //tempSVM.setC(1/Math.pow(2,6));
-        //tempSVM.setC(1/Math.pow(2,7));
-        //tempSVM.setC(1/Math.pow(2,8));
-        //tempSVM.setC(1/Math.pow(2,9));
-        //tempSVM.setC(1/Math.pow(2,10));
-        //tempSVM.setC(1/Math.pow(2,11));
-        //tempSVM.setC(1/Math.pow(2,12));
-        //tempSVM.setC(1/Math.pow(2,12.5));
-
-        //tempSVM.setNu(0.99);
-        //tempSVM.setNu(1/Math.pow(2,1.1));
-        //tempSVM.setNu(1/Math.pow(2,1.5));
-        //tempSVM.setNu(1/Math.pow(2,1.7));
-        //tempSVM.setNu(1/Math.pow(2,1.9));
-        //tempSVM.setNu(1/Math.pow(2,2));
-        //tempSVM.setNu(1/Math.pow(2,5));
-        //tempSVM.setNu(1/Math.pow(2,6));
-        //tempSVM.setNu(1/Math.pow(2,7));
-        //tempSVM.setNu(1/Math.pow(2,8));
-        //tempSVM.setNu(1/Math.pow(2,9));
-        //tempSVM.setNu(1/Math.pow(2,10));
-        //tempSVM.setNu(1/Math.pow(2,11));
-        //tempSVM.setNu(1/Math.pow(2,13));
-        tempSVM.setNu(1/Math.pow(2,18.1));
-        //tempSVM.setNu(1/Math.pow(2,18.5));
-        //tempSVM.setNu(1/Math.pow(2,28));
+        tempSVM.setC(10.55);
+        tempSVM.setGamma(0.2);
 
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
 
         System.out.println("Train Mat for ScrollFling is:\n");
-        displayMatrix(trainScrollFlingMat);
+        //displayMatrix(trainScrollFlingMat);
 
         System.out.println("Train Labels Mat for ScrollFling is:\n");
-        displayMatrix(labelsScrollFlingMat);
+        //displayMatrix(labelsScrollFlingMat);
 
         tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
 

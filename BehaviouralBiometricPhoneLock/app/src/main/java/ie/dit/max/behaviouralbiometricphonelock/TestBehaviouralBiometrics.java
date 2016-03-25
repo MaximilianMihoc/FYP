@@ -39,9 +39,18 @@ public class TestBehaviouralBiometrics extends Activity implements
 
     private static final String DEBUG_TAG = "Test Activity";
     private final static double threshold = 70; //Max
-    private int guestsObservationsNeeded = 14;
-    private double high = 15; // Max Reword or Penalty
-    private double low = 0;   // Min Reward or Penalty
+    private int guestsObservationsNeeded = 4;
+    private double highOwner1 = 5;  // MaxReword1 for Owner
+    private double highOwner2 = 10; // MaxReword2 for Owner
+    private double lowOwner1 = 1;   // MinReword1 for Owner
+    private double lowOwner2 = 5;   // MinReword2 for Owner
+
+    private double highGuest1 = 5;  // MaxReword1 for Guest
+    private double highGuest2 = 10; // MaxReword2 for Guest
+    private double lowGuest1 = 1;   // MinReword1 for Guest
+    private double lowGuest2 = 5;   // MinReword2 for Guest
+
+
     private double userTrust;
 
     private GestureDetectorCompat mDetector;
@@ -53,8 +62,6 @@ public class TestBehaviouralBiometrics extends Activity implements
     ArrayList<Point> points = new ArrayList<>();
     ArrayList<Observation> trainScrollFlingObservations;
     ArrayList<Observation> scrollFlingObservations;
-    ArrayList<Observation> tapOnlyObservations;
-    ArrayList<Observation> trainTapOnlyObservations;
 
     private ArrayList<Float> linearAccelerations;
     private ArrayList<Float> angularVelocities;
@@ -102,8 +109,6 @@ public class TestBehaviouralBiometrics extends Activity implements
 
         scrollFlingObservations = new ArrayList<>();
         trainScrollFlingObservations = new ArrayList<>();
-        tapOnlyObservations = new ArrayList<>();
-        trainTapOnlyObservations = new ArrayList<>();
         points = new ArrayList<>();
         linearAccelerations = new ArrayList<>();
         angularVelocities = new ArrayList<>();
@@ -186,26 +191,10 @@ public class TestBehaviouralBiometrics extends Activity implements
                         tempObs.setAverageAngularVelocity(Observation.calculateAVGAngularVelocity(angularVelocities));
                         tempObs.setAverageLinearAcceleration(Observation.calculateAVGLinearAcc(linearAccelerations));
 
-                        //In this section check each observation, one at a time and assign a judgement to it.
+                        //In this section check each observation
                         if(!isFling && !isScroll)
                         {
-                            tapOnlyObservations.add(tempObs);
-
-                            if(tapOnlyObservations.size() % 6 == 0)
-                            {
-                                Mat testDataMat = buildTrainOrTestMatForTaps(tapOnlyObservations);
-                                // create the result Mat
-                                Mat resultMat = new Mat(tapOnlyObservations.size(), 1, CvType.CV_32S);
-
-                                if (tapSVM.isTrained())
-                                {
-                                    tapSVM.predict(testDataMat, resultMat, 0);
-                                    int counter = countOwnerResults(resultMat);
-                                    /*Toast toast = Toast.makeText(getApplicationContext(), "SVM Taps -> " + counter + " / " + tapOnlyObservations.size()
-                                            + " -> " + Math.round((counter * 100) / tapOnlyObservations.size()) + "%", Toast.LENGTH_SHORT);
-                                    toast.show();*/
-                                }
-                            }
+                            //no predictions on taps, just store interactions
 
                             // add test data in Firebase if the check box for adding data is selected.
                             if(OptionsScreen.saveData)
@@ -217,17 +206,15 @@ public class TestBehaviouralBiometrics extends Activity implements
                         }
                         else
                         {
-                            // add all observations to a list.
-                            //scrollFlingObservations.add(tempObs);
+                            // Trust Model implementation
 
-                            ArrayList<Observation> testOneObservstion = new ArrayList<>();
-                            testOneObservstion.add(tempObs);
-                            //if(scrollFlingObservations.size() % 6 == 0)
+                            ArrayList<Observation> testOneObservation = new ArrayList<>();
+                            testOneObservation.add(tempObs);
+
+                            if(scrollFlingObservations.size() % 6 == 0)
                             {
-                                Mat testDataMat = buildTrainOrTestMatForScrollFling(testOneObservstion);
-
-                                // create the result Mat
-                                Mat resultMat = new Mat(testOneObservstion.size(), 1, CvType.CV_32S);
+                                Mat testDataMat = buildTrainOrTestMatForScrollFling(testOneObservation);
+                                Mat resultMat = new Mat(testOneObservation.size(), 1, CvType.CV_32S);
 
                                 if (scrollFlingSVM.isTrained())
                                 {
@@ -237,10 +224,26 @@ public class TestBehaviouralBiometrics extends Activity implements
 
                                     System.out.println("Confidence: " + observationConfidenceFromSVM);
 
+
                                     if(observationConfidenceFromSVM < 0)
                                     {
                                         //Owner Observation
-                                        double newConf = normalizeOwnerConfidence(Math.abs(observationConfidenceFromSVM), 0, 50, high, low);
+                                        double newConf;
+                                        observationConfidenceFromSVM = Math.abs(observationConfidenceFromSVM);
+
+                                        if(observationConfidenceFromSVM <= 2)
+                                        {
+                                            // first reward apply
+                                            newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 0, 2, highOwner1, lowOwner1);
+                                        }
+                                        else
+                                        {
+                                            // second rewards apply
+                                            newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 2, 10, highOwner2, lowOwner2);
+                                        }
+
+                                        System.out.println("Normalised Confidence Owner: " + newConf);
+
                                         if(userTrust + newConf > 100)
                                             userTrust = 100;
                                         else
@@ -249,37 +252,37 @@ public class TestBehaviouralBiometrics extends Activity implements
                                     else
                                     {
                                         // guest Observation
-                                        double newConf = normalizeOwnerConfidence(Math.abs(observationConfidenceFromSVM), 0, 50, high, low);
+                                        double newConf;
+
+                                        if(observationConfidenceFromSVM <= 2)
+                                        {
+                                            // first reward apply
+                                            newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 0, 2, highGuest1, lowGuest1);
+                                        }
+                                        else
+                                        {
+                                            // second rewards apply
+                                            newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 2, 10, highGuest2, lowGuest2);
+                                        }
+
+                                        System.out.println("Normalised Confidence Guest: " + newConf);
+
                                         if(userTrust - newConf < 0)
                                             userTrust = 0;
                                         else
                                             userTrust -= newConf;
                                     }
-                                    Toast toast = Toast.makeText(getApplicationContext(), "" + userTrust, Toast.LENGTH_SHORT);
-                                    toast.show();
 
-                                    System.out.println("Confidence Normalized: " + normalizeOwnerConfidence(Math.abs(observationConfidenceFromSVM), 0, 50, high, low));
+                                    System.out.println("User Trust: " + userTrust);
 
-                                    if(userTrust < threshold)
-                                    {
-                                        //lock the phone
-                                        Intent intent = new Intent(TestBehaviouralBiometrics.this, LogIn.class);
-                                        startActivity(intent);
-
-                                    }
-
-                                    //int counter = countOwnerResults(resultMat);
-                                    /*Toast toast = Toast.makeText(getApplicationContext(), "SVM Scrolls -> " + counter + " / " + scrollFlingObservations.size()
-                                            + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%", Toast.LENGTH_SHORT);
-                                    toast.show();*/
                                 }
                             }
 
                             // uncomment the next 2 lines to add test data in Firebase.
                             if(OptionsScreen.saveData)
                             {
-                                Firebase newUserRef = ref.child("testData").child(userID).child("scrollFling");
-                                newUserRef.push().setValue(tempObs);
+                                ///Firebase newUserRef = ref.child("testData").child(userID).child("scrollFling");
+                                //newUserRef.push().setValue(tempObs);
                             }
                         }
 
@@ -315,7 +318,7 @@ public class TestBehaviouralBiometrics extends Activity implements
         int counter = 0;
         for (int i = 0; i < mat.rows(); i++)
         {
-            if (mat.get(i, 0)[0] == 1) counter++;
+            if (mat.get(i, 0)[0] < 0) counter++;
         }
 
         return counter;
@@ -349,18 +352,11 @@ public class TestBehaviouralBiometrics extends Activity implements
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                if(countGuestObs < guestsObservationsNeeded) trainScrollFlingObservations.add(obs);
+                                if (countGuestObs < guestsObservationsNeeded)
+                                    trainScrollFlingObservations.add(obs);
                                 countGuestObs++;
                             }
 
-                            // Taps:
-                            DataSnapshot dpTap = usrSnapshot.child("tap");
-                            for (DataSnapshot obsSnapshot : dpScroll.getChildren())
-                            {
-                                Observation obs = obsSnapshot.getValue(Observation.class);
-                                obs.setJudgement(0);
-                                trainTapOnlyObservations.add(obs);
-                            }
                         } else  // get data from the actual user
                         {
                             DataSnapshot scrollSnapshot = usrSnapshot.child("scrollFling");
@@ -382,26 +378,6 @@ public class TestBehaviouralBiometrics extends Activity implements
                                 Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided", Toast.LENGTH_SHORT);
                                 toast.show();
                             }
-                            //--------------------------------------------------------------------------------------------------------
-                            // Tap Information
-                            DataSnapshot tapSnapshot = usrSnapshot.child("tap");
-                            for (DataSnapshot obsSnapshot : tapSnapshot.getChildren())
-                            {
-                                Observation obs = obsSnapshot.getValue(Observation.class);
-                                trainTapOnlyObservations.add(obs);
-                            }
-
-                            if (trainTapOnlyObservations.size() > 0)
-                            {
-                                tapSVM = createAndTrainTapSVMClassifier(trainTapOnlyObservations);
-
-                            } else
-                            {
-                                System.out.println("No Tap data available. ");
-                                // display a Toast letting the user know that there is no training data available.
-                                Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided for Taps", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
                         }
                     }
                 }
@@ -419,12 +395,11 @@ public class TestBehaviouralBiometrics extends Activity implements
     {
         //initialise scrollFlingSVM
         SVM tempSVM = SVM.create();
-        tempSVM.setKernel(SVM.RBF);
+        tempSVM.setKernel(SVM.CHI2);
 
         tempSVM.setType(SVM.C_SVC);
-        //tempSVM.setType(SVM.NU_SVC);
-        //tempSVM.setC(1/Math.pow(2,12));
-        tempSVM.setNu(1/Math.pow(2,18.1));
+        tempSVM.setC(10.55);
+        tempSVM.setGamma(0.15);
 
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
@@ -433,27 +408,6 @@ public class TestBehaviouralBiometrics extends Activity implements
         //displayMatrix(trainScrollFlingMat);
 
         tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
-
-        return tempSVM;
-    }
-
-    private SVM createAndTrainTapSVMClassifier(ArrayList<Observation> arrayListObservations)
-    {
-        //initialise scrollFlingSVM
-        SVM tempSVM = SVM.create();
-        tempSVM.setKernel(SVM.RBF);
-        //tapSVM.setType(SVM.C_SVC);
-        tempSVM.setType(SVM.NU_SVC);
-        tempSVM.setC(1/Math.pow(2,13));
-        tempSVM.setNu(1/Math.pow(2,18.1));
-
-        Mat trainTapMat = buildTrainOrTestMatForTaps(arrayListObservations);
-        Mat labelsTapMat = buildLabelsMat(arrayListObservations);
-
-        //System.out.println("Train Matrix for Tap is:\n");
-        //displayMatrix(trainTapMat);
-
-        tempSVM.train(trainTapMat, Ml.ROW_SAMPLE, labelsTapMat);
 
         return tempSVM;
     }
@@ -513,91 +467,7 @@ public class TestBehaviouralBiometrics extends Activity implements
         System.out.println("Normalise Mat: " );
         displayMatrix(tempMat);
         return tempMat;
-    }
 
-    private Mat buildTrainOrTestMatForTaps(ArrayList<Observation> listObservations)
-    {
-        Mat tempMat = new Mat(listObservations.size(), Tap.numberOfFeatures, CvType.CV_32FC1);
-
-        for(int i = 0; i < listObservations.size(); i++)
-        {
-            Tap tapInteraction = new Tap(listObservations.get(i).getTouch());
-            int j = 0;
-
-            // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
-
-            // angular Velocity are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageAngularVelocity());
-
-
-            tempMat.put(i, j++, tapInteraction.getMidStrokeAreaCovered());
-
-            //Stop x
-            tempMat.put(i, j++, tapInteraction.getScaledEndPoint().x);
-
-            // Start x
-            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
-
-            //Duration
-            tempMat.put(i, j++, tapInteraction.getScaledDuration()/10);
-
-            // Start y
-            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);
-
-            //Stop y
-            tempMat.put(i, j, tapInteraction.getScaledEndPoint().y);
-
-        }
-
-        return tempMat;
-    }
-
-    private Mat normalizeMat(Mat toNormalize)
-    {
-        Mat tempMat = toNormalize.clone();
-
-        for(int col = 0; col < toNormalize.cols(); col++)
-        {
-            // only normalize data from 2 features that are not properly normalised
-            if(col == 5 || col == 8)
-            {
-                double min = getMinValueOFColumn(toNormalize, col);
-                double max = getMaxValueOFColumn(toNormalize, col);
-
-                for (int row = 0; row < toNormalize.rows(); row++)
-                {
-                    double[] element = toNormalize.get(row, col);
-                    tempMat.put(row, col, (element[0] - min) / (max - min));
-                }
-            }
-        }
-
-        return tempMat;
-    }
-
-    private double getMinValueOFColumn(Mat mat, int col)
-    {
-        double min = Double.MAX_VALUE;
-        for(int i = 0; i < mat.rows(); i++)
-        {
-            double [] temp = mat.get(i,col);
-            if(temp[0] < min ) min = temp[0];
-        }
-
-        return min;
-    }
-
-    private double getMaxValueOFColumn(Mat mat, int col)
-    {
-        double max = Double.MIN_VALUE;
-        for(int i = 0; i < mat.rows(); i++)
-        {
-            double [] temp = mat.get(i,col);
-            if(temp[0] > max ) max = temp[0];
-        }
-
-        return max;
     }
 
     @Override

@@ -23,6 +23,7 @@ import com.firebase.client.ValueEventListener;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.TermCriteria;
 import org.opencv.ml.KNearest;
 import org.opencv.ml.Ml;
 import org.opencv.ml.RTrees;
@@ -156,7 +157,7 @@ public class AllUsersValidation extends AppCompatActivity
                     }
 
                     /* Print all train data */
-                    displayTrainMatrixForEachUser();
+                    //displayTrainMatrixForEachUser();
 
                     /* Get test data from firebase and return predictions. */
                     getTestDataFromFirebaseAndTestSystem();
@@ -212,17 +213,17 @@ public class AllUsersValidation extends AppCompatActivity
                     }
 
                     /* Display Test Data on screen*/
-                    displayTestMatrixForEachUser();
+                    //displayTestMatrixForEachUser();
 
                     //calculate the best number of Observations needed from other users.
-                    float min = 100, max = 0, percentOnMinAvg = 0;
+                    /*float min = 100, max = 0, percentOnMinAvg = 0;
                     int bestValueForObsNumbers = 1;
                     int nrObsAtMaxOwnerPercent = 1;
 
 
                     ReturnValues retValuesValidation;
 
-                    for (int i = 10; i <= 10; i++)
+                    for (int i = 1; i <= 0; i++)
                     {
                         retValuesValidation = computeValidationForOneUserAgainstAllOthers(userID, userName, i, false);
                         System.out.println("Average: " + retValuesValidation.average);
@@ -249,7 +250,7 @@ public class AllUsersValidation extends AppCompatActivity
                     System.out.println("Avg: " + tempRV.average + " #obs: " + nrObsAtMaxOwnerPercent + " MaxOwnerPercent: " + tempRV.ownerPercent);
 
                     // display results for best value here
-                    computeValidationForOneUserAgainstAllOthers(userID, userName, bestValueForObsNumbers, true);
+                    computeValidationForOneUserAgainstAllOthers(userID, userName, bestValueForObsNumbers, true);*/
 
                 }
             }
@@ -351,6 +352,7 @@ public class AllUsersValidation extends AppCompatActivity
         ReturnValues rV = new ReturnValues();
 
         String output = "For " + forUserName + "\n # of Observations From Other users needed: " + (numberObsNeededFromOtherUsers + 1) +"\n";
+        String confusionMatrixRow = "For usr: ";
 
         // test the new SVM model with the test data
         for(int i = 0; i < userKeys.length; i++)
@@ -378,13 +380,20 @@ public class AllUsersValidation extends AppCompatActivity
                     }
                 }
 
-                //if(displayOutput)
+                //System.out.println("Result Mat " + i + " Of " + forUserName  + ": ");
+                //displayMatrix(resultMat);
+
+                if (i < userKeys.length - 1) confusionMatrixRow += counter + ",";
+                else confusionMatrixRow += counter + "";
+
+                if(displayOutput)
                     output += (i+1) + ". " + userNames[i] + ": SVM Scroll/Fling -> " + counter + " / " + testData.size() + " -> " + Math.round((counter * 100) / testData.size()) + "%\n";
             }
         }
 
         if(displayOutput) validationText.setText(output);
-        System.out.println(output);
+
+        System.out.println(confusionMatrixRow);
 
         rV.average = sumOfPercentages/numberOfUsersWithTestData;
         rV.ownerPercent = ownerPercent;
@@ -465,44 +474,21 @@ public class AllUsersValidation extends AppCompatActivity
     {
         SVM tempSVM = SVM.create();
         //initialise scrollFlingSVM
-        tempSVM.setKernel(SVM.RBF);
+        tempSVM.setKernel(SVM.CHI2);
 
-        //tempSVM.setType(SVM.C_SVC);
-        tempSVM.setType(SVM.NU_SVC);
+        tempSVM.setType(SVM.C_SVC);
+        //tempSVM.setType(SVM.NU_SVC);
 
-        //tempSVM.setP(1);
-        //tempSVM.setC(1/Math.pow(2,1));
-        //tempSVM.setC(1/Math.pow(2,2));
-        //tempSVM.setC(1/Math.pow(2,3));
-        //tempSVM.setC(1/Math.pow(2,4));
-        //tempSVM.setC(1/Math.pow(2,5));
-        //tempSVM.setC(1/Math.pow(2,6));
-        //tempSVM.setC(1/Math.pow(2,7));
-        //tempSVM.setC(1/Math.pow(2,8));
-        //tempSVM.setC(1/Math.pow(2,9));
-        //tempSVM.setC(1/Math.pow(2,10));
-        //tempSVM.setC(1/Math.pow(2,11));
-        //tempSVM.setC(1/Math.pow(2,12));
-        //tempSVM.setC(1/Math.pow(2,12.5));
-        //tempSVM.setC(1/Math.pow(2,13));
+        tempSVM.setC(10.55);
+        //tempSVM.setC(Math.pow(2,1.12));
 
-        //tempSVM.setNu(0.99);
-        //tempSVM.setNu(1/Math.pow(2,1.1));
-        //tempSVM.setNu(1/Math.pow(2,1.5));
-        //tempSVM.setNu(1/Math.pow(2,1.7));
-        //tempSVM.setNu(1/Math.pow(2,1.9));
-        //tempSVM.setNu(1/Math.pow(2,2));
-        //tempSVM.setNu(1/Math.pow(2,5));
-        //tempSVM.setNu(1/Math.pow(2,6));
-        //tempSVM.setNu(1/Math.pow(2,7));
-        //tempSVM.setNu(1/Math.pow(2,8));
-        //tempSVM.setNu(1/Math.pow(2,9));
-        //tempSVM.setNu(1/Math.pow(2,10));
-        //tempSVM.setNu(1/Math.pow(2,11));
-        //tempSVM.setNu(1/Math.pow(2,13));
-        tempSVM.setNu(1/Math.pow(2,18.1));
-        //tempSVM.setNu(1/Math.pow(2,18.5));
-        //tempSVM.setNu(1/Math.pow(2,28));
+        tempSVM.setGamma(0.2);
+        //tempSVM.setGamma(Math.pow(2,8));
+
+        /*Mat weightsMat = new Mat(2, 1, CvType.CV_32FC1);
+        weightsMat.put(0, 0, 0.1 );
+        weightsMat.put(1, 0, 0.9 );
+        tempSVM.setClassWeights(weightsMat);*/
 
         Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
@@ -510,7 +496,7 @@ public class AllUsersValidation extends AppCompatActivity
         //System.out.println("Train Matrix is:\n");
         //displayMatrix(trainScrollFlingMat);
 
-        System.out.println("Coef0: " + tempSVM.getCoef0() );
+        /*System.out.println("Coef0: " + tempSVM.getCoef0() );
         System.out.println("C: " + tempSVM.getC());
         System.out.println("TermCriteria: " + tempSVM.getTermCriteria().toString());
         System.out.println("Degree: " + tempSVM.getDegree());
@@ -519,7 +505,7 @@ public class AllUsersValidation extends AppCompatActivity
         System.out.println("P: " + tempSVM.getP());
         System.out.println("Type: " + tempSVM.getType());
         System.out.println("ClassWeights: " );
-        displayMatrix(tempSVM.getClassWeights());
+        displayMatrix(tempSVM.getClassWeights());*/
 
         tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
 
