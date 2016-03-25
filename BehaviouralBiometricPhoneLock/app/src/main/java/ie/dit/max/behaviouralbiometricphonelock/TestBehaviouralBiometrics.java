@@ -275,6 +275,16 @@ public class TestBehaviouralBiometrics extends Activity implements
 
                                     System.out.println("User Trust: " + userTrust);
 
+                                    // Analyse Trust Values
+
+                                    if(userTrust < threshold)
+                                    {
+                                        //log out user
+                                        Intent intent = new Intent(TestBehaviouralBiometrics.this, LogIn.class);
+                                        startActivity(intent);
+
+                                    }
+
                                 }
                             }
 
