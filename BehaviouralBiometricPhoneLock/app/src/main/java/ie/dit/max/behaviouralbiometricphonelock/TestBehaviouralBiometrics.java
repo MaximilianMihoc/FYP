@@ -1,6 +1,8 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,6 +40,9 @@ public class TestBehaviouralBiometrics extends Activity implements
     Firebase ref;
 
     private static final String DEBUG_TAG = "Test Activity";
+    private DevicePolicyManager mDevicePolicyManager;
+    private ComponentName mComponentName;
+
     private final static double threshold = 70; //Max
     private int guestsObservationsNeeded = 4;
     private double highOwner1 = 5;  // MaxReword1 for Owner
@@ -89,6 +94,9 @@ public class TestBehaviouralBiometrics extends Activity implements
         Firebase.setAndroidContext(this);
         ref = new Firebase("https://fyp-max.firebaseio.com");
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        mDevicePolicyManager = (DevicePolicyManager)getSystemService(
+                Context.DEVICE_POLICY_SERVICE);
+        mComponentName = new ComponentName(this, MyAdminReceiver.class);
 
         mDetector = new GestureDetectorCompat(this, this);
         mDetector.setOnDoubleTapListener(this);
@@ -275,13 +283,20 @@ public class TestBehaviouralBiometrics extends Activity implements
 
                                     System.out.println("User Trust: " + userTrust);
 
-                                    // Analyse Trust Values
-
+                                    // Analyse Trust Values and lock phone if user not genuine
                                     if(userTrust < threshold)
                                     {
                                         //log out user
                                         Intent intent = new Intent(TestBehaviouralBiometrics.this, LogIn.class);
                                         startActivity(intent);
+
+                                        //lock user
+                                        boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
+                                        if (isAdmin) {
+                                            mDevicePolicyManager.lockNow();
+                                        }else{
+                                            Toast.makeText(getApplicationContext(), "Not Registered as admin", Toast.LENGTH_SHORT).show();
+                                        }
 
                                     }
 
