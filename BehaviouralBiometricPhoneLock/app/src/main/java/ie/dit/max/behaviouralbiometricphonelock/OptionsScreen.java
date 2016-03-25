@@ -217,12 +217,15 @@ public class OptionsScreen extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
+        switch(item.getItemId())
         {
-            return true;
+            case R.id.action_settings:
+                return true;
+            case R.id.action_lockOption:
+                startActivity(new Intent(this, MyLockScreenActivity.class));
+                return true;
+            default:
+                super.onOptionsItemSelected(item);
         }
 
         return super.onOptionsItemSelected(item);
