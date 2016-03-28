@@ -158,8 +158,61 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
-                startActivity(trainIntent);
+                // Check if train data exists for the current user
+                Firebase trainDataRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
+                trainDataRef.addListenerForSingleValueEvent(new ValueEventListener()
+                {
+
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        loadingPanel.setVisibility(View.GONE);
+                        if (dataSnapshot.getValue() == null)
+                        {
+                            Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                        else
+                        {
+                            // check if test data for password Change exist
+                            Firebase testDataRef = new Firebase("https://fyp-max.firebaseio.com/testDataForPasswordChange/" + userID);
+                            testDataRef.addListenerForSingleValueEvent(new ValueEventListener()
+                            {
+
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot)
+                                {
+                                    loadingPanel.setVisibility(View.GONE);
+                                    if (dataSnapshot.getValue() == null)
+                                    {
+                                        Toast toast = Toast.makeText(getApplicationContext(), "Please use the app for a while before changing the password." +
+                                                " Password can not be changed if the application is not used. \n\n" +
+                                                "Please play Country List game or Use Stack Overflow for couple of minutes.", Toast.LENGTH_LONG);
+                                        toast.show();
+                                    }
+                                    else
+                                    {
+                                        Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
+                                        startActivity(trainIntent);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError)
+                                {
+
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError)
+                    {
+
+                    }
+                });
+
             }
         });
 
@@ -168,6 +221,10 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
+                // Delete data that would be used for changing password.
+                Firebase deleteTestDataForPasswordChange = new Firebase("https://fyp-max.firebaseio.com/testDataForPasswordChange/" + userID);
+                deleteTestDataForPasswordChange.removeValue();
+
                 ref.unauth();
                 Intent trainIntent = new Intent(OptionsScreen.this, LogIn.class);
                 startActivity(trainIntent);

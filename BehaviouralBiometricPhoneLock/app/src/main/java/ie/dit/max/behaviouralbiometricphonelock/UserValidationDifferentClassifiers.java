@@ -215,7 +215,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     userNames[i++] = u.getUserName();//"User " + i ; //
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, userNames);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, userNames);
                 trainSpinner.setAdapter(adapter);
                 testSpinner.setAdapter(adapter);
 
@@ -268,7 +268,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                //if(i < 10)
                                 trainTapOnlyObservations.add(obs);
                                 i++;
                             }

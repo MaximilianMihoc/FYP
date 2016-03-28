@@ -302,6 +302,10 @@ public class TestBehaviouralBiometrics extends Activity implements
                                 Firebase newUserRef = ref.child("testData").child(userID).child("scrollFling");
                                 newUserRef.push().setValue(tempObs);
                             }
+
+                            //save test data to be used if password changes. Gets deleted automatically
+                            Firebase newUserRef = ref.child("testDataForPasswordChange").child(userID).child("scrollFling");
+                            newUserRef.push().setValue(tempObs);
                         }
 
                         points.clear();
