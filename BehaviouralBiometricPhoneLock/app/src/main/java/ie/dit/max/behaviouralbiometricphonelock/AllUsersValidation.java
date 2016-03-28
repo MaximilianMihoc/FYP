@@ -80,8 +80,8 @@ public class AllUsersValidation extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                //computeValidationForOneUserAgainstAllOthers(userID, userName, 4, true);
-                buildAndDisplayConfidenceMatrix();
+                computeValidationForOneUserAgainstAllOthers(userID, userName, 4, true);
+                //buildAndDisplayConfidenceMatrix();
             }
         });
 
@@ -147,17 +147,7 @@ public class AllUsersValidation extends AppCompatActivity
                         //add train data to HashMap
                         trainDataMapScrollFling.put(usrSnapshot.getKey(), tempArrayObs);
 
-                        // Taps - Later
-                        /*DataSnapshot dpTap = usrSnapshot.child("tap");
-                        for (DataSnapshot obsSnapshot : dpTap.getChildren())
-                        {
-                            Observation obs = obsSnapshot.getValue(Observation.class);
-                        }*/
-
                     }
-
-                    /* Print all train data */
-                    //displayTrainMatrixForEachUser();
 
                     /* Get test data from firebase and return predictions. */
                     getTestDataFromFirebaseAndTestSystem();
@@ -202,31 +192,20 @@ public class AllUsersValidation extends AppCompatActivity
                         }
                         //add test data to HashMap
                         testDataMapScrollFling.put(usrSnapshot.getKey(), tempArrayObs);
-
-                        // Taps - Later
-                        /*DataSnapshot dpTap = usrSnapshot.child("tap");
-                        for (DataSnapshot obsSnapshot : dpTap.getChildren())
-                        {
-                            Observation obs = obsSnapshot.getValue(Observation.class);
-                        }*/
-
                     }
 
-                    /* Display Test Data on screen*/
-                    //displayTestMatrixForEachUser();
-
                     //calculate the best number of Observations needed from other users.
-                    /*float min = 100, max = 0, percentOnMinAvg = 0;
+                    float min = 100, max = 0, percentOnMinAvg = 0;
                     int bestValueForObsNumbers = 1;
                     int nrObsAtMaxOwnerPercent = 1;
 
 
                     ReturnValues retValuesValidation;
 
-                    for (int i = 1; i <= 0; i++)
+                    for (int i = 10; i <= 100; i++)
                     {
                         retValuesValidation = computeValidationForOneUserAgainstAllOthers(userID, userName, i, false);
-                        System.out.println("Average: " + retValuesValidation.average);
+                        //System.out.println("Average: " + retValuesValidation.average);
 
                         if (retValuesValidation.average < min) //&& retValuesValidation.ownerPercent >= 70)
                         {
@@ -250,7 +229,7 @@ public class AllUsersValidation extends AppCompatActivity
                     System.out.println("Avg: " + tempRV.average + " #obs: " + nrObsAtMaxOwnerPercent + " MaxOwnerPercent: " + tempRV.ownerPercent);
 
                     // display results for best value here
-                    computeValidationForOneUserAgainstAllOthers(userID, userName, bestValueForObsNumbers, true);*/
+                    computeValidationForOneUserAgainstAllOthers(userID, userName, bestValueForObsNumbers, true);
 
                 }
             }
@@ -267,32 +246,6 @@ public class AllUsersValidation extends AppCompatActivity
     {
         float average;
         float ownerPercent;
-    }
-
-    private void displayTrainMatrixForEachUser()
-    {
-        for( HashMap.Entry<String, ArrayList<Observation>> trainDataEntry : trainDataMapScrollFling.entrySet())
-        {
-            ArrayList<Observation> tempList = trainDataEntry.getValue();
-
-            // print train matrix for all users, one at a time
-            System.out.println("Train data for UserID: " + trainDataEntry.getKey());
-            displayMatrix(buildTrainOrTestMatForScrollFling(tempList));
-
-        }
-    }
-
-    private void displayTestMatrixForEachUser()
-    {
-        for( HashMap.Entry<String, ArrayList<Observation>> trainDataEntry : testDataMapScrollFling.entrySet())
-        {
-            ArrayList<Observation> tempList = trainDataEntry.getValue();
-
-            // print train matrix for all users, one at a time
-            System.out.println("Test data for UserID: " + trainDataEntry.getKey());
-            displayMatrix(buildTrainOrTestMatForScrollFling(tempList));
-
-        }
     }
 
     // this method builds a confidence matrix and displays it on console
@@ -393,7 +346,7 @@ public class AllUsersValidation extends AppCompatActivity
 
         if(displayOutput) validationText.setText(output);
 
-        System.out.println(confusionMatrixRow);
+        //System.out.println(confusionMatrixRow);
 
         rV.average = sumOfPercentages/numberOfUsersWithTestData;
         rV.ownerPercent = ownerPercent;
@@ -433,36 +386,12 @@ public class AllUsersValidation extends AppCompatActivity
         return rTree;
     }
 
-    private RTrees createAndTraintapRTreeClassifier(ArrayList<Observation> arrayListObservations)
-    {
-        RTrees rTree = RTrees.create();
-        Mat rTreeTrainMat = buildTrainOrTestMatForTaps(arrayListObservations);
-        Mat rTreeLabelsMat = buildLabelsMat(arrayListObservations);
-
-        rTree.train(rTreeTrainMat, Ml.ROW_SAMPLE, rTreeLabelsMat);
-
-        return rTree;
-    }
-
     private KNearest createAndTrainScrollFlingKNNClassifier(ArrayList<Observation> arrayListObservations)
     {
         KNearest kNN = KNearest.create();
         System.out.println("K is: " + kNN.getDefaultK());
 
         Mat kNNTrainMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
-        Mat kNNLabelsMat = buildLabelsMat(arrayListObservations);
-
-        kNN.train(kNNTrainMat, Ml.ROW_SAMPLE, kNNLabelsMat);
-
-        return kNN;
-    }
-
-    private KNearest createAndTrainTapKNNClassifier(ArrayList<Observation> arrayListObservations)
-    {
-        KNearest kNN = KNearest.create();
-        //System.out.println("K is: " + kNN.getDefaultK());
-
-        Mat kNNTrainMat = buildTrainOrTestMatForTaps(arrayListObservations);
         Mat kNNLabelsMat = buildLabelsMat(arrayListObservations);
 
         kNN.train(kNNTrainMat, Ml.ROW_SAMPLE, kNNLabelsMat);
@@ -508,27 +437,6 @@ public class AllUsersValidation extends AppCompatActivity
         displayMatrix(tempSVM.getClassWeights());*/
 
         tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
-
-        return tempSVM;
-    }
-
-    private SVM createAndTrainTapSVMClassifier(ArrayList<Observation> arrayListObservations)
-    {
-        SVM tempSVM = SVM.create();
-        //initialise scrollFlingSVM
-        tempSVM.setKernel(SVM.RBF);
-        //tapSVM.setType(SVM.C_SVC);
-        tempSVM.setType(SVM.NU_SVC);
-        tempSVM.setC(1/Math.pow(2,13));
-        tempSVM.setNu(1 / Math.pow(2, 11));
-
-        Mat trainTapMat = buildTrainOrTestMatForTaps(arrayListObservations);
-        Mat labelsTapMat = buildLabelsMat(arrayListObservations);
-
-        //System.out.println("Train Matrix for Tap is:\n");
-        //displayMatrix(trainTapMat);
-
-        tempSVM.train(trainTapMat, Ml.ROW_SAMPLE, labelsTapMat);
 
         return tempSVM;
     }
@@ -596,45 +504,7 @@ public class AllUsersValidation extends AppCompatActivity
             tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
 
             // Stop y
-            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().y);
-        }
-
-        return tempMat;
-    }
-
-    private Mat buildTrainOrTestMatForTaps(ArrayList<Observation> listObservations)
-    {
-        Mat tempMat = new Mat(listObservations.size(), Tap.numberOfFeatures, CvType.CV_32FC1);
-
-        for(int i = 0; i < listObservations.size(); i++)
-        {
-            Tap tapInteraction = new Tap(listObservations.get(i).getTouch());
-            int j = 0;
-
-            // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
-
-            // angular Velocity are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageAngularVelocity());
-
-
-            tempMat.put(i, j++, tapInteraction.getMidStrokeAreaCovered());
-
-            //Stop x
-            tempMat.put(i, j++, tapInteraction.getScaledEndPoint().x);
-
-            // Start x
-            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().x);
-
-            //Duration
-            tempMat.put(i, j++, tapInteraction.getScaledDuration());
-
-            // Start y
-            tempMat.put(i, j++, tapInteraction.getScaledStartPoint().y);
-
-            //Stop y
-            tempMat.put(i, j++, tapInteraction.getScaledEndPoint().y);
-
+            tempMat.put(i, j, scrollFlingObs.getScaledEndPoint().y);
         }
 
         return tempMat;

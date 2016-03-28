@@ -29,7 +29,7 @@
         android:background="@drawable/bg_button"
         android:id="@+id/goToCountryListGame"
         android:layout_below="@+id/goToTrainFirstScreen"
-        android:layout_alignEnd="@+id/settingsButton"
+        android:layout_alignEnd="@+id/changePassword"
         android:layout_marginTop="25dp"
         android:layout_alignParentStart="true"/>
 
@@ -47,9 +47,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
+        android:text="Change Password"
         android:background="@drawable/bg_button"
-        android:id="@+id/settingsButton"
+        android:id="@+id/changePassword"
         android:layout_below="@+id/goToStackOverflowApp"
         android:layout_alignParentStart="true"
         android:layout_marginTop="24dp"
@@ -58,11 +58,11 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Validate Input"
+        android:text="Validate Test Data"
         android:background="@drawable/bg_button"
         android:id="@+id/goToCrossValidation"
         android:layout_marginTop="24dp"
-        android:layout_below="@+id/settingsButton"
+        android:layout_below="@+id/changePassword"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"/>
 
@@ -87,20 +87,6 @@
         android:id="@+id/saveDataCheckBox"
         android:layout_below="@+id/logOutButton"
         android:layout_marginTop="15dp"/>
-
-    <TextView
-        android:id="@+id/changePassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ChangePassword"
-        android:textColor="@color/green"
-        android:textSize="15sp"
-        android:layout_below="@id/logOutButton"
-        android:layout_alignEnd="@id/logOutButton"
-        android:layout_marginTop="15dp"
-        android:selectAllOnFocus="true"
-        android:linksClickable="true"
-        android:clickable="true"/>
 
         <ProgressBar
             android:id="@+id/loadingPanel"

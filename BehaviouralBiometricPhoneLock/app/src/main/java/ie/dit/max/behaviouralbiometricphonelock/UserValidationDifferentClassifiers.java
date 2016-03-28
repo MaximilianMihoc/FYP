@@ -377,7 +377,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         //displayMatrix(buildTrainOrTestMatForScrollFling(scrollFlingObservations));
 
                         // SVM
-                        scrollFlingSVM.predict(testDataMat, resultMat, 1);
+                        scrollFlingSVM.predict(testDataMat, resultMat, 0);
                         int counter = countOwnerResults(resultMat);
                         scrollSVMTextView.setText("SVM Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
@@ -477,7 +477,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         int counter = 0;
         for (int i = 0; i < mat.rows(); i++)
         {
-            if (mat.get(i, 0)[0] < 0) counter++;
+            if (mat.get(i, 0)[0] == 1) counter++;
         }
 
         return counter;

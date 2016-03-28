@@ -32,12 +32,10 @@ public class OptionsScreen extends AppCompatActivity
     Button goToTrainFirstActivity;
     Button goToCrossValidation;
     Button goToCountryListGame;
-    Button goToSettings;
+    Button goToChangePassword;
     Button logOutButton;
     CheckBox saveDataCheckBox;
     ProgressBar loadingPanel;
-    TextView changePassword;
-
     Firebase ref;
     SharedPreferences sharedpreferences;
     private String userID;
@@ -61,9 +59,8 @@ public class OptionsScreen extends AppCompatActivity
         goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
         goToCrossValidation = (Button) findViewById(R.id.goToCrossValidation);
         goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
-        goToSettings = (Button) findViewById(R.id.settingsButton);
+        goToChangePassword = (Button) findViewById(R.id.changePassword);
         logOutButton = (Button) findViewById(R.id.logOutButton);
-        changePassword = (TextView) findViewById(R.id.changePassword);
         saveDataCheckBox = (CheckBox) findViewById(R.id.saveDataCheckBox);
         saveDataCheckBox.setChecked(true);
 
@@ -155,19 +152,14 @@ public class OptionsScreen extends AppCompatActivity
 
             }
         });
-
-        goToSettings.setText("Delete Test Data");
-        goToSettings.setOnClickListener(new View.OnClickListener()
+        
+        goToChangePassword.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                Firebase dataRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
-                dataRef.removeValue();
-
-                Toast toast = Toast.makeText(getApplicationContext(), "Test data has been deleted.", Toast.LENGTH_SHORT);
-                toast.show();
-
+                Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
+                startActivity(trainIntent);
             }
         });
 
@@ -189,16 +181,6 @@ public class OptionsScreen extends AppCompatActivity
             public void onClick(View v)
             {
                 saveData = saveDataCheckBox.isChecked();
-            }
-        });
-
-        changePassword.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
-                startActivity(trainIntent);
             }
         });
     }
