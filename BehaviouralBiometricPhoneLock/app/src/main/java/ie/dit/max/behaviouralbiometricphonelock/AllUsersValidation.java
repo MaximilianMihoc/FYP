@@ -53,6 +53,7 @@ public class AllUsersValidation extends AppCompatActivity
     String[] userNames;
 
     TextView validationText;
+    TextView displayMinMaxValues;
     Button buttonChange;
 
     @Override
@@ -68,6 +69,7 @@ public class AllUsersValidation extends AppCompatActivity
         if(sharedpreferences.contains("ValidateDataForUserName")) userName = sharedpreferences.getString("ValidateDataForUserName", "");
 
         validationText = (TextView) findViewById(R.id.validationText);
+        displayMinMaxValues = (TextView) findViewById(R.id.displayMinMaxValues);
         buttonChange = (Button) findViewById(R.id.buttonChange);
 
         trainDataMapScrollFling = new HashMap<>();
@@ -75,13 +77,40 @@ public class AllUsersValidation extends AppCompatActivity
 
         populateUserArrays();
 
+        buttonChange.setText("Check Errors");
         buttonChange.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                computeValidationForOneUserAgainstAllOthers(userID, userName, 4, true);
-                //buildAndDisplayConfidenceMatrix();
+                // check Errors for number of observations from settings
+                final Firebase settingsRef = new Firebase("https://fyp-max.firebaseio.com/settings/" + userID);
+                settingsRef.addListenerForSingleValueEvent(new ValueEventListener()
+                {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        if (dataSnapshot.getValue() == null)
+                        {
+                            computeValidationForOneUserAgainstAllOthers(userID, userName, 4, true);
+                        }
+                        else
+                        {
+                            UserSettings userSettings = dataSnapshot.getValue(UserSettings.class);
+                            computeValidationForOneUserAgainstAllOthers(userID, userName, userSettings.getNrObsFromAnotherUser(), true);
+                        }
+
+                        // used to create confidence matrix
+                        // buildAndDisplayConfidenceMatrix();
+
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError)
+                    {
+
+                    }
+                });
             }
         });
 
@@ -103,7 +132,7 @@ public class AllUsersValidation extends AppCompatActivity
                 {
                     User u = usrSnapshot.getValue(User.class);
                     userKeys[i] = u.getUserID();
-                    userNames[i++] = "User " + i; //u.getUserName();
+                    userNames[i++] = u.getUserName(); //"User " + i; //
                 }
 
                 getTrainDataFromUsersFirebase();
@@ -224,12 +253,14 @@ public class AllUsersValidation extends AppCompatActivity
                     // calculate the average for the max Owner Percent
                     ReturnValues tempRV = computeValidationForOneUserAgainstAllOthers(userID, userName, nrObsAtMaxOwnerPercent, false);
 
-                    System.out.println("MinAvg: " + min + " #obs: " + bestValueForObsNumbers + " PercentOnMinAvg: " + percentOnMinAvg);
-
-                    System.out.println("Avg: " + tempRV.average + " #obs: " + nrObsAtMaxOwnerPercent + " MaxOwnerPercent: " + tempRV.ownerPercent);
-
                     // display results for best value here
                     computeValidationForOneUserAgainstAllOthers(userID, userName, bestValueForObsNumbers, true);
+
+                    String minMaxValues = "\n\n";
+                    minMaxValues += "Min Average Error " + min + " for " + bestValueForObsNumbers + " observations with Percent accuracy: " + percentOnMinAvg;
+                    minMaxValues += "\n\nAverage error " + tempRV.average + " for " + nrObsAtMaxOwnerPercent + " observations when Owner accuracy is: " + tempRV.ownerPercent;
+
+                    displayMinMaxValues.setText(minMaxValues);
 
                 }
             }

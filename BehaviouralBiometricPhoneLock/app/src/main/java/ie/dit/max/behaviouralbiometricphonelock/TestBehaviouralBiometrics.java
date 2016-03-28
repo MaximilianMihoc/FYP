@@ -40,11 +40,14 @@ public class TestBehaviouralBiometrics extends Activity implements
     Firebase ref;
 
     private static final String DEBUG_TAG = "Test Activity";
+    private static double userTrust = 100;
+
     private DevicePolicyManager mDevicePolicyManager;
     private ComponentName mComponentName;
 
-    private final static double threshold = 70; //Max
-    private int guestsObservationsNeeded = 4;
+    private double threshold;
+    private int guestsObservationsNeeded;
+
     private double highOwner1 = 5;  // MaxReword1 for Owner
     private double highOwner2 = 10; // MaxReword2 for Owner
     private double lowOwner1 = 1;   // MinReword1 for Owner
@@ -55,9 +58,6 @@ public class TestBehaviouralBiometrics extends Activity implements
     private double lowGuest1 = 1;   // MinReword1 for Guest
     private double lowGuest2 = 5;   // MinReword2 for Guest
 
-
-    private double userTrust;
-
     private GestureDetectorCompat mDetector;
 
     //to be used for assigning listener to different views.
@@ -66,7 +66,6 @@ public class TestBehaviouralBiometrics extends Activity implements
     Point startPoint, endPoint;
     ArrayList<Point> points = new ArrayList<>();
     ArrayList<Observation> trainScrollFlingObservations;
-    ArrayList<Observation> scrollFlingObservations;
 
     private ArrayList<Float> linearAccelerations;
     private ArrayList<Float> angularVelocities;
@@ -85,7 +84,6 @@ public class TestBehaviouralBiometrics extends Activity implements
     private String userID;
 
     private static SVM scrollFlingSVM;
-    private static SVM tapSVM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -103,7 +101,6 @@ public class TestBehaviouralBiometrics extends Activity implements
 
         linearAcceleration = 0.0f;
         angularVelocity = 0.0f;
-        userTrust = 100;
 
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -115,7 +112,6 @@ public class TestBehaviouralBiometrics extends Activity implements
         senGyroscope = senSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         senSensorManager.registerListener(this, senGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
-        scrollFlingObservations = new ArrayList<>();
         trainScrollFlingObservations = new ArrayList<>();
         points = new ArrayList<>();
         linearAccelerations = new ArrayList<>();
@@ -124,8 +120,8 @@ public class TestBehaviouralBiometrics extends Activity implements
         // get User details
         userID = sharedpreferences.getString("UserID", "");
 
-        /* Get user training data from Firebase - Owner and Guest data */
-        getTrainDataFromFirebase();
+        /* Get user Settings */
+        getUserSettings();
 
         gestureListener = new View.OnTouchListener()
         {
@@ -219,95 +215,92 @@ public class TestBehaviouralBiometrics extends Activity implements
                             ArrayList<Observation> testOneObservation = new ArrayList<>();
                             testOneObservation.add(tempObs);
 
-                            if(scrollFlingObservations.size() % 6 == 0)
+                            Mat testDataMat = buildTrainOrTestMatForScrollFling(testOneObservation);
+                            Mat resultMat = new Mat(testOneObservation.size(), 1, CvType.CV_32S);
+
+                            if (scrollFlingSVM.isTrained())
                             {
-                                Mat testDataMat = buildTrainOrTestMatForScrollFling(testOneObservation);
-                                Mat resultMat = new Mat(testOneObservation.size(), 1, CvType.CV_32S);
+                                scrollFlingSVM.predict(testDataMat, resultMat, 1);
 
-                                if (scrollFlingSVM.isTrained())
+                                double observationConfidenceFromSVM =  resultMat.get(0, 0)[0];
+
+                                System.out.println("Confidence: " + observationConfidenceFromSVM);
+
+
+                                if(observationConfidenceFromSVM < 0)
                                 {
-                                    scrollFlingSVM.predict(testDataMat, resultMat, 1);
+                                    //Owner Observation
+                                    double newConf;
+                                    observationConfidenceFromSVM = Math.abs(observationConfidenceFromSVM);
 
-                                    double observationConfidenceFromSVM =  resultMat.get(0, 0)[0];
-
-                                    System.out.println("Confidence: " + observationConfidenceFromSVM);
-
-
-                                    if(observationConfidenceFromSVM < 0)
+                                    if(observationConfidenceFromSVM <= 2)
                                     {
-                                        //Owner Observation
-                                        double newConf;
-                                        observationConfidenceFromSVM = Math.abs(observationConfidenceFromSVM);
-
-                                        if(observationConfidenceFromSVM <= 2)
-                                        {
-                                            // first reward apply
-                                            newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 0, 2, highOwner1, lowOwner1);
-                                        }
-                                        else
-                                        {
-                                            // second rewards apply
-                                            newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 2, 10, highOwner2, lowOwner2);
-                                        }
-
-                                        System.out.println("Normalised Confidence Owner: " + newConf);
-
-                                        if(userTrust + newConf > 100)
-                                            userTrust = 100;
-                                        else
-                                            userTrust += newConf;
+                                        // first reward apply
+                                        newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 0, 2, highOwner1, lowOwner1);
                                     }
                                     else
                                     {
-                                        // guest Observation
-                                        double newConf;
-
-                                        if(observationConfidenceFromSVM <= 2)
-                                        {
-                                            // first reward apply
-                                            newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 0, 2, highGuest1, lowGuest1);
-                                        }
-                                        else
-                                        {
-                                            // second rewards apply
-                                            newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 2, 10, highGuest2, lowGuest2);
-                                        }
-
-                                        System.out.println("Normalised Confidence Guest: " + newConf);
-
-                                        if(userTrust - newConf < 0)
-                                            userTrust = 0;
-                                        else
-                                            userTrust -= newConf;
+                                        // second rewards apply
+                                        newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 2, 10, highOwner2, lowOwner2);
                                     }
 
-                                    System.out.println("User Trust: " + userTrust);
+                                    System.out.println("Normalised Confidence Owner: " + newConf);
 
-                                    // Analyse Trust Values and lock phone if user not genuine
-                                    if(userTrust < threshold)
+                                    if(userTrust + newConf > 100)
+                                        userTrust = 100;
+                                    else
+                                        userTrust += newConf;
+                                }
+                                else
+                                {
+                                    // guest Observation
+                                    double newConf;
+
+                                    if(observationConfidenceFromSVM <= 2)
                                     {
-                                        //log out user
-                                        Intent intent = new Intent(TestBehaviouralBiometrics.this, LogIn.class);
-                                        startActivity(intent);
+                                        // first reward apply
+                                        newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 0, 2, highGuest1, lowGuest1);
+                                    }
+                                    else
+                                    {
+                                        // second rewards apply
+                                        newConf = normalizeOwnerConfidence(observationConfidenceFromSVM, 2, 10, highGuest2, lowGuest2);
+                                    }
 
-                                        //lock user
-                                        boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
-                                        if (isAdmin) {
-                                            mDevicePolicyManager.lockNow();
-                                        }else{
-                                            Toast.makeText(getApplicationContext(), "Not Registered as admin", Toast.LENGTH_SHORT).show();
-                                        }
+                                    System.out.println("Normalised Confidence Guest: " + newConf);
 
+                                    if(userTrust - newConf < 0)
+                                        userTrust = 0;
+                                    else
+                                        userTrust -= newConf;
+                                }
+
+                                System.out.println("User Trust: " + userTrust);
+
+                                // Analyse Trust Values and lock phone if user not genuine
+                                if(userTrust < threshold)
+                                {
+                                    //log out user
+                                    Intent intent = new Intent(TestBehaviouralBiometrics.this, LogIn.class);
+                                    startActivity(intent);
+
+                                    //lock user
+                                    boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
+                                    if (isAdmin) {
+                                        mDevicePolicyManager.lockNow();
+                                    }else{
+                                        Toast.makeText(getApplicationContext(), "Not Registered as admin", Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
+
                             }
 
                             // uncomment the next 2 lines to add test data in Firebase.
                             if(OptionsScreen.saveData)
                             {
-                                ///Firebase newUserRef = ref.child("testData").child(userID).child("scrollFling");
-                                //newUserRef.push().setValue(tempObs);
+                                Firebase newUserRef = ref.child("testData").child(userID).child("scrollFling");
+                                newUserRef.push().setValue(tempObs);
                             }
                         }
 
@@ -412,6 +405,39 @@ public class TestBehaviouralBiometrics extends Activity implements
             public void onCancelled(FirebaseError firebaseError)
             {
                 System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+    }
+
+    private void getUserSettings()
+    {
+        final Firebase settingsRef = new Firebase("https://fyp-max.firebaseio.com/settings/" + userID);
+        settingsRef.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.getValue() == null)
+                {
+                    // Default values
+                    threshold = 70;
+                    guestsObservationsNeeded = 4;
+                }
+                else
+                {
+                    UserSettings userSettings = dataSnapshot.getValue(UserSettings.class);
+                    threshold = userSettings.getThreshold();
+                    guestsObservationsNeeded = userSettings.getNrObsFromAnotherUser() - 1;
+                }
+
+                /* Get user training data from Firebase - Owner and Guest data */
+                getTrainDataFromFirebase();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError)
+            {
+
             }
         });
     }

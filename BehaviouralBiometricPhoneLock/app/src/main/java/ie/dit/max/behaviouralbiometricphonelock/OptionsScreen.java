@@ -202,6 +202,7 @@ public class OptionsScreen extends AppCompatActivity
         switch(item.getItemId())
         {
             case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.action_lockOption:
                 startActivity(new Intent(this, MyLockScreenActivity.class));

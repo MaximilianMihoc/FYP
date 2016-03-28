@@ -19,23 +19,26 @@
 
             <TextView
                 android:id="@+id/validationText"
-                android:text="@string/hello_world"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"/>
+
+            <TextView
+                android:id="@+id/displayMinMaxValues"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/validationText"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Change Results"
                 android:id="@+id/buttonChange"
-                android:layout_marginTop="23dp"
-                android:layout_below="@+id/validationText"
-                android:layout_alignParentStart="true"/>
+                android:layout_below="@+id/displayMinMaxValues"/>
+
 
         </RelativeLayout>
     </ScrollView>
-
-
 
 </RelativeLayout>
