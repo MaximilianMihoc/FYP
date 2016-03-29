@@ -139,8 +139,9 @@ public class CountryListGameTest extends TestBehaviouralBiometrics
             @Override
             public void onClick(View v)
             {
-                centerText.setText("Results: " +
+                centerText.setText("Results " +
                         "\nAttempts: " + attempts + " Good: " + goodAttempts + " Wrong: " + badAttempts);
+                centerText.setTextSize(30);
 
                 OKbutton.setText("Retry");
 
