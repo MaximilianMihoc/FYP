@@ -79,7 +79,7 @@ public class LogIn extends Activity
                                 editor.putString("UserEmail", usrObj.getEmail());
                                 editor.apply();
 
-                                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID());
+                                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID() + "/scrollFling");
                                 scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                                 {
 

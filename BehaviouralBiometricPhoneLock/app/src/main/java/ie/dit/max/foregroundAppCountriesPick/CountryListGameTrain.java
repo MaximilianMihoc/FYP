@@ -71,7 +71,8 @@ public class CountryListGameTrain extends TrainActivity
         correctImage = (ImageView) findViewById(R.id.correctImage);
         wrongImage = (ImageView) findViewById(R.id.wrongImage);
 
-        centerText2.setText("Now please play a small game where you are required to find the NON European country from a list." +
+        centerText2.setText("Train system\n\n" +
+                "You are required to play a small game where you have to find the NON European country from a list." +
                 "\n\nWhen the correct country is found, the list will be regenerated and a new country needs to be found." +
                 "\n\nYou have 10 attempts. \n\nClick the Start button to enter the game.");
         //

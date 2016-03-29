@@ -389,8 +389,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         //System.out.println("Class Weights Mat:");
                         //displayMatrix(scrollFlingSVM.getClassWeights());
 
-                        System.out.println("Result Mat:");
-                        displayMatrix(resultMat);
+                        //System.out.println("Result Mat:");
+                        //displayMatrix(resultMat);
                         //System.out.println("TermCriteria: " + scrollFlingSVM.get);
 
                         // kNN

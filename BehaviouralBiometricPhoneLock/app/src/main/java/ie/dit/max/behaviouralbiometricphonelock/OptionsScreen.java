@@ -62,7 +62,7 @@ public class OptionsScreen extends AppCompatActivity
             public void onClick(View v)
             {
                 loadingPanel.setVisibility(View.VISIBLE);
-                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
+                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
                 scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                 {
 
@@ -96,7 +96,7 @@ public class OptionsScreen extends AppCompatActivity
             public void onClick(View v)
             {
                 loadingPanel.setVisibility(View.VISIBLE);
-                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
+                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
                 scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                 {
 

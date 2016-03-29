@@ -443,6 +443,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                 if (dataSnapshot.getValue() == null)
                 {
                     // Default values
+                    userSettings = new UserSettings();
                     userSettings.setThreshold(70);
                     userSettings.setNrObsFromAnotherUser(4);
                     userSettings.setSaveTestData(true);

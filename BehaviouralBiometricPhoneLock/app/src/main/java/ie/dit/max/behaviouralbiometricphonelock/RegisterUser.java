@@ -122,7 +122,7 @@ public class RegisterUser extends AppCompatActivity
                                             editor.apply();
 
                                             // check if train data exist
-                                            Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID());
+                                            Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID() + "/scrollFling");
                                             scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                                             {
 
