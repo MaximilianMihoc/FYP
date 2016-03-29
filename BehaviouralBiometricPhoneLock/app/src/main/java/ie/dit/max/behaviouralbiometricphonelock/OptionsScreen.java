@@ -177,7 +177,7 @@ public class OptionsScreen extends AppCompatActivity
         {
             case R.id.action_settings:
             {
-                alertDialogBuilder.setCancelable(false)
+                alertDialogBuilder
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener()
                     {
@@ -277,7 +277,7 @@ public class OptionsScreen extends AppCompatActivity
             }
             case R.id.action_lockOption:
             {
-                alertDialogBuilder.setCancelable(false)
+                alertDialogBuilder
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener()
                     {
@@ -308,7 +308,7 @@ public class OptionsScreen extends AppCompatActivity
             }
             case R.id.action_trainSystem:
             {
-                alertDialogBuilder.setCancelable(false)
+                alertDialogBuilder
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener()
                     {
