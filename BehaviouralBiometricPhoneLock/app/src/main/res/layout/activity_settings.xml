@@ -15,14 +15,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/green"
-        android:textSize="20dp"/>
+        android:textSize="30sp"/>
 
     <SeekBar
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/thresholdSeekBar"
         android:layout_alignParentStart="true"
+        android:progressDrawable="@drawable/seekbar_progressbar"
+        android:thumb="@drawable/seek_thumb"
         android:layout_marginTop="34dp"
+        android:thumbTintMode="multiply"
+        android:max="100"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/thresholdValue"/>
 
@@ -32,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/green"
-        android:textSize="20dp"
+        android:textSize="30sp"
         android:layout_below="@+id/thresholdSeekBar"
         android:layout_alignParentStart="true"
         android:layout_marginTop="82dp"/>
@@ -41,9 +45,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/nrObsSeekBar"
-        android:layout_centerVertical="true"
+        android:progressDrawable="@drawable/seekbar_progressbar"
+        android:thumb="@drawable/seek_thumb"
         android:layout_alignParentStart="true"
+        android:thumbTintMode="multiply"
+        android:max="100"
         android:layout_marginTop="34dp"
+        android:layout_below="@+id/nrObservations"
         android:layout_alignEnd="@+id/thresholdSeekBar"/>
 
     <Button
