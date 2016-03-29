@@ -39,6 +39,7 @@ public class OptionsScreen extends AppCompatActivity
     Firebase ref;
     SharedPreferences sharedpreferences;
     private String userID;
+    int numberInteractionsNeededToChangePassword = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -183,6 +184,8 @@ public class OptionsScreen extends AppCompatActivity
                                 public void onDataChange(DataSnapshot dataSnapshot)
                                 {
                                     loadingPanel.setVisibility(View.GONE);
+                                    System.out.println("dataSnapshot: ");
+
                                     if (dataSnapshot.getValue() == null)
                                     {
                                         Toast toast = Toast.makeText(getApplicationContext(), "Please use the app for a while before changing the password." +
@@ -192,8 +195,19 @@ public class OptionsScreen extends AppCompatActivity
                                     }
                                     else
                                     {
-                                        Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
-                                        startActivity(trainIntent);
+                                        DataSnapshot dpScroll = dataSnapshot.child("scrollFling");
+
+                                        if(dpScroll.getChildrenCount() <= numberInteractionsNeededToChangePassword)
+                                        {
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Please use the app a little longer." +
+                                                    "\n\nMore interactions needed to change password.", Toast.LENGTH_LONG);
+                                            toast.show();
+                                        }
+                                        else
+                                        {
+                                            Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
+                                            startActivity(trainIntent);
+                                        }
                                     }
                                 }
 
