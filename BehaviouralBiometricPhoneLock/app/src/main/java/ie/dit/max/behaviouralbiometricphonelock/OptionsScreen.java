@@ -27,9 +27,7 @@ public class OptionsScreen extends AppCompatActivity
 {
     Button goToStackOverflow;
     Button goToTrainFirstActivity;
-    Button goToCrossValidation;
     Button goToCountryListGame;
-    Button goToChangePassword;
     Button logOutButton;
 
     ProgressBar loadingPanel;
@@ -57,9 +55,7 @@ public class OptionsScreen extends AppCompatActivity
 
         goToStackOverflow = (Button) findViewById(R.id.goToStackOverflowApp);
         goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
-        goToCrossValidation = (Button) findViewById(R.id.goToCrossValidation);
         goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
-        goToChangePassword = (Button) findViewById(R.id.changePassword);
         logOutButton = (Button) findViewById(R.id.logOutButton);
 
         goToTrainFirstActivity.setOnClickListener(new View.OnClickListener()
@@ -106,16 +102,6 @@ public class OptionsScreen extends AppCompatActivity
             }
         });
 
-        goToCrossValidation.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent trainIntent = new Intent(OptionsScreen.this, UserValidationDifferentClassifiers.class);
-                startActivity(trainIntent);
-            }
-        });
-
         goToCountryListGame.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -147,15 +133,6 @@ public class OptionsScreen extends AppCompatActivity
 
                     }
                 });
-
-            }
-        });
-
-        goToChangePassword.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
 
             }
         });
@@ -272,6 +249,11 @@ public class OptionsScreen extends AppCompatActivity
             case R.id.action_lockOption:
             {
                 startActivity(new Intent(this, MyLockScreenActivity.class));
+                return true;
+            }
+            case R.id.action_evaluation:
+            {
+                startActivity(new Intent(this, UserValidationDifferentClassifiers.class));
                 return true;
             }
             default:

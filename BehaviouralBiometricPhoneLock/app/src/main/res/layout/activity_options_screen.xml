@@ -47,23 +47,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Validate Test Data"
-        android:background="@drawable/bg_button"
-        android:id="@+id/goToCrossValidation"
-        android:layout_marginTop="24dp"
-        android:layout_below="@+id/goToStackOverflowApp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="Log Out"
         android:background="@drawable/bg_button"
         android:id="@+id/logOutButton"
-        android:layout_below="@+id/goToCrossValidation"
+        android:layout_below="@+id/goToStackOverflowApp"
         android:layout_marginTop="24dp"
-        android:layout_alignEnd="@+id/goToCrossValidation"
+        android:layout_alignEnd="@+id/goToStackOverflowApp"
         android:layout_alignParentStart="true"/>
 
         <ProgressBar
