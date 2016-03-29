@@ -39,6 +39,7 @@ public class TestBehaviouralBiometrics extends Activity implements
 {
     Firebase ref;
 
+    public static boolean trainDataLoaded = false;
     private static final String DEBUG_TAG = "Test Activity";
     private static double userTrust = 100;
 
@@ -361,7 +362,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                     System.out.println("No Scroll Fling data available. ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                } else
+                }
+                else
                 {
                     for (DataSnapshot usrSnapshot : snapshot.getChildren())
                     {
@@ -381,7 +383,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                                 countGuestObs++;
                             }
 
-                        } else  // get data from the actual user
+                        }
+                        else  // get data from the actual user
                         {
                             DataSnapshot scrollSnapshot = usrSnapshot.child("scrollFling");
                             for (DataSnapshot obsSnapshot : scrollSnapshot.getChildren())
@@ -405,6 +408,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                         }
                     }
                 }
+                // set the train flag to true
+                trainDataLoaded = true;
             }
 
             @Override
@@ -521,8 +526,6 @@ public class TestBehaviouralBiometrics extends Activity implements
             // Stop y
             tempMat.put(i, j, scrollFlingObs.getScaledEndPoint().y);
         }
-        System.out.println("Normalise Mat: " );
-        displayMatrix(tempMat);
         return tempMat;
 
     }

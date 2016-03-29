@@ -93,15 +93,10 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
         correctImage.setVisibility(View.INVISIBLE);
         wrongImage.setVisibility(View.INVISIBLE);
 
-        try
-        {
-            Thread.sleep(5000);
-            trainLayout.addView(OKbutton);
-            trainLayout.addView(exitButton);
-        } catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
+        ///
+        trainLayout.addView(OKbutton);
+        trainLayout.addView(exitButton);
+        //
 
         OKbutton.setOnClickListener(new View.OnClickListener()
         {
@@ -111,6 +106,18 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
                 iterations = 10;
                 goodAttempts = 0;
                 badAttempts = 0;
+
+                if (!TestBehaviouralBiometrics.trainDataLoaded)
+                {
+                    System.out.println("Waiting " + TestBehaviouralBiometrics.trainDataLoaded);
+                    try
+                    {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
 
                 trainLayout.addView(activityTitle);
                 trainLayout.addView(endButton);
