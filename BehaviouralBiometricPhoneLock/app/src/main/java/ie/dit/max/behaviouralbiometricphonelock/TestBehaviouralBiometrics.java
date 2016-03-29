@@ -42,8 +42,8 @@ public class TestBehaviouralBiometrics extends Activity implements
     private static final String DEBUG_TAG = "Test Activity";
     private static double userTrust = 100;
 
-    private DevicePolicyManager mDevicePolicyManager;
-    private ComponentName mComponentName;
+    private DevicePolicyManager devicePolicyManager;
+    private ComponentName componentName;
 
     private double threshold;
     private int guestsObservationsNeeded;
@@ -92,9 +92,9 @@ public class TestBehaviouralBiometrics extends Activity implements
         Firebase.setAndroidContext(this);
         ref = new Firebase("https://fyp-max.firebaseio.com");
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        mDevicePolicyManager = (DevicePolicyManager)getSystemService(
+        devicePolicyManager = (DevicePolicyManager)getSystemService(
                 Context.DEVICE_POLICY_SERVICE);
-        mComponentName = new ComponentName(this, MyAdminReceiver.class);
+        componentName = new ComponentName(this, MyAdminReceiver.class);
 
         mDetector = new GestureDetectorCompat(this, this);
         mDetector.setOnDoubleTapListener(this);
@@ -285,10 +285,12 @@ public class TestBehaviouralBiometrics extends Activity implements
                                     startActivity(intent);
 
                                     //lock user
-                                    boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
-                                    if (isAdmin) {
-                                        mDevicePolicyManager.lockNow();
-                                    }else{
+                                    if (devicePolicyManager.isAdminActive(componentName))
+                                    {
+                                        devicePolicyManager.lockNow();
+                                    }
+                                    else
+                                    {
                                         Toast.makeText(getApplicationContext(), "Not Registered as admin", Toast.LENGTH_SHORT).show();
                                     }
 
