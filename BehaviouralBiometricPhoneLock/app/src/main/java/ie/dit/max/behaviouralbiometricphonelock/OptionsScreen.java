@@ -1,18 +1,23 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -33,6 +38,7 @@ public class OptionsScreen extends AppCompatActivity
     Firebase ref;
     SharedPreferences sharedpreferences;
     private String userID;
+    private String userEmail;
     int numberInteractionsNeededToChangePassword = 20;
 
     @Override
@@ -47,7 +53,8 @@ public class OptionsScreen extends AppCompatActivity
         TestBehaviouralBiometrics.userTrust = 100;
 
         // get User details
-        userID = sharedpreferences.getString("UserID", "");
+        if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
+        if(sharedpreferences.contains("UserEmail")) userEmail = sharedpreferences.getString("UserEmail", "");
 
         loadingPanel = (ProgressBar) findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.GONE);
@@ -139,6 +146,7 @@ public class OptionsScreen extends AppCompatActivity
                 startActivity(trainIntent);
             }
         });
+
     }
 
     @Override
@@ -152,14 +160,50 @@ public class OptionsScreen extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        AlertDialog alertDialog;
+        final EditText userPasswordConfirmed;
+
+        // get prompts.xml view
+        LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View promptsView = li.inflate(R.layout.prompt, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(OptionsScreen.this);
+
+        // set prompts.xml to alert dialog builder
+        alertDialogBuilder.setView(promptsView);
+        userPasswordConfirmed = (EditText) promptsView.findViewById(R.id.confirmPasswordPrompt);
+
         switch(item.getItemId())
         {
             case R.id.action_settings:
             {
-                startActivity(new Intent(this, SettingsActivity.class));
+                alertDialogBuilder.setCancelable(false)
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int id)
+                        {
+                            ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                            {
+                                @Override
+                                public void onAuthenticated(AuthData authData)
+                                {
+                                    startActivity(new Intent(OptionsScreen.this, SettingsActivity.class));
+                                }
+
+                                @Override
+                                public void onAuthenticationError(FirebaseError firebaseError)
+                                {
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+
+                            });
+                        }
+                    });
+
+                alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
                 return true;
             }
             case R.id.action_changePassword:
@@ -233,12 +277,65 @@ public class OptionsScreen extends AppCompatActivity
             }
             case R.id.action_lockOption:
             {
-                startActivity(new Intent(this, MyLockScreenActivity.class));
+                alertDialogBuilder.setCancelable(false)
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int id)
+                        {
+                            ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                            {
+                                @Override
+                                public void onAuthenticated(AuthData authData)
+                                {
+                                    startActivity(new Intent(OptionsScreen.this, MyLockScreenActivity.class));
+                                }
+
+                                @Override
+                                public void onAuthenticationError(FirebaseError firebaseError)
+                                {
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+
+                            });
+                        }
+                    });
+                alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
                 return true;
             }
             case R.id.action_trainSystem:
             {
-                startActivity(new Intent(this, CountryListGameTrain.class));
+                alertDialogBuilder.setCancelable(false)
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int id)
+                        {
+                            ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                            {
+                                @Override
+                                public void onAuthenticated(AuthData authData)
+                                {
+                                    startActivity(new Intent(OptionsScreen.this, CountryListGameTrain.class));
+                                }
+
+                                @Override
+                                public void onAuthenticationError(FirebaseError firebaseError)
+                                {
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+
+                            });
+                        }
+                    });
+
+                alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
                 return true;
             }
             case R.id.action_evaluation:
@@ -252,4 +349,5 @@ public class OptionsScreen extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+
 }
