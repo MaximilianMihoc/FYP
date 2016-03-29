@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ public class SettingsActivity extends AppCompatActivity
     SeekBar thresholdSeekBar;
     SeekBar nrObsSeekBar;
     Button saveSettings;
+    CheckBox saveDataCheckBox;
 
     Firebase ref;
     SharedPreferences sharedpreferences;
@@ -48,6 +50,8 @@ public class SettingsActivity extends AppCompatActivity
         thresholdSeekBar = (SeekBar) findViewById(R.id.thresholdSeekBar);
         nrObsSeekBar = (SeekBar) findViewById(R.id.nrObsSeekBar);
         saveSettings = (Button) findViewById(R.id.saveSettingsButton);
+
+        saveDataCheckBox = (CheckBox) findViewById(R.id.saveDataCheckBox);
 
         //default Settings:
         showUserSettings();
@@ -101,7 +105,7 @@ public class SettingsActivity extends AppCompatActivity
             {
                 Firebase newUserRef = ref.child("settings").child(userID);
 
-                UserSettings us = new UserSettings(thresholdSeekBar.getProgress(), nrObsSeekBar.getProgress());
+                UserSettings us = new UserSettings(thresholdSeekBar.getProgress(), nrObsSeekBar.getProgress(), saveDataCheckBox.isChecked());
 
                 newUserRef.setValue(us);
 
@@ -130,6 +134,7 @@ public class SettingsActivity extends AppCompatActivity
                     thresholdSeekBar.setProgress(70);
                     nrObsLabel.setText("Number of guest Observation to use: 5");
                     nrObsSeekBar.setProgress(5);
+                    saveDataCheckBox.setChecked(true);
 
                 }
                 else
@@ -140,6 +145,7 @@ public class SettingsActivity extends AppCompatActivity
                     thresholdSeekBar.setProgress(userSettings.getThreshold());
                     nrObsLabel.setText("Number of guest Observation to use:\n" + userSettings.getNrObsFromAnotherUser());
                     nrObsSeekBar.setProgress(userSettings.getNrObsFromAnotherUser());
+                    saveDataCheckBox.setChecked(userSettings.getSaveTestData());
                 }
 
             }

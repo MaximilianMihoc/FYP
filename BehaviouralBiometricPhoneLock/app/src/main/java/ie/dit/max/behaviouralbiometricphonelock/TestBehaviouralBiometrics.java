@@ -59,9 +59,6 @@ public class TestBehaviouralBiometrics extends Activity implements
     private DevicePolicyManager devicePolicyManager;
     private ComponentName componentName;
 
-    private double threshold;
-    private int guestsObservationsNeeded;
-
     private double highOwner1 = 5;  // MaxReword1 for Owner
     private double highOwner2 = 10; // MaxReword2 for Owner
     private double lowOwner1 = 1;   // MinReword1 for Owner
@@ -93,6 +90,7 @@ public class TestBehaviouralBiometrics extends Activity implements
 
     private Float linearAcceleration;
     private Float angularVelocity;
+    private UserSettings userSettings;
 
     SharedPreferences sharedpreferences;
     private String userID;
@@ -215,7 +213,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             //no predictions on taps, just store interactions
 
                             // add test data in Firebase if the check box for adding data is selected.
-                            if(OptionsScreen.saveData)
+                            if(userSettings.getSaveTestData())
                             {
                                 Firebase newUserRef = ref.child("testData").child(userID).child("tap");
                                 newUserRef.push().setValue(tempObs);
@@ -292,7 +290,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                                 System.out.println("User Trust: " + userTrust);
 
                                 // Analyse Trust Values and lock phone if user not genuine
-                                if(userTrust < threshold)
+                                if(userTrust < userSettings.getThreshold())
                                 {
                                     //log out user
                                     ref.unauth();
@@ -314,7 +312,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             }
 
                             // uncomment the next 2 lines to add test data in Firebase.
-                            if(OptionsScreen.saveData)
+                            if(userSettings.getSaveTestData())
                             {
                                 Firebase newUserRef = ref.child("testData").child(userID).child("scrollFling");
                                 newUserRef.push().setValue(tempObs);
@@ -392,7 +390,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             {
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 obs.setJudgement(0);
-                                if (countGuestObs < guestsObservationsNeeded)
+                                if (countGuestObs < userSettings.getNrObsFromAnotherUser())
                                     trainScrollFlingObservations.add(obs);
                                 countGuestObs++;
                             }
@@ -445,14 +443,13 @@ public class TestBehaviouralBiometrics extends Activity implements
                 if (dataSnapshot.getValue() == null)
                 {
                     // Default values
-                    threshold = 70;
-                    guestsObservationsNeeded = 4;
+                    userSettings.setThreshold(70);
+                    userSettings.setNrObsFromAnotherUser(4);
+                    userSettings.setSaveTestData(true);
                 }
                 else
                 {
-                    UserSettings userSettings = dataSnapshot.getValue(UserSettings.class);
-                    threshold = userSettings.getThreshold();
-                    guestsObservationsNeeded = userSettings.getNrObsFromAnotherUser() - 1;
+                    userSettings = dataSnapshot.getValue(UserSettings.class);
                 }
 
                 /* Get user training data from Firebase - Owner and Guest data */

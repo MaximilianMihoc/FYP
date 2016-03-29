@@ -7,15 +7,19 @@ public class UserSettings
 {
     private int threshold;
     private int nrObsFromAnotherUser;
+    private boolean saveTestData;
+
+
 
     public UserSettings()
     {
     }
 
-    public UserSettings(int threshold, int nrObsFromAnotherUser)
+    public UserSettings(int threshold, int nrObsFromAnotherUser, boolean saveTestData)
     {
         this.threshold = threshold;
         this.nrObsFromAnotherUser = nrObsFromAnotherUser;
+        this.saveTestData = saveTestData;
     }
 
     public int getThreshold()
@@ -36,5 +40,15 @@ public class UserSettings
     public void setNrObsFromAnotherUser(int nrObsFromAnotherUser)
     {
         this.nrObsFromAnotherUser = nrObsFromAnotherUser;
+    }
+
+    public boolean getSaveTestData()
+    {
+        return saveTestData;
+    }
+
+    public void setSaveTestData(boolean saveTestData)
+    {
+        this.saveTestData = saveTestData;
     }
 }

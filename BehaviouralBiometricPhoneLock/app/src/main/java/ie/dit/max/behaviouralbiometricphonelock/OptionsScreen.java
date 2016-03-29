@@ -25,15 +25,13 @@ import ie.dit.max.foregroundAppCountriesPick.CountryListGameTrain;
 
 public class OptionsScreen extends AppCompatActivity
 {
-    public static boolean saveData;
-
     Button goToStackOverflow;
     Button goToTrainFirstActivity;
     Button goToCrossValidation;
     Button goToCountryListGame;
     Button goToChangePassword;
     Button logOutButton;
-    CheckBox saveDataCheckBox;
+
     ProgressBar loadingPanel;
     Firebase ref;
     SharedPreferences sharedpreferences;
@@ -63,8 +61,6 @@ public class OptionsScreen extends AppCompatActivity
         goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
         goToChangePassword = (Button) findViewById(R.id.changePassword);
         logOutButton = (Button) findViewById(R.id.logOutButton);
-        saveDataCheckBox = (CheckBox) findViewById(R.id.saveDataCheckBox);
-        saveDataCheckBox.setChecked(true);
 
         goToTrainFirstActivity.setOnClickListener(new View.OnClickListener()
         {
@@ -243,16 +239,6 @@ public class OptionsScreen extends AppCompatActivity
                 ref.unauth();
                 Intent trainIntent = new Intent(OptionsScreen.this, LogIn.class);
                 startActivity(trainIntent);
-            }
-        });
-
-        saveData = true;
-        saveDataCheckBox.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                saveData = saveDataCheckBox.isChecked();
             }
         });
     }

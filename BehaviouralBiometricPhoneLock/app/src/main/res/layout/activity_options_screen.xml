@@ -77,17 +77,6 @@
         android:layout_alignEnd="@+id/goToCrossValidation"
         android:layout_alignParentStart="true"/>
 
-    <CheckBox
-        android:text="Save Test Data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/green"
-        android:textSize="15sp"
-        android:buttonTint="@color/green"
-        android:id="@+id/saveDataCheckBox"
-        android:layout_below="@+id/logOutButton"
-        android:layout_marginTop="15dp"/>
-
         <ProgressBar
             android:id="@+id/loadingPanel"
             android:layout_width="wrap_content"

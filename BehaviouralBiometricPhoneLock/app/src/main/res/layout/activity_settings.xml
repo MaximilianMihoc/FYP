@@ -54,6 +54,18 @@
         android:layout_below="@+id/nrObservations"
         android:layout_alignEnd="@+id/thresholdSeekBar"/>
 
+    <CheckBox
+        android:text="Save Test Data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/green"
+        android:layout_centerHorizontal="true"
+        android:textSize="30sp"
+        android:buttonTint="@color/green"
+        android:id="@+id/saveDataCheckBox"
+        android:layout_below="@+id/nrObsSeekBar"
+        android:layout_marginTop="15dp"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
