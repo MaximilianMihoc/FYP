@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ie.dit.max.foregroundAppCountriesPick.CountryListGameTrain;
 import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
 
 public class RegisterUser extends AppCompatActivity
@@ -118,10 +119,35 @@ public class RegisterUser extends AppCompatActivity
                                             SharedPreferences.Editor editor = sharedpreferences.edit();
                                             editor.putString("UserID", usrObj.getUserID());
                                             editor.putString("UserEmail", usrObj.getEmail());
-                                            editor.commit();
+                                            editor.apply();
 
-                                            Intent trainIntent = new Intent(RegisterUser.this, OptionsScreen.class);
-                                            startActivity(trainIntent);
+                                            // check if train data exist
+                                            Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID());
+                                            scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
+                                            {
+
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot)
+                                                {
+                                                    if (dataSnapshot.getValue() == null)
+                                                    {
+                                                        Intent trainIntent = new Intent(RegisterUser.this, CountryListGameTrain.class);
+                                                        startActivity(trainIntent);
+                                                    }
+                                                    else
+                                                    {
+                                                        Intent trainIntent = new Intent(RegisterUser.this, OptionsScreen.class);
+                                                        startActivity(trainIntent);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(FirebaseError firebaseError)
+                                                {
+                                                    System.out.println("The read failed: " + firebaseError.getMessage());
+                                                }
+                                            });
+
                                         }
 
                                         @Override

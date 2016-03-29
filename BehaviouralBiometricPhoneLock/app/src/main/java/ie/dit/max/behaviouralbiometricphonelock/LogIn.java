@@ -20,6 +20,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import ie.dit.max.foregroundAppCountriesPick.CountryListGameTrain;
 import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
 
 public class LogIn extends Activity
@@ -78,8 +79,30 @@ public class LogIn extends Activity
                                 editor.putString("UserEmail", usrObj.getEmail());
                                 editor.apply();
 
-                                Intent trainIntent = new Intent(LogIn.this, OptionsScreen.class);
-                                startActivity(trainIntent);
+                                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID());
+                                scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
+                                {
+
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot)
+                                    {
+                                        if (dataSnapshot.getValue() == null)
+                                        {
+                                            Intent trainIntent = new Intent(LogIn.this, CountryListGameTrain.class);
+                                            startActivity(trainIntent);
+                                        } else
+                                        {
+                                            Intent trainIntent = new Intent(LogIn.this, OptionsScreen.class);
+                                            startActivity(trainIntent);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(FirebaseError firebaseError)
+                                    {
+                                        System.out.println("The read failed: " + firebaseError.getMessage());
+                                    }
+                                });
                             }
 
                             @Override

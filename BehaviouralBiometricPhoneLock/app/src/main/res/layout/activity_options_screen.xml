@@ -10,25 +10,12 @@
                 tools:context="ie.dit.max.behaviouralbiometricphonelock.OptionsScreen">
 
 
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Train System"
-        android:background="@drawable/bg_button"
-        android:id="@+id/goToTrainFirstScreen"
-        android:layout_marginTop="24dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/goToStackOverflowApp"/>
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Country List Game"
         android:background="@drawable/bg_button"
         android:id="@+id/goToCountryListGame"
-        android:layout_below="@+id/goToTrainFirstScreen"
         android:layout_alignEnd="@+id/goToStackOverflowApp"
         android:layout_marginTop="25dp"
         android:layout_alignParentStart="true"/>

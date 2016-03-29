@@ -26,7 +26,6 @@ import ie.dit.max.foregroundAppCountriesPick.CountryListGameTrain;
 public class OptionsScreen extends AppCompatActivity
 {
     Button goToStackOverflow;
-    Button goToTrainFirstActivity;
     Button goToCountryListGame;
     Button logOutButton;
 
@@ -54,19 +53,8 @@ public class OptionsScreen extends AppCompatActivity
         loadingPanel.setVisibility(View.GONE);
 
         goToStackOverflow = (Button) findViewById(R.id.goToStackOverflowApp);
-        goToTrainFirstActivity = (Button) findViewById(R.id.goToTrainFirstScreen);
         goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
         logOutButton = (Button) findViewById(R.id.logOutButton);
-
-        goToTrainFirstActivity.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent trainIntent = new Intent(OptionsScreen.this, CountryListGameTrain.class);
-                startActivity(trainIntent);
-            }
-        });
 
         goToStackOverflow.setOnClickListener(new View.OnClickListener()
         {
@@ -189,8 +177,7 @@ public class OptionsScreen extends AppCompatActivity
                         {
                             Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
                             toast.show();
-                        }
-                        else
+                        } else
                         {
                             // check if test data for password Change exist
                             Firebase testDataRef = new Firebase("https://fyp-max.firebaseio.com/testDataForPasswordChange/" + userID);
@@ -209,18 +196,16 @@ public class OptionsScreen extends AppCompatActivity
                                                 " Password can not be changed if the application is not used. \n\n" +
                                                 "Please play Country List game or Use Stack Overflow for couple of minutes.", Toast.LENGTH_LONG);
                                         toast.show();
-                                    }
-                                    else
+                                    } else
                                     {
                                         DataSnapshot dpScroll = dataSnapshot.child("scrollFling");
 
-                                        if(dpScroll.getChildrenCount() <= numberInteractionsNeededToChangePassword)
+                                        if (dpScroll.getChildrenCount() <= numberInteractionsNeededToChangePassword)
                                         {
                                             Toast toast = Toast.makeText(getApplicationContext(), "Please use the app a little longer." +
                                                     "\n\nMore interactions needed to change password.", Toast.LENGTH_LONG);
                                             toast.show();
-                                        }
-                                        else
+                                        } else
                                         {
                                             Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
                                             startActivity(trainIntent);
@@ -249,6 +234,11 @@ public class OptionsScreen extends AppCompatActivity
             case R.id.action_lockOption:
             {
                 startActivity(new Intent(this, MyLockScreenActivity.class));
+                return true;
+            }
+            case R.id.action_trainSystem:
+            {
+                startActivity(new Intent(this, CountryListGameTrain.class));
                 return true;
             }
             case R.id.action_evaluation:
