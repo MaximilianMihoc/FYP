@@ -11,8 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
@@ -20,9 +18,10 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import ie.dit.max.evaluationClasses.UserValidationDifferentClassifiers;
 import ie.dit.max.foregroundAppCountriesPick.NonEuropeanCountryPick;
 import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
-import ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScreen;
+import ie.dit.max.foregroundAppCountriesPick.TrainActivityFirstScreen;
 
 public class OptionsScreen extends AppCompatActivity
 {

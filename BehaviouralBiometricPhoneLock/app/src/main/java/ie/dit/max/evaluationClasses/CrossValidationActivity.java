@@ -2,7 +2,7 @@
 *   This Activity is for Scroll/Fling interaction tests
 *
 * */
-package ie.dit.max.behaviouralbiometricphonelock;
+package ie.dit.max.evaluationClasses;
 
 import android.app.Activity;
 import android.content.Context;
@@ -43,6 +43,12 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+
+import ie.dit.max.behaviouralbiometricphonelock.Observation;
+import ie.dit.max.behaviouralbiometricphonelock.R;
+import ie.dit.max.behaviouralbiometricphonelock.ScrollFling;
+import ie.dit.max.behaviouralbiometricphonelock.Tap;
+import ie.dit.max.behaviouralbiometricphonelock.User;
 
 public class CrossValidationActivity extends Activity
 {

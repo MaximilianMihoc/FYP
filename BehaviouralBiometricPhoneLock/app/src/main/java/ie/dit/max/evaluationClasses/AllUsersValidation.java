@@ -1,4 +1,4 @@
-package ie.dit.max.behaviouralbiometricphonelock;
+package ie.dit.max.evaluationClasses;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -36,6 +36,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import ie.dit.max.behaviouralbiometricphonelock.Observation;
+import ie.dit.max.behaviouralbiometricphonelock.R;
+import ie.dit.max.behaviouralbiometricphonelock.ScrollFling;
+import ie.dit.max.behaviouralbiometricphonelock.User;
+import ie.dit.max.behaviouralbiometricphonelock.UserSettings;
 
 public class AllUsersValidation extends AppCompatActivity
 {

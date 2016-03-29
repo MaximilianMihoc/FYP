@@ -24,7 +24,7 @@
             android:label="@string/title_activity_train" >
         </activity>
         <activity
-            android:name=".CrossValidationActivity"
+            android:name="ie.dit.max.evaluationClasses.CrossValidationActivity"
             android:label="@string/title_activity_test" >
         </activity>
         <activity
@@ -48,7 +48,7 @@
             android:label="@string/title_activity_options_screen" >
         </activity>
         <activity
-            android:name="ie.dit.max.trainActivitiesSpecificToForegroundApp.TrainActivityFirstScreen"
+            android:name="ie.dit.max.foregroundAppCountriesPick.TrainActivityFirstScreen"
             android:label="@string/title_activity_train_activity_first_screen" >
         </activity>
         <activity
@@ -56,7 +56,7 @@
             android:label="@string/title_activity_non_european_country_pick" >
         </activity>
         <activity
-            android:name=".UserValidationDifferentClassifiers"
+            android:name="ie.dit.max.evaluationClasses.UserValidationDifferentClassifiers"
             android:label="@string/title_activity_user_validation_different_classifiers" >
         </activity>
         <activity
@@ -64,7 +64,7 @@
             android:label="@string/title_activity_change_password" >
         </activity>
         <activity
-            android:name=".AllUsersValidation"
+            android:name="ie.dit.max.evaluationClasses.AllUsersValidation"
             android:label="@string/title_activity_all_users_validation" >
         </activity>
         <activity

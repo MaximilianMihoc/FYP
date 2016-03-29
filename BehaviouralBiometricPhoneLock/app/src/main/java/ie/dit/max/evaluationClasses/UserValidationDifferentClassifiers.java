@@ -1,12 +1,10 @@
-package ie.dit.max.behaviouralbiometricphonelock;
+package ie.dit.max.evaluationClasses;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,13 +21,18 @@ import com.firebase.client.ValueEventListener;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
 import org.opencv.ml.RTrees;
 import org.opencv.ml.KNearest;
 import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
 
 import java.util.ArrayList;
+
+import ie.dit.max.behaviouralbiometricphonelock.Observation;
+import ie.dit.max.behaviouralbiometricphonelock.R;
+import ie.dit.max.behaviouralbiometricphonelock.ScrollFling;
+import ie.dit.max.behaviouralbiometricphonelock.Tap;
+import ie.dit.max.behaviouralbiometricphonelock.User;
 
 public class UserValidationDifferentClassifiers extends AppCompatActivity
 {

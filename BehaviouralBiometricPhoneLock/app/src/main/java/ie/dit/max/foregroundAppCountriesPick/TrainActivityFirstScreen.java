@@ -1,25 +1,17 @@
-package ie.dit.max.trainActivitiesSpecificToForegroundApp;
+package ie.dit.max.foregroundAppCountriesPick;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,7 +19,6 @@ import java.util.TimerTask;
 import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
-import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
 
 public class TrainActivityFirstScreen extends TrainActivity
 {
