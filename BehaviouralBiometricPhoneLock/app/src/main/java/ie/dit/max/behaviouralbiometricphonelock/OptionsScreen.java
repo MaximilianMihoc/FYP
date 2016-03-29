@@ -150,11 +150,54 @@ public class OptionsScreen extends AppCompatActivity
 
             }
         });
-        
+
         goToChangePassword.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
+            {
+
+            }
+        });
+
+        logOutButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // Delete data that would be used for changing password.
+                Firebase deleteTestDataForPasswordChange = new Firebase("https://fyp-max.firebaseio.com/testDataForPasswordChange/" + userID);
+                deleteTestDataForPasswordChange.removeValue();
+
+                ref.unauth();
+                Intent trainIntent = new Intent(OptionsScreen.this, LogIn.class);
+                startActivity(trainIntent);
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_options_screen, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        switch(item.getItemId())
+        {
+            case R.id.action_settings:
+            {
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            }
+            case R.id.action_changePassword:
             {
                 // Check if train data exists for the current user
                 Firebase trainDataRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
@@ -224,47 +267,13 @@ public class OptionsScreen extends AppCompatActivity
                     }
                 });
 
-            }
-        });
-
-        logOutButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                // Delete data that would be used for changing password.
-                Firebase deleteTestDataForPasswordChange = new Firebase("https://fyp-max.firebaseio.com/testDataForPasswordChange/" + userID);
-                deleteTestDataForPasswordChange.removeValue();
-
-                ref.unauth();
-                Intent trainIntent = new Intent(OptionsScreen.this, LogIn.class);
-                startActivity(trainIntent);
-            }
-        });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_options_screen, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch(item.getItemId())
-        {
-            case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
+            }
             case R.id.action_lockOption:
+            {
                 startActivity(new Intent(this, MyLockScreenActivity.class));
                 return true;
+            }
             default:
                 super.onOptionsItemSelected(item);
         }

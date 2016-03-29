@@ -5,10 +5,15 @@
     <item android:id="@+id/action_settings"
           android:title="@string/action_settings"
           android:orderInCategory="100"
-          app:showAsAction="never"
-        />
-      <item android:id="@+id/action_lockOption"
-            android:title="Lock Option"
-            android:orderInCategory="100"
-            app:showAsAction="never"/>
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_changePassword"
+          android:title="Change Password"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_lockOption"
+          android:title="Lock Option"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
 </menu>
