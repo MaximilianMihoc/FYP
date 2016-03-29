@@ -30,6 +30,7 @@ import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
 
 import java.util.ArrayList;
+import org.opencv.android.OpenCVLoader;
 
 /**
  * Created by Maximilian on 04/02/2016.
@@ -37,11 +38,23 @@ import java.util.ArrayList;
 public class TestBehaviouralBiometrics extends Activity implements
         GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, SensorEventListener
 {
+    // Check if OpenCV loads properly
+    static
+    {
+        if (!OpenCVLoader.initDebug())
+        {
+            Log.i("OpenCV", "OpenCV initialization failed");
+        } else
+        {
+            Log.i("OpenCV", "OpenCV initialization successful");
+        }
+    }
+
     Firebase ref;
 
     public static boolean trainDataLoaded = false;
+    public static double userTrust = 100;
     private static final String DEBUG_TAG = "Test Activity";
-    private static double userTrust = 100;
 
     private DevicePolicyManager devicePolicyManager;
     private ComponentName componentName;
@@ -282,6 +295,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                                 if(userTrust < threshold)
                                 {
                                     //log out user
+                                    ref.unauth();
                                     Intent intent = new Intent(TestBehaviouralBiometrics.this, LogIn.class);
                                     startActivity(intent);
 
@@ -360,7 +374,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                 if (snapshot.getValue() == null)
                 {
                     System.out.println("No Scroll Fling data available. ");
-                    Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getApplicationContext(), "No Train data Provided", Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 else

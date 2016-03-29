@@ -50,6 +50,8 @@ public class OptionsScreen extends AppCompatActivity
         ref = new Firebase("https://fyp-max.firebaseio.com");
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
+        TestBehaviouralBiometrics.userTrust = 100;
+
         // get User details
         userID = sharedpreferences.getString("UserID", "");
 

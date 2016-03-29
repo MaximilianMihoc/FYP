@@ -52,6 +52,19 @@
         android:layout_marginTop="33dp"
         android:layout_alignParentStart="true"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register here"
+        android:textColor="@color/ligthBlue"
+        android:id="@+id/goToRegistrationScreen"
+        android:layout_below="@+id/logInButton"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:layout_centerHorizontal="true"/>
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,6 +73,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignEnd="@+id/logInButton"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/logInButton"/>
+        android:layout_below="@+id/goToRegistrationScreen"/>
+
+
 
 </RelativeLayout>

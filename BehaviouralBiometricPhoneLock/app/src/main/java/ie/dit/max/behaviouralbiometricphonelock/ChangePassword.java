@@ -168,7 +168,7 @@ public class ChangePassword extends AppCompatActivity
                                     }
                                     else
                                     {
-                                        Toast.makeText(getApplicationContext(), "Password could not be changed.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), "Password could not be changed. Log out and try again.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 

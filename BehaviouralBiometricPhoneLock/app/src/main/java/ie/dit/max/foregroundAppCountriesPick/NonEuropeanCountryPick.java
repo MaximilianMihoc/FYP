@@ -93,10 +93,8 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
         correctImage.setVisibility(View.INVISIBLE);
         wrongImage.setVisibility(View.INVISIBLE);
 
-        ///
         trainLayout.addView(OKbutton);
         trainLayout.addView(exitButton);
-        //
 
         OKbutton.setOnClickListener(new View.OnClickListener()
         {

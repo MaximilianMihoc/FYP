@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
@@ -90,6 +91,14 @@ public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
         });
 
     }
+
+    @Override
+    public void onBackPressed ()
+    {
+        Intent goToAnswersIntent = new Intent(StackOverflowHomeScreen.this, OptionsScreen.class);
+        startActivity(goToAnswersIntent);
+    }
+
 
     private void startConnection(String stringUrl)
     {
@@ -159,6 +168,18 @@ public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
                 questionsListAdapter = new QuestionListAdapter(getApplicationContext(), questionsList);
                 questionsListView.setEmptyView(findViewById(android.R.id.empty));
                 questionsListView.setAdapter(questionsListAdapter);
+
+                if (!TestBehaviouralBiometrics.trainDataLoaded)
+                {
+                    System.out.println("Waiting " + TestBehaviouralBiometrics.trainDataLoaded);
+                    try
+                    {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
 
 
             } catch (JSONException e)

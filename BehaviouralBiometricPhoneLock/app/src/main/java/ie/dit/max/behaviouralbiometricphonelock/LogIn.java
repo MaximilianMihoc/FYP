@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.AuthData;
@@ -28,6 +30,7 @@ public class LogIn extends Activity
     EditText email;
     EditText password;
     Button logInButton;
+    TextView goToRegistrationScreen;
 
     SharedPreferences sharedpreferences;
 
@@ -44,6 +47,7 @@ public class LogIn extends Activity
         email = (EditText) findViewById(R.id.emailLogin);
         password = (EditText) findViewById(R.id.passwordLogin);
         logInButton = (Button) findViewById(R.id.logInButton);
+        goToRegistrationScreen = (TextView) findViewById(R.id.goToRegistrationScreen);
 
         logInButton.setOnClickListener(new View.OnClickListener()
         {
@@ -96,5 +100,24 @@ public class LogIn extends Activity
 
             }
         });
+
+        goToRegistrationScreen.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent trainIntent = new Intent(LogIn.this, RegisterUser.class);
+                startActivity(trainIntent);
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed ()
+    {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }
