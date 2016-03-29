@@ -19,9 +19,9 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import ie.dit.max.evaluationClasses.UserValidationDifferentClassifiers;
-import ie.dit.max.foregroundAppCountriesPick.NonEuropeanCountryPick;
+import ie.dit.max.foregroundAppCountriesPick.CountryListGameTest;
 import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
-import ie.dit.max.foregroundAppCountriesPick.TrainActivityFirstScreen;
+import ie.dit.max.foregroundAppCountriesPick.CountryListGameTrain;
 
 public class OptionsScreen extends AppCompatActivity
 {
@@ -71,7 +71,7 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent trainIntent = new Intent(OptionsScreen.this, TrainActivityFirstScreen.class);
+                Intent trainIntent = new Intent(OptionsScreen.this, CountryListGameTrain.class);
                 startActivity(trainIntent);
             }
         });
@@ -140,7 +140,7 @@ public class OptionsScreen extends AppCompatActivity
                             toast.show();
                         } else
                         {
-                            Intent trainIntent = new Intent(OptionsScreen.this, NonEuropeanCountryPick.class);
+                            Intent trainIntent = new Intent(OptionsScreen.this, CountryListGameTest.class);
                             startActivity(trainIntent);
                         }
                     }

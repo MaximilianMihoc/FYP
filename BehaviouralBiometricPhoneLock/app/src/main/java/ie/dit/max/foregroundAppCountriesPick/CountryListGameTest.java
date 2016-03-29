@@ -1,10 +1,7 @@
 package ie.dit.max.foregroundAppCountriesPick;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,15 +15,12 @@ import android.widget.Toast;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
-import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
-public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
+public class CountryListGameTest extends TestBehaviouralBiometrics
 {
     Button endButton;
     Button OKbutton;
@@ -53,7 +47,7 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_non_european_country_pick);
+        setContentView(R.layout.activity_test_country_game);
 
         europeCountries = getResources().getStringArray(R.array.europeanCountries);
         nonEuropeCountries = getResources().getStringArray(R.array.nonEuropeCountries);
@@ -165,7 +159,7 @@ public class NonEuropeanCountryPick extends TestBehaviouralBiometrics
             @Override
             public void onClick(View v)
             {
-                Intent intent = new Intent(NonEuropeanCountryPick.this, OptionsScreen.class);
+                Intent intent = new Intent(CountryListGameTest.this, OptionsScreen.class);
                 startActivity(intent);
             }
         });

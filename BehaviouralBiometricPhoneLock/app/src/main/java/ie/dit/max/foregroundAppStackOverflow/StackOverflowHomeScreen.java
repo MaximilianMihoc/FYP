@@ -12,7 +12,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
-import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
 public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
 {
@@ -43,7 +41,7 @@ public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_stackoverflow_home);
 
         startConnection("https://api.stackexchange.com/2.2/questions?pagesize=100&order=desc&sort=activity&site=stackoverflow&filter=!9YdnSIN18");
 

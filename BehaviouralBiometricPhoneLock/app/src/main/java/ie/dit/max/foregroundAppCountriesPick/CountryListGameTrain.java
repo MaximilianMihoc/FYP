@@ -20,7 +20,7 @@ import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
-public class TrainActivityFirstScreen extends TrainActivity
+public class CountryListGameTrain extends TrainActivity
 {
 
     private int count;
@@ -51,7 +51,7 @@ public class TrainActivityFirstScreen extends TrainActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_train_activity_first_screen);
+        setContentView(R.layout.activity_train_country_game);
 
         europeCountries = getResources().getStringArray(R.array.europeanCountries);
         nonEuropeCountries = getResources().getStringArray(R.array.nonEuropeCountries);
@@ -128,7 +128,7 @@ public class TrainActivityFirstScreen extends TrainActivity
                 } else
                 {
                     //exit
-                    Intent trainIntent = new Intent(TrainActivityFirstScreen.this, OptionsScreen.class);
+                    Intent trainIntent = new Intent(CountryListGameTrain.this, OptionsScreen.class);
                     startActivity(trainIntent);
 
                 }
@@ -176,7 +176,7 @@ public class TrainActivityFirstScreen extends TrainActivity
             @Override
             public void onClick(View v)
             {
-                Intent intent = new Intent(TrainActivityFirstScreen.this, OptionsScreen.class);
+                Intent intent = new Intent(CountryListGameTrain.this, OptionsScreen.class);
                 startActivity(intent);
             }
         });
