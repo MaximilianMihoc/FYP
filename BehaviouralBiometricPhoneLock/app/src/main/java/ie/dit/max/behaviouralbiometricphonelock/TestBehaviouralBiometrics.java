@@ -38,23 +38,24 @@ import org.opencv.android.OpenCVLoader;
 public class TestBehaviouralBiometrics extends Activity implements
         GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, SensorEventListener
 {
+    private static final String DEBUG_TAG = "Test Activity";
+
     // Check if OpenCV loads properly
     static
     {
         if (!OpenCVLoader.initDebug())
         {
-            Log.i("OpenCV", "OpenCV initialization failed");
-        } else
+            Log.i(DEBUG_TAG, "OpenCV initialization failed");
+        }
+        else
         {
-            Log.i("OpenCV", "OpenCV initialization successful");
+            Log.i(DEBUG_TAG, "OpenCV initialization successful");
         }
     }
 
-    Firebase ref;
-
     public static boolean trainDataLoaded = false;
     public static double userTrust = 100;
-    private static final String DEBUG_TAG = "Test Activity";
+    private static UserSettings userSettings;
 
     private DevicePolicyManager devicePolicyManager;
     private ComponentName componentName;
@@ -90,12 +91,13 @@ public class TestBehaviouralBiometrics extends Activity implements
 
     private Float linearAcceleration;
     private Float angularVelocity;
-    private UserSettings userSettings;
 
     SharedPreferences sharedpreferences;
     private String userID;
 
     private static SVM scrollFlingSVM;
+
+    private Firebase ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -452,6 +454,8 @@ public class TestBehaviouralBiometrics extends Activity implements
                 {
                     userSettings = dataSnapshot.getValue(UserSettings.class);
                 }
+
+
 
                 /* Get user training data from Firebase - Owner and Guest data */
                 getTrainDataFromFirebase();

@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,8 +32,8 @@ import ie.dit.max.foregroundAppCountriesPick.CountryListGameTrain;
 
 public class OptionsScreen extends AppCompatActivity
 {
-    Button goToStackOverflow;
-    Button goToCountryListGame;
+    ImageButton goToStackOverflow;
+    ImageButton goToCountryListGame;
     Button logOutButton;
 
     ProgressBar loadingPanel;
@@ -60,8 +61,8 @@ public class OptionsScreen extends AppCompatActivity
         loadingPanel = (ProgressBar) findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.GONE);
 
-        goToStackOverflow = (Button) findViewById(R.id.goToStackOverflowApp);
-        goToCountryListGame = (Button) findViewById(R.id.goToCountryListGame);
+        goToStackOverflow = (ImageButton) findViewById(R.id.goToStackOverflowApp);
+        goToCountryListGame = (ImageButton) findViewById(R.id.goToCountryListGame);
         logOutButton = (Button) findViewById(R.id.logOutButton);
 
         goToStackOverflow.setOnClickListener(new View.OnClickListener()
