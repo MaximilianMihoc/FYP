@@ -88,6 +88,10 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+        <activity
+            android:name=".ViewRecomendedValues"
+            android:label="@string/title_activity_view_recomended_values" >
+        </activity>
     </application>
 
 </manifest>

@@ -338,6 +338,11 @@ public class OptionsScreen extends AppCompatActivity
 
                 return true;
             }
+            case R.id.action_viewRecommendedValues:
+            {
+                startActivity(new Intent(this, ViewRecomendedValues.class));
+                return true;
+            }
             case R.id.action_evaluation:
             {
                 startActivity(new Intent(this, UserValidationDifferentClassifiers.class));

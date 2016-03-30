@@ -202,4 +202,5 @@
     <string name="title_activity_all_users_validation">AllUsersValidation</string>
     <string name="title_activity_my_lock_screen">MyLockScreenActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_view_recomended_values">ViewRecomendedValues</string>
 </resources>
