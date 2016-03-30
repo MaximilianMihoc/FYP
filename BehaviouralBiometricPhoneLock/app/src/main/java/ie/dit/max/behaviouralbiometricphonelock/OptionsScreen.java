@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.AuthData;
@@ -177,30 +178,39 @@ public class OptionsScreen extends AppCompatActivity
         {
             case R.id.action_settings:
             {
-                alertDialogBuilder
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                alertDialogBuilder.setMessage("Open Settings Screen")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
                     {
-                        public void onClick(DialogInterface dialog, int id)
+                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
                         {
-                            ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                            @Override
+                            public void onAuthenticated(AuthData authData)
                             {
-                                @Override
-                                public void onAuthenticated(AuthData authData)
-                                {
-                                    startActivity(new Intent(OptionsScreen.this, SettingsActivity.class));
-                                }
+                                startActivity(new Intent(OptionsScreen.this, SettingsActivity.class));
+                            }
 
-                                @Override
-                                public void onAuthenticationError(FirebaseError firebaseError)
-                                {
-                                    Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
-                                    toast.show();
-                                }
+                            @Override
+                            public void onAuthenticationError(FirebaseError firebaseError)
+                            {
+                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
 
-                            });
-                        }
-                    });
+                        });
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                        dialog.cancel();
+                    }
+                });
 
                 alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
@@ -277,30 +287,39 @@ public class OptionsScreen extends AppCompatActivity
             }
             case R.id.action_lockOption:
             {
-                alertDialogBuilder
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                alertDialogBuilder.setMessage("View Lock Options")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
                     {
-                        public void onClick(DialogInterface dialog, int id)
+                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
                         {
-                            ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                            @Override
+                            public void onAuthenticated(AuthData authData)
                             {
-                                @Override
-                                public void onAuthenticated(AuthData authData)
-                                {
-                                    startActivity(new Intent(OptionsScreen.this, MyLockScreenActivity.class));
-                                }
+                                startActivity(new Intent(OptionsScreen.this, MyLockScreenActivity.class));
+                            }
 
-                                @Override
-                                public void onAuthenticationError(FirebaseError firebaseError)
-                                {
-                                    Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
-                                    toast.show();
-                                }
+                            @Override
+                            public void onAuthenticationError(FirebaseError firebaseError)
+                            {
+                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
 
-                            });
-                        }
-                    });
+                        });
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                        dialog.cancel();
+                    }
+                });
                 alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
 
@@ -309,29 +328,38 @@ public class OptionsScreen extends AppCompatActivity
             case R.id.action_trainSystem:
             {
                 alertDialogBuilder
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                .setCancelable(false).setMessage("Re-Train System")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
                     {
-                        public void onClick(DialogInterface dialog, int id)
+                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
                         {
-                            ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                            @Override
+                            public void onAuthenticated(AuthData authData)
                             {
-                                @Override
-                                public void onAuthenticated(AuthData authData)
-                                {
-                                    startActivity(new Intent(OptionsScreen.this, CountryListGameTrain.class));
-                                }
+                                startActivity(new Intent(OptionsScreen.this, CountryListGameTrain.class));
+                            }
 
-                                @Override
-                                public void onAuthenticationError(FirebaseError firebaseError)
-                                {
-                                    Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
-                                    toast.show();
-                                }
+                            @Override
+                            public void onAuthenticationError(FirebaseError firebaseError)
+                            {
+                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
 
-                            });
-                        }
-                    });
+                        });
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                        dialog.cancel();
+                    }
+                });
 
                 alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
@@ -341,6 +369,92 @@ public class OptionsScreen extends AppCompatActivity
             case R.id.action_viewRecommendedValues:
             {
                 startActivity(new Intent(this, ViewRecomendedValues.class));
+                return true;
+            }
+            case R.id.action_deleteTestData:
+            {
+                alertDialogBuilder
+                .setCancelable(false).setMessage("Delete Test Data")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                        {
+                            @Override
+                            public void onAuthenticated(AuthData authData)
+                            {
+                                Firebase removeDataRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
+                                removeDataRef.removeValue();
+                                Toast toast = Toast.makeText(getApplicationContext(), "Test Data Successfully deleted.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+
+                            @Override
+                            public void onAuthenticationError(FirebaseError firebaseError)
+                            {
+                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+
+                        });
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                        dialog.cancel();
+                    }
+                });
+
+                alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+                return true;
+            }
+            case R.id.action_deleteTrainData:
+            {
+                alertDialogBuilder
+                .setCancelable(false).setMessage("Delete Train Data")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                        {
+                            @Override
+                            public void onAuthenticated(AuthData authData)
+                            {
+                                Firebase removeDataRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
+                                removeDataRef.removeValue();
+                                Toast toast = Toast.makeText(getApplicationContext(), "Train Data Successfully deleted.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+
+                            @Override
+                            public void onAuthenticationError(FirebaseError firebaseError)
+                            {
+                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+
+                        });
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                        dialog.cancel();
+                    }
+                });
+
+                alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
                 return true;
             }
             case R.id.action_evaluation:

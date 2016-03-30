@@ -27,6 +27,16 @@
           android:orderInCategory="100"
           app:showAsAction="never"/>
 
+    <item android:id="@+id/action_deleteTestData"
+          android:title="Delete Test Data"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_deleteTrainData"
+          android:title="Delete Train Data"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+
     <item android:id="@+id/action_evaluation"
           android:title="Evaluation"
           android:orderInCategory="100"

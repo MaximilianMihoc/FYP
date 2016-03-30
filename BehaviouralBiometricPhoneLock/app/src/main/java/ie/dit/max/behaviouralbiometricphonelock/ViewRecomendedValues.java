@@ -251,7 +251,7 @@ public class ViewRecomendedValues extends AppCompatActivity
                         // SVM
                         scrollFlingSVM.predict(testDataMat, resultMat, 0);
                         int counter = countOwnerResults(resultMat);
-                        scrollSVMTextView.setText("Test Data Validation for current Settings -> " + counter + " / " + scrollFlingObservations.size()
+                        scrollSVMTextView.setText("Test Data Validation for current Settings\n" + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
                         progressBarScrollSVM.setMax(scrollFlingObservations.size());
                         progressBarScrollSVM.setProgress(counter);
@@ -336,11 +336,11 @@ public class ViewRecomendedValues extends AppCompatActivity
 
                     String minMaxValues = "\n\n";
                     minMaxValues += "For " + bestValueForObsNumbers + " observations, the Minimum Average Error " + min +  " was computed, with a Percent accuracy of " + percentOnMinAvg + "%";
-                    minMaxValues += "\n\nFor " + nrObsAtMaxOwnerPercent +  "observations, the Average error is " + tempRV.average + "  with a Percent accuracy of " + tempRV.ownerPercent + "%";
+                    minMaxValues += "\n\nFor " + nrObsAtMaxOwnerPercent +  " observations, the Average error is " + tempRV.average + "  with a Percent accuracy of " + tempRV.ownerPercent + "%";
 
                     // display results for current values
                     ReturnValues rvCurrent = computeValidationForOneUserAgainstAllOthers(userID, userName, userSettings.getNrObsFromAnotherUser());
-                    minMaxValues += "\n\nCurrent Settings\nAverage error " + rvCurrent.average + " for " + userSettings.getNrObsFromAnotherUser() + " observations";
+                    minMaxValues += "\n\nCurrent Settings\n" + "For " + userSettings.getNrObsFromAnotherUser() + " observations, Average Error is" + rvCurrent.average;
 
                     displayMinMaxValues.setText(minMaxValues);
                     loadingPanel.setVisibility(View.GONE);
