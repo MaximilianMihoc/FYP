@@ -120,7 +120,7 @@ public class ViewRecomendedValues extends AppCompatActivity
                     // Default values
                     userSettings = new UserSettings();
                     userSettings.setThreshold(70);
-                    userSettings.setNrObsFromAnotherUser(4);
+                    userSettings.setNrObsFromAnotherUser(5);
                     userSettings.setSaveTestData(true);
                 }
                 else
@@ -340,7 +340,7 @@ public class ViewRecomendedValues extends AppCompatActivity
 
                     // display results for current values
                     ReturnValues rvCurrent = computeValidationForOneUserAgainstAllOthers(userID, userName, userSettings.getNrObsFromAnotherUser());
-                    minMaxValues += "\n\nCurrent Settings\n" + "For " + userSettings.getNrObsFromAnotherUser() + " observations, Average Error is" + rvCurrent.average;
+                    minMaxValues += "\n\nCurrent Settings\n" + "For " + userSettings.getNrObsFromAnotherUser() + " observations, Average Error is " + rvCurrent.average;
 
                     displayMinMaxValues.setText(minMaxValues);
                     loadingPanel.setVisibility(View.GONE);

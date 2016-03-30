@@ -445,7 +445,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                     // Default values
                     userSettings = new UserSettings();
                     userSettings.setThreshold(70);
-                    userSettings.setNrObsFromAnotherUser(4);
+                    userSettings.setNrObsFromAnotherUser(5);
                     userSettings.setSaveTestData(true);
                 }
                 else
