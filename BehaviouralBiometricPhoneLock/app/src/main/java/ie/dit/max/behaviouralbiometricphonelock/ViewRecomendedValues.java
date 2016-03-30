@@ -335,8 +335,8 @@ public class ViewRecomendedValues extends AppCompatActivity
                     ReturnValues tempRV = computeValidationForOneUserAgainstAllOthers(userID, userName, nrObsAtMaxOwnerPercent);
 
                     String minMaxValues = "\n\n";
-                    minMaxValues += "Min Average Error " + min + " for " + bestValueForObsNumbers + " observations with Percent accuracy: " + percentOnMinAvg;
-                    minMaxValues += "\n\nAverage error " + tempRV.average + " for " + nrObsAtMaxOwnerPercent + " observations when Owner accuracy is: " + tempRV.ownerPercent;
+                    minMaxValues += "For " + bestValueForObsNumbers + " observations, the Minimum Average Error " + min +  " was computed, with a Percent accuracy of " + percentOnMinAvg + "%";
+                    minMaxValues += "\n\nFor " + nrObsAtMaxOwnerPercent +  "observations, the Average error is " + tempRV.average + "  with a Percent accuracy of " + tempRV.ownerPercent + "%";
 
                     // display results for current values
                     ReturnValues rvCurrent = computeValidationForOneUserAgainstAllOthers(userID, userName, userSettings.getNrObsFromAnotherUser());

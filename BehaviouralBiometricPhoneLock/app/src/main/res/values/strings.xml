@@ -18,6 +18,21 @@
     <string name="title_activity_question_body_screen">Question Body Screen</string>
     <string name="title_activity_options_screen">Options Screen</string>
     <string name="title_activity_train_activity_first_screen">Train Activity First Screen</string>
+    <string name="title_activity_non_european_country_pick">Country-List Game</string>
+    <string name="title_activity_user_validation_different_classifiers">User Validation With Different Classifiers</string>
+    <string name="title_activity_change_password">Change Password</string>
+    <string name="title_activity_all_users_validation"> Users Validation</string>
+    <string name="title_activity_my_lock_screen">Lock Screen Options</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_view_recomended_values">View Recomended Values</string>
+
+
+    <string name="notes_for_recomended_values">
+        \nNotes:\n
+        \nSmaller average Error, make the system recognise intruders faster.
+        \n\nGreater Accuracy, makes the system recognise your interactions better.
+    </string>
+
 
     <string-array name="europeanCountries">
         <item>Belarus</item>
@@ -194,13 +209,4 @@
         <item>Guyana</item>
         <item>Venezuela</item>
     </string-array>
-    <string name="title_activity_non_european_country_pick">NonEuropeanCountryPick</string>
-    <string name="title_activity_user_validation_different_classifiers">
-        UserValidationDifferentClassifiers
-    </string>
-    <string name="title_activity_change_password">ChangePassword</string>
-    <string name="title_activity_all_users_validation">AllUsersValidation</string>
-    <string name="title_activity_my_lock_screen">MyLockScreenActivity</string>
-    <string name="title_activity_settings">SettingsActivity</string>
-    <string name="title_activity_view_recomended_values">ViewRecomendedValues</string>
 </resources>

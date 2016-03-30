@@ -63,6 +63,14 @@
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/view1"/>
 
+            <TextView
+                android:id="@+id/notes"
+                android:text="@string/notes_for_recomended_values"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/displayMinMaxValues"/>
+
         </RelativeLayout>
     </ScrollView>
 
