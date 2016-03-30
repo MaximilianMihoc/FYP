@@ -176,13 +176,11 @@ public class ViewRecomendedValues extends AppCompatActivity
                         else // Current user Data
                         {
                             DataSnapshot scrollSnapshot = usrSnapshot.child("scrollFling");
-                            int trainObsOwnerCount = 0;
                             for (DataSnapshot obsSnapshot : scrollSnapshot.getChildren())
                             {
                                 //System.out.println("data: " + obsSnapshot.toString());
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 trainScrollFlingObservations.add(obs);
-                                trainObsOwnerCount ++;
                             }
                         }
                     }
@@ -251,8 +249,17 @@ public class ViewRecomendedValues extends AppCompatActivity
                         // SVM
                         scrollFlingSVM.predict(testDataMat, resultMat, 0);
                         int counter = countOwnerResults(resultMat);
-                        scrollSVMTextView.setText("Test Data Validation for current Settings\n" + counter + " / " + scrollFlingObservations.size()
-                                + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
+
+                        if(Math.round((counter * 100) / scrollFlingObservations.size()) < 50)
+                            scrollSVMTextView.setText("Test Data Validation for current Settings\n" + counter + " / " + scrollFlingObservations.size()
+                                    + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%" +
+                                    "Settings values need to be changed to better values. " +
+                                    "\nA model Re-train is also recommended." +
+                                    "\nTrain Data can be also deleted before training.");
+                        else
+                            scrollSVMTextView.setText("Test Data Validation for current Settings\n" + counter + " / " + scrollFlingObservations.size()
+                                    + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
+
                         progressBarScrollSVM.setMax(scrollFlingObservations.size());
                         progressBarScrollSVM.setProgress(counter);
 
