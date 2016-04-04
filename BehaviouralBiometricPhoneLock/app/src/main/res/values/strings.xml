@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BehaviouralBiometricPhoneLock</string>
+    <string name="app_name">BbPl</string>
 
     <string name="hello_world">Testing user authenticity</string>
     <string name="login">Log In Screen</string>
