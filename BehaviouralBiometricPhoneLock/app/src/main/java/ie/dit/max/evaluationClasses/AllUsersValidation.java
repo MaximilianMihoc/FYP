@@ -68,7 +68,6 @@ public class AllUsersValidation extends AppCompatActivity
     private TextView displayMinMaxValues;
     private Button buttonChange;
 
-    private Classifier classifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -82,7 +81,6 @@ public class AllUsersValidation extends AppCompatActivity
         if(sharedpreferences.contains("ValidateDataForUserID")) userID = sharedpreferences.getString("ValidateDataForUserID", "");
         if(sharedpreferences.contains("ValidateDataForUserName")) userName = sharedpreferences.getString("ValidateDataForUserName", "");
 
-        classifier = new Classifier();
         validationText = (TextView) findViewById(R.id.validationText);
         displayMinMaxValues = (TextView) findViewById(R.id.displayMinMaxValues);
         buttonChange = (Button) findViewById(R.id.buttonChange);
@@ -304,12 +302,12 @@ public class AllUsersValidation extends AppCompatActivity
         {
             if(trainDataEntry.getKey().equals(forUserID))
             {
-                ArrayList<Observation> tempList = classifier.changeJudgements(trainDataEntry.getValue(), 1);
+                ArrayList<Observation> tempList = Classifier.changeJudgements(trainDataEntry.getValue(), 1);
                 trainScrollFlingDataForUserID.addAll(tempList);
             }
             else
             {
-                ArrayList<Observation> tempList = classifier.changeJudgements(trainDataEntry.getValue(), 0);
+                ArrayList<Observation> tempList = Classifier.changeJudgements(trainDataEntry.getValue(), 0);
                 if(tempList.size() > 0)
                 {
                     //trainScrollFlingDataForUserID.addAll(tempList);
@@ -326,7 +324,7 @@ public class AllUsersValidation extends AppCompatActivity
         }
 
         //create and train the SVM model
-        SVM tempScrollFlingSVM = classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
+        SVM tempScrollFlingSVM = Classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
 
         int numberOfUsersWithTestData = 0;
         float sumOfPercentages = 0;
@@ -344,11 +342,11 @@ public class AllUsersValidation extends AppCompatActivity
 
             if(testData != null)
             {
-                Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(testData);
+                Mat testDataMat = Classifier.buildTrainOrTestMatForScrollFling(testData);
                 Mat resultMat = new Mat(testData.size(), 1, CvType.CV_32S);
 
                 tempScrollFlingSVM.predict(testDataMat, resultMat, 0);
-                int counter = classifier.countOwnerResults(resultMat);
+                int counter = Classifier.countOwnerResults(resultMat);
 
                 if(!userKeys[i].equals(forUserID))
                 {

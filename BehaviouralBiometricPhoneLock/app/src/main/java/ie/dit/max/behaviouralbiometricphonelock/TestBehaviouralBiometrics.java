@@ -47,7 +47,6 @@ public class TestBehaviouralBiometrics extends Activity implements
 
     //private variables
     private static SVM scrollFlingSVM;
-    private Classifier classifier;
     private static UserSettings userSettings;
     private DevicePolicyManager devicePolicyManager;
     private ComponentName componentName;
@@ -120,7 +119,6 @@ public class TestBehaviouralBiometrics extends Activity implements
         senGyroscope = senSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         senSensorManager.registerListener(this, senGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
-        classifier = new Classifier();
         trainScrollFlingObservations = new ArrayList<>();
         points = new ArrayList<>();
         linearAccelerations = new ArrayList<>();
@@ -222,7 +220,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             ArrayList<Observation> testOneObservation = new ArrayList<>();
                             testOneObservation.add(tempObs);
 
-                            Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(testOneObservation);
+                            Mat testDataMat = Classifier.buildTrainOrTestMatForScrollFling(testOneObservation);
                             Mat resultMat = new Mat(testOneObservation.size(), 1, CvType.CV_32S);
 
                             if (scrollFlingSVM.isTrained())
@@ -427,7 +425,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             // Built the SVM model for Scroll/Fling Observations if training data exists.
                             if (trainScrollFlingObservations.size() > 0)
                             {
-                                scrollFlingSVM = classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
+                                scrollFlingSVM = Classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
 
                             } else
                             {

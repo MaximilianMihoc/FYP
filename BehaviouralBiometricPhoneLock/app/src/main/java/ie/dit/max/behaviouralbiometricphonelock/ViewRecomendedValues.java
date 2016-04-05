@@ -45,7 +45,6 @@ public class ViewRecomendedValues extends AppCompatActivity
 
     SharedPreferences sharedpreferences;
     private UserSettings userSettings;
-    private Classifier classifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,7 +57,6 @@ public class ViewRecomendedValues extends AppCompatActivity
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
 
-        classifier = new Classifier();
         scrollFlingObservations = new ArrayList<>();
         trainScrollFlingObservations = new ArrayList<>();
         trainDataMapScrollFling = new HashMap<>();
@@ -183,7 +181,7 @@ public class ViewRecomendedValues extends AppCompatActivity
                     // Built the SVM model for Scroll/Fling Observations if training data exists.
                     if (trainScrollFlingObservations.size() > 0)
                     {
-                        scrollFlingSVM = classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
+                        scrollFlingSVM = Classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
                     }
                     else
                     {
@@ -238,12 +236,12 @@ public class ViewRecomendedValues extends AppCompatActivity
                     if (scrollFlingObservations.size() > 0)
                     {
                         //create train and test Martices
-                        Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(scrollFlingObservations);
+                        Mat testDataMat = Classifier.buildTrainOrTestMatForScrollFling(scrollFlingObservations);
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
 
                         // SVM
                         scrollFlingSVM.predict(testDataMat, resultMat, 0);
-                        int counter = classifier.countOwnerResults(resultMat);
+                        int counter = Classifier.countOwnerResults(resultMat);
 
                         if(Math.round((counter * 100) / scrollFlingObservations.size()) < 50)
                             scrollSVMTextView.setText("Test Data Validation for current Settings\n" + counter + " / " + scrollFlingObservations.size()
@@ -415,12 +413,12 @@ public class ViewRecomendedValues extends AppCompatActivity
         {
             if(trainDataEntry.getKey().equals(forUserID))
             {
-                ArrayList<Observation> tempList = classifier.changeJudgements(trainDataEntry.getValue(), 1);
+                ArrayList<Observation> tempList = Classifier.changeJudgements(trainDataEntry.getValue(), 1);
                 trainScrollFlingDataForUserID.addAll(tempList);
             }
             else
             {
-                ArrayList<Observation> tempList = classifier.changeJudgements(trainDataEntry.getValue(), 0);
+                ArrayList<Observation> tempList = Classifier.changeJudgements(trainDataEntry.getValue(), 0);
                 if(tempList.size() > 0)
                 {
                     for (int i = 0; i < tempList.size(); i++)
@@ -435,7 +433,7 @@ public class ViewRecomendedValues extends AppCompatActivity
         }
 
         //create and train the SVM model
-        SVM tempScrollFlingSVM = classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
+        SVM tempScrollFlingSVM = Classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
 
         int numberOfUsersWithTestData = 0;
         float sumOfPercentages = 0;
@@ -450,11 +448,11 @@ public class ViewRecomendedValues extends AppCompatActivity
 
             if(testData != null)
             {
-                Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(testData);
+                Mat testDataMat = Classifier.buildTrainOrTestMatForScrollFling(testData);
                 Mat resultMat = new Mat(testData.size(), 1, CvType.CV_32S);
 
                 tempScrollFlingSVM.predict(testDataMat, resultMat, 0);
-                int counter = classifier.countOwnerResults(resultMat);
+                int counter = Classifier.countOwnerResults(resultMat);
 
                 if(!userKeys[i].equals(forUserID))
                 {

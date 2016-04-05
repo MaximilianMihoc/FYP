@@ -70,7 +70,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     private String[] userNames;
 
     private SharedPreferences sharedpreferences;
-    private Classifier classifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -82,7 +81,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
 
-        classifier = new Classifier();
         scrollFlingObservations = new ArrayList<>();
         trainScrollFlingObservations = new ArrayList<>();
         tapOnlyObservations = new ArrayList<>();
@@ -298,11 +296,11 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     // Built the SVM model for Scroll/Fling Observations if training data exists.
                     if (trainScrollFlingObservations.size() > 0)
                     {
-                        scrollFlingSVM = classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
+                        scrollFlingSVM = Classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
 
-                        scrollKNN = classifier.createAndTrainScrollFlingKNNClassifier(trainScrollFlingObservations);
+                        scrollKNN = Classifier.createAndTrainScrollFlingKNNClassifier(trainScrollFlingObservations);
 
-                        scrollRTree = classifier.createAndTrainScrollFlingRTreeClassifier(trainScrollFlingObservations);
+                        scrollRTree = Classifier.createAndTrainScrollFlingRTreeClassifier(trainScrollFlingObservations);
 
                     }
                     else
@@ -316,11 +314,11 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     // Built the SVM model for Tap Observations if training data exists.
                     if (trainTapOnlyObservations.size() > 0)
                     {
-                        tapSVM = classifier.createAndTrainTapSVMClassifier(trainTapOnlyObservations);
+                        tapSVM = Classifier.createAndTrainTapSVMClassifier(trainTapOnlyObservations);
 
-                        tapKNN = classifier.createAndTrainTapKNNClassifier(trainTapOnlyObservations);
+                        tapKNN = Classifier.createAndTrainTapKNNClassifier(trainTapOnlyObservations);
 
-                        tapRTree = classifier.createAndTraintapRTreeClassifier(trainTapOnlyObservations);
+                        tapRTree = Classifier.createAndTraintapRTreeClassifier(trainTapOnlyObservations);
                     }
                     else
                     {
@@ -372,7 +370,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     if (scrollFlingObservations.size() > 0)
                     {
                         //create train and test Martices
-                        Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(scrollFlingObservations);
+                        Mat testDataMat = Classifier.buildTrainOrTestMatForScrollFling(scrollFlingObservations);
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
 
                         System.out.println("Scroll Fling Test Data Mat: ");
@@ -380,7 +378,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
                         // SVM
                         scrollFlingSVM.predict(testDataMat, resultMat, 0);
-                        int counter = classifier.countOwnerResults(resultMat);
+                        int counter = Classifier.countOwnerResults(resultMat);
                         scrollSVMTextView.setText("SVM Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
                         progressBarScrollSVM.setMax(scrollFlingObservations.size());
@@ -389,7 +387,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         // kNN
                         resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
                         scrollKNN.predict(testDataMat, resultMat, 0);
-                        counter = classifier.countOwnerResults(resultMat);
+                        counter = Classifier.countOwnerResults(resultMat);
                         scrollKNNTextView.setText("kNN Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
                         progressBarScrollKNN.setMax(scrollFlingObservations.size());
@@ -398,7 +396,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         // rTrees
                         resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
                         scrollRTree.predict(testDataMat, resultMat, 0);
-                        counter = classifier.countOwnerResults(resultMat);
+                        counter = Classifier.countOwnerResults(resultMat);
                         scrollRTreeTextView.setText("rTrees Scroll/Fling -> " + counter + " / " + scrollFlingObservations.size()
                                 + " -> " + Math.round((counter * 100) / scrollFlingObservations.size()) + "%");
                         progressBarScrollRTree.setMax(scrollFlingObservations.size());
@@ -422,12 +420,12 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
                     if (tapOnlyObservations.size() > 0)
                     {
-                        Mat testTapDataMat = classifier.buildTrainOrTestMatForTaps(tapOnlyObservations);
+                        Mat testTapDataMat = Classifier.buildTrainOrTestMatForTaps(tapOnlyObservations);
                         Mat resultTapMat = new Mat(tapOnlyObservations.size(), 1, CvType.CV_32S);
 
                         // SVM
                         tapSVM.predict(testTapDataMat, resultTapMat, 0);
-                        int counter = classifier.countOwnerResults(resultTapMat);
+                        int counter = Classifier.countOwnerResults(resultTapMat);
                         tapSVMTextView.setText("SVM Taps -> " + counter + " / " + tapOnlyObservations.size()
                                 + " -> " + Math.round((counter * 100) / tapOnlyObservations.size()) + "%");
                         progressBarTapSVM.setMax(tapOnlyObservations.size());
@@ -435,7 +433,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
                         // kNN
                         tapKNN.predict(testTapDataMat, resultTapMat, 0);
-                        counter = classifier.countOwnerResults(resultTapMat);
+                        counter = Classifier.countOwnerResults(resultTapMat);
                         tapKNNTextView.setText("kNN Taps -> " + counter + " / " + tapOnlyObservations.size()
                                 + " -> " + Math.round((counter * 100) / tapOnlyObservations.size()) + "%");
                         progressBarTapKNN.setMax(tapOnlyObservations.size());
@@ -443,7 +441,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
                         // rTrees
                         tapRTree.predict(testTapDataMat, resultTapMat, 0);
-                        counter = classifier.countOwnerResults(resultTapMat);
+                        counter = Classifier.countOwnerResults(resultTapMat);
                         tapRTreeTextView.setText("rTrees Taps -> " + counter + " / " + tapOnlyObservations.size()
                                 + " -> " + Math.round((counter * 100) / tapOnlyObservations.size()) + "%");
                         progressBarTapRTree.setMax(tapOnlyObservations.size());

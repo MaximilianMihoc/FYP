@@ -75,8 +75,6 @@ public class CrossValidationActivity extends Activity
     private String[] userKeys;
     private String[] userNames;
 
-    private Classifier classifier;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -89,7 +87,6 @@ public class CrossValidationActivity extends Activity
         SharedPreferences sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
 
-        classifier = new Classifier();
         scrollFlingObservations = new ArrayList<>();
         trainScrollFlingObservations = new ArrayList<>();
         tapOnlyObservations = new ArrayList<>();
@@ -224,11 +221,11 @@ public class CrossValidationActivity extends Activity
                     //scrollFlingSVM.setNu(1/Math.pow(2,11));
                     scrollFlingSVM.setNu(1/Math.pow(2,13));
 
-                    Mat trainScrollFlingMat = classifier.buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
-                    Mat labelsScrollFlingMat = classifier.buildLabelsMat(trainScrollFlingObservations);
+                    Mat trainScrollFlingMat = Classifier.buildTrainOrTestMatForScrollFling(trainScrollFlingObservations);
+                    Mat labelsScrollFlingMat = Classifier.buildLabelsMat(trainScrollFlingObservations);
 
                     System.out.println("Train Matrix is:\n");
-                    classifier.displayMatrix(trainScrollFlingMat);
+                    Classifier.displayMatrix(trainScrollFlingMat);
 
                     scrollFlingSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
                     // end training scrollFlingSNM
@@ -283,8 +280,8 @@ public class CrossValidationActivity extends Activity
                     //tapSVM.setNu(1/Math.pow(2,10));
                     tapSVM.setNu(1/Math.pow(2,11));
 
-                    Mat trainTapMat = classifier.buildTrainOrTestMatForTaps(trainTapOnlyObservations);
-                    Mat labelsTapMat = classifier.buildLabelsMat(trainTapOnlyObservations);
+                    Mat trainTapMat = Classifier.buildTrainOrTestMatForTaps(trainTapOnlyObservations);
+                    Mat labelsTapMat = Classifier.buildLabelsMat(trainTapOnlyObservations);
 
                     //System.out.println("Train Matrix for Tap is:\n");
                     //displayMatrix(trainTapMat);
@@ -396,7 +393,7 @@ public class CrossValidationActivity extends Activity
                         scrollFlingObservations.add(obs);
                     }
 
-                    Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(scrollFlingObservations);
+                    Mat testDataMat = Classifier.buildTrainOrTestMatForScrollFling(scrollFlingObservations);
 
                     // create the result Mat
                     Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
@@ -446,7 +443,7 @@ public class CrossValidationActivity extends Activity
                         tapOnlyObservations.add(obs);
                     }
 
-                    Mat testDataMat = classifier.buildTrainOrTestMatForTaps(tapOnlyObservations);
+                    Mat testDataMat = Classifier.buildTrainOrTestMatForTaps(tapOnlyObservations);
 
                     // create the result Mat
                     Mat resultMat = new Mat(tapOnlyObservations.size(), 1, CvType.CV_32S);

@@ -10,16 +10,24 @@ import org.opencv.ml.SVM;
 import java.util.ArrayList;
 
 /**
- * Created by Maximilian on 05/04/2016.
+ * This class contains the classifiers initialisations and common methods used by each classifier
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 04th April 2016
  */
 public class Classifier
 {
-    public Classifier()
-    {
-
-    }
-
-    public int countOwnerResults(Mat mat)
+    /**
+     * Method countOwnerResults()
+     * This method is used to count the results returned by the classifier in the Result Mat
+     * 1 representing Owner data
+     * 0 representing Guest data
+     *
+     * @param mat ResultMat
+     * @return int
+     */
+    public static int countOwnerResults(Mat mat)
     {
         int counter = 0;
         for (int i = 0; i < mat.rows(); i++)
@@ -30,7 +38,15 @@ public class Classifier
         return counter;
     }
 
-    public ArrayList<Observation> changeJudgements(ArrayList<Observation> obsList, int judgementValue)
+    /**
+     * Method changeJudgements
+     * This method is used to change the judgements of observations
+     *
+     * @param obsList ArrayList of Observations
+     * @param judgementValue value of the new judgement for all observations
+     * @return ArrayList
+     */
+    public static ArrayList<Observation> changeJudgements(ArrayList<Observation> obsList, int judgementValue)
     {
         for(Observation obs : obsList)
         {
@@ -40,7 +56,15 @@ public class Classifier
         return obsList;
     }
 
-    public SVM createAndTrainScrollFlingSVMClassifier(ArrayList<Observation> arrayListObservations)
+    /**
+     * Method createAndTrainScrollFlingSVMClassifier
+     * This method is used to create and train the SVM classifier for Scroll/Fling actions
+     * given an array of Observations for the train data.
+     *
+     * @param arrayListObservations ArrayList of Observations
+     * @return SVM
+     */
+    public static SVM createAndTrainScrollFlingSVMClassifier(ArrayList<Observation> arrayListObservations)
     {
         //initialise scrollFlingSVM
         SVM tempSVM = SVM.create();
@@ -58,7 +82,15 @@ public class Classifier
         return tempSVM;
     }
 
-    public SVM createAndTrainTapSVMClassifier(ArrayList<Observation> arrayListObservations)
+    /**
+     * Method createAndTrainTapSVMClassifier
+     * This method is used to create and train the SVM classifier for Tap actions
+     * given an array of Observations for the train data.
+     *
+     * @param arrayListObservations ArrayList of Observations
+     * @return SVM
+     */
+    public static SVM createAndTrainTapSVMClassifier(ArrayList<Observation> arrayListObservations)
     {
         SVM tempSVM = SVM.create();
 
@@ -75,7 +107,15 @@ public class Classifier
         return tempSVM;
     }
 
-    public RTrees createAndTrainScrollFlingRTreeClassifier(ArrayList<Observation> arrayListObservations)
+    /**
+     * Method createAndTrainScrollFlingRTreeClassifier
+     * This method is used to create and train the RTrees classifier for Scroll/Fling actions
+     * given an array of Observations for the train data.
+     *
+     * @param arrayListObservations ArrayList of Observations
+     * @return RTrees
+     */
+    public static RTrees createAndTrainScrollFlingRTreeClassifier(ArrayList<Observation> arrayListObservations)
     {
         RTrees rTree = RTrees.create();
         Mat rTreeTrainMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
@@ -86,7 +126,15 @@ public class Classifier
         return rTree;
     }
 
-    public RTrees createAndTraintapRTreeClassifier(ArrayList<Observation> arrayListObservations)
+    /**
+     * Method createAndTraintapRTreeClassifier
+     * This method is used to create and train the RTrees classifier for Tap actions
+     * given an array of Observations for the train data.
+     *
+     * @param arrayListObservations ArrayList of Observations
+     * @return RTrees
+     */
+    public static RTrees createAndTraintapRTreeClassifier(ArrayList<Observation> arrayListObservations)
     {
         RTrees rTree = RTrees.create();
         Mat rTreeTrainMat = buildTrainOrTestMatForTaps(arrayListObservations);
@@ -97,10 +145,17 @@ public class Classifier
         return rTree;
     }
 
-    public KNearest createAndTrainScrollFlingKNNClassifier(ArrayList<Observation> arrayListObservations)
+    /**
+     * Method createAndTrainScrollFlingKNNClassifier
+     * This method is used to create and train the KNearest classifier for Scroll/Fling actions
+     * given an array of Observations for the train data.
+     *
+     * @param arrayListObservations ArrayList of Observations
+     * @return KNearest
+     */
+    public static KNearest createAndTrainScrollFlingKNNClassifier(ArrayList<Observation> arrayListObservations)
     {
         KNearest kNN = KNearest.create();
-        System.out.println("K is: " + kNN.getDefaultK());
 
         Mat kNNTrainMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
         Mat kNNLabelsMat = buildLabelsMat(arrayListObservations);
@@ -110,10 +165,17 @@ public class Classifier
         return kNN;
     }
 
-    public KNearest createAndTrainTapKNNClassifier(ArrayList<Observation> arrayListObservations)
+    /**
+     * Method createAndTrainTapKNNClassifier
+     * This method is used to create and train the KNearest classifier for Tap actions
+     * given an array of Observations for the train data.
+     *
+     * @param arrayListObservations ArrayList of Observations
+     * @return KNearest
+     */
+    public static KNearest createAndTrainTapKNNClassifier(ArrayList<Observation> arrayListObservations)
     {
         KNearest kNN = KNearest.create();
-        System.out.println("K is: " + kNN.getDefaultK());
 
         Mat kNNTrainMat = buildTrainOrTestMatForTaps(arrayListObservations);
         Mat kNNLabelsMat = buildLabelsMat(arrayListObservations);
@@ -123,7 +185,16 @@ public class Classifier
         return kNN;
     }
 
-    public Mat buildLabelsMat(ArrayList<Observation> listObservations)
+    /**
+     * Method buildLabelsMat
+     * This method is used to build the Labels Matrix for a classifier
+     * Given a list of Observations, the method returns the judgements of each observation
+     * The returned Mat contains only one column and many rows. Each row contain the judgement of one Observation     *
+     *
+     * @param listObservations ArrayList of Observations
+     * @return Mat
+     */
+    public static Mat buildLabelsMat(ArrayList<Observation> listObservations)
     {
         Mat labelsTempMat = new Mat(listObservations.size(), 1, CvType.CV_32S);
 
@@ -135,7 +206,15 @@ public class Classifier
         return labelsTempMat;
     }
 
-    public Mat buildTrainOrTestMatForScrollFling(ArrayList<Observation> listObservations)
+    /**
+     * Method buildTrainOrTestMatForScrollFling
+     * Given a list of observations, this method returns the feature matrix used by classifiers to train or test the Scroll/Fling model
+     * Each row of the matrix contains all the features of one Scroll/Fling observation
+     *
+     * @param listObservations ArrayList of Observations
+     * @return Mat
+     */
+    public static Mat buildTrainOrTestMatForScrollFling(ArrayList<Observation> listObservations)
     {
         Mat tempMat = new Mat(listObservations.size(), ScrollFling.numberOfFeatures, CvType.CV_32FC1);
 
@@ -179,7 +258,15 @@ public class Classifier
 
     }
 
-    public Mat buildTrainOrTestMatForTaps(ArrayList<Observation> listObservations)
+    /**
+     * Method buildTrainOrTestMatForTaps
+     * Given a list of observations, this method returns the feature matrix used by classifiers to train or test the Tap model
+     * Each row of the matrix contains all the features of one Tap observation
+     *
+     * @param listObservations ArrayList of Observations
+     * @return Mat
+     */
+    public static Mat buildTrainOrTestMatForTaps(ArrayList<Observation> listObservations)
     {
         Mat tempMat = new Mat(listObservations.size(), Tap.numberOfFeatures, CvType.CV_32FC1);
 
@@ -217,7 +304,13 @@ public class Classifier
         return tempMat;
     }
 
-    public void displayMatrix(Mat matrix)
+    /**
+     * Method displayMatrix
+     * This method is used to display the content of ant matrix on console
+     *
+     * @param matrix Mat
+     */
+    public static void displayMatrix(Mat matrix)
     {
         for(int i=0; i<matrix.rows(); i++)
         {
@@ -229,30 +322,43 @@ public class Classifier
         }
     }
 
-    public Mat normalizeMat(Mat toNormalize)
+    /**
+     * Method normalizeMat
+     * This method was used to normalise feature values of a matrix between 0 and 1
+     * Not used anymore as normalisation on each feature was better for predictions
+     *
+     * @param toNormalize Mat to normalize
+     * @return Mat
+     */
+    public static Mat normalizeMat(Mat toNormalize)
     {
         Mat tempMat = toNormalize.clone();
 
         for(int col = 0; col < toNormalize.cols(); col++)
         {
-            // only normalize data from 2 features that are not properly normalised
-            if(col == 5 || col == 8)
-            {
-                double min = getMinValueOFColumn(toNormalize, col);
-                double max = getMaxValueOFColumn(toNormalize, col);
+            double min = getMinValueOFColumn(toNormalize, col);
+            double max = getMaxValueOFColumn(toNormalize, col);
 
-                for (int row = 0; row < toNormalize.rows(); row++)
-                {
-                    double[] element = toNormalize.get(row, col);
-                    tempMat.put(row, col, (element[0] - min) / (max - min));
-                }
+            for (int row = 0; row < toNormalize.rows(); row++)
+            {
+                double[] element = toNormalize.get(row, col);
+                tempMat.put(row, col, (element[0] - min) / (max - min));
             }
         }
 
         return tempMat;
     }
 
-    private double getMinValueOFColumn(Mat mat, int col)
+    /**
+     * Method getMinValueOFColumn
+     * This method was used to get the minimum value of a column from a matrix
+     * Used for normalization
+     *
+     * @param mat Mat to use
+     * @param col column number
+     * @return double
+     */
+    private static double getMinValueOFColumn(Mat mat, int col)
     {
         double min = Double.MAX_VALUE;
         for(int i = 0; i < mat.rows(); i++)
@@ -264,7 +370,16 @@ public class Classifier
         return min;
     }
 
-    private double getMaxValueOFColumn(Mat mat, int col)
+    /**
+     * Method getMinValueOFColumn
+     * This method was used to get the maximum value of a column from a matrix
+     * Used for normalization
+     *
+     * @param mat Mat to use
+     * @param col column number
+     * @return double
+     */
+    private static double getMaxValueOFColumn(Mat mat, int col)
     {
         double max = Double.MIN_VALUE;
         for(int i = 0; i < mat.rows(); i++)
