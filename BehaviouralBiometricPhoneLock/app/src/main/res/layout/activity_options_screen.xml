@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stack Overflow"
+        android:text="@string/SOlabel"
         android:id="@+id/textView4"
         android:textSize="20sp"
         android:textColor="@color/green"
@@ -27,12 +27,12 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/circle_button"
         android:src="@drawable/stackoverflow"
-        android:contentDescription="StackOverflow"/>
+        android:contentDescription="@string/SOlabel"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Country-List Game"
+        android:text="@string/CLLabel"
         android:id="@+id/textView5"
         android:textSize="20sp"
         android:textColor="@color/green"
@@ -47,12 +47,12 @@
         android:src="@drawable/europe"
         android:layout_below="@+id/textView5"
         android:layout_alignStart="@+id/goToStackOverflowApp"
-        android:contentDescription="Country-List Game"/>
+        android:contentDescription="@string/CLLabel"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Log Out"
+        android:text="@string/log_out"
         android:background="@drawable/bg_button"
         android:id="@+id/logOutButton"
         android:layout_below="@+id/goToCountryListGame"

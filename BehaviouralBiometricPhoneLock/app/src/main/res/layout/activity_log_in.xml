@@ -11,7 +11,7 @@
 
     <EditText
         android:id="@+id/emailLogin"
-        android:hint="E-mail"
+        android:hint="@string/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
@@ -27,7 +27,7 @@
 
     <EditText
         android:id="@+id/passwordLogin"
-        android:hint="Password"
+        android:hint="@string/password"
         android:textColor="@color/ligthBlue"
         android:textColorHint="@color/ligthBlue"
         android:backgroundTint="@color/ligthBlue"
@@ -43,7 +43,7 @@
 
     <Button
         android:id="@+id/logInButton"
-        android:text="Log In"
+        android:text="@string/log_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_button"
@@ -55,7 +55,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register here"
+        android:text="@string/registerLabel"
         android:textColor="@color/ligthBlue"
         android:id="@+id/goToRegistrationScreen"
         android:layout_below="@+id/logInButton"
@@ -73,8 +73,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignEnd="@+id/logInButton"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/goToRegistrationScreen"/>
-
-
+        android:layout_below="@+id/goToRegistrationScreen"
+        android:contentDescription="@string/registerImageDescription"/>
 
 </RelativeLayout>

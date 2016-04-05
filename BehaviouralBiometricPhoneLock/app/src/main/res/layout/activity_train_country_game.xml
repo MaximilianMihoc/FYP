@@ -7,7 +7,7 @@
                 tools:context="ie.dit.max.foregroundAppCountriesPick.CountryListGameTrain">
 
     <TextView
-        android:text="Please tap the button below."
+        android:text="@string/instruction1CLGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
@@ -21,7 +21,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tap me 5 times to start"
+        android:text="@string/buttonTrainTapCLGame"
         android:id="@+id/startTrainingFirstActivity"
         android:background="@drawable/bg_button"
         android:layout_alignParentBottom="true"
@@ -44,7 +44,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
         android:textColor="@color/green"
         android:id="@+id/textInCenter"
         android:textSize="45sp"
@@ -55,7 +54,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Text"
         android:textColor="@color/green"
         android:padding="10dp"
         android:id="@+id/textInCenter2"
@@ -68,7 +66,7 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start"
+        android:text="@string/start"
         android:id="@+id/OKbutton"
         android:background="@drawable/bg_button"
         android:layout_marginTop="57dp"
@@ -80,7 +78,7 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Exit"
+        android:text="@string/exit"
         android:id="@+id/exitButton"
         android:background="@drawable/bg_button"
         android:layout_marginTop="10dp"

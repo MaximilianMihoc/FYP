@@ -6,7 +6,7 @@
                 tools:context="ie.dit.max.foregroundAppStackOverflow.AnswersScreen">
 
     <TextView
-        android:text="Question Title"
+        android:text="@string/questionTitle"
         android:textSize="20sp"
         android:id="@+id/questionBody"
         android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Back"
+        android:text="@string/back"
         android:background="@drawable/bg_button"
         android:id="@+id/backToQuestionBody"
         android:layout_alignParentBottom="true"

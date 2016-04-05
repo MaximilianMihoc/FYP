@@ -20,14 +20,14 @@
         <Button
             android:layout_width="184dp"
             android:layout_height="wrap_content"
-            android:text="Back"
+            android:text="@string/back"
             android:background="@drawable/bg_button"
             android:id="@+id/backHomeScreen"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="View Answers"
+            android:text="@string/viewAnswers"
             android:background="@drawable/bg_button"
             android:id="@+id/goToAnswers"/>
 
@@ -45,37 +45,32 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Question Title"
+                android:text="@string/questionTitle"
                 android:id="@+id/bodyScreenTitle"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"/>
 
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="2dp"
                 android:background="#c0c0c0"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/bodyScreenTitle"
                 android:id="@+id/view3"/>
 
             <TextView
-                android:text="Question Body"
+                android:text="@string/questionBody"
                 android:id="@+id/questionBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/view3"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Asked time + owner"
                 android:id="@+id/questionBodyOwner"
                 android:layout_below="@+id/questionBody"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"/>
         </RelativeLayout>
     </ScrollView>

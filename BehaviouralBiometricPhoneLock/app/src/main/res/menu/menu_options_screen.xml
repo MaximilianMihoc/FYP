@@ -8,37 +8,37 @@
           app:showAsAction="never"/>
 
     <item android:id="@+id/action_changePassword"
-          android:title="Change Password"
+          android:title="@string/settings_1"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 
     <item android:id="@+id/action_lockOption"
-          android:title="Lock Option"
+          android:title="@string/settings_2"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 
     <item android:id="@+id/action_trainSystem"
-          android:title="Re-Train System"
+          android:title="@string/settings_3"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 
     <item android:id="@+id/action_viewRecommendedValues"
-          android:title="View Recommended values"
+          android:title="@string/settings_4"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 
     <item android:id="@+id/action_deleteTestData"
-          android:title="Delete Test Data"
+          android:title="@string/settings_5"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 
     <item android:id="@+id/action_deleteTrainData"
-          android:title="Delete Train Data"
+          android:title="@string/settings_6"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 
     <item android:id="@+id/action_evaluation"
-          android:title="Evaluation"
+          android:title="@string/settings_7"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 

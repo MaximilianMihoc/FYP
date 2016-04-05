@@ -11,7 +11,7 @@
 
     <TextView
         android:id="@+id/thresholdValue"
-        android:text="Threshold: "
+        android:text="@string/threshold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/green"
@@ -32,7 +32,7 @@
 
     <TextView
         android:id="@+id/nrObservations"
-        android:text="Number of guest Observation to use: "
+        android:text="@string/nrObservations"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/green"
@@ -55,7 +55,7 @@
         android:layout_alignEnd="@+id/thresholdSeekBar"/>
 
     <CheckBox
-        android:text="Save Test Data"
+        android:text="@string/saveTestData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/green"
@@ -69,7 +69,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:id="@+id/saveSettingsButton"
         android:background="@drawable/bg_button"
         android:layout_alignParentBottom="true"
