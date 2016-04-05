@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -70,32 +72,40 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                loadingPanel.setVisibility(View.VISIBLE);
-                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
-                scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
+                if(isNetworkAvailable())
                 {
-
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot)
+                    loadingPanel.setVisibility(View.VISIBLE);
+                    Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
+                    scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                     {
-                        loadingPanel.setVisibility(View.GONE);
-                        if (dataSnapshot.getValue() == null)
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot)
                         {
-                            Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
-                            toast.show();
-                        } else
-                        {
-                            Intent trainIntent = new Intent(OptionsScreen.this, StackOverflowHomeScreen.class);
-                            startActivity(trainIntent);
+                            loadingPanel.setVisibility(View.GONE);
+                            if (dataSnapshot.getValue() == null)
+                            {
+                                Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            } else
+                            {
+                                Intent trainIntent = new Intent(OptionsScreen.this, StackOverflowHomeScreen.class);
+                                startActivity(trainIntent);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError)
-                    {
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError)
+                        {
 
-                    }
-                });
+                        }
+                    });
+                }
+                else
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(), "No Internet Connection Available.\n\nPlease Connect to Internet and try again.", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         });
 
@@ -104,33 +114,40 @@ public class OptionsScreen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                loadingPanel.setVisibility(View.VISIBLE);
-                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
-                scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
+                if(isNetworkAvailable())
                 {
-
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot)
+                    loadingPanel.setVisibility(View.VISIBLE);
+                    Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID + "/scrollFling");
+                    scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                     {
-                        loadingPanel.setVisibility(View.GONE);
-                        if (dataSnapshot.getValue() == null)
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot)
                         {
-                            Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
-                            toast.show();
-                        } else
-                        {
-                            Intent trainIntent = new Intent(OptionsScreen.this, CountryListGameTest.class);
-                            startActivity(trainIntent);
+                            loadingPanel.setVisibility(View.GONE);
+                            if (dataSnapshot.getValue() == null)
+                            {
+                                Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            } else
+                            {
+                                Intent trainIntent = new Intent(OptionsScreen.this, CountryListGameTest.class);
+                                startActivity(trainIntent);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError)
-                    {
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError)
+                        {
 
-                    }
-                });
-
+                        }
+                    });
+                }
+                else
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(), "No Internet Connection Available.\n\nPlease Connect to Internet and try again.", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         });
 
@@ -175,299 +192,313 @@ public class OptionsScreen extends AppCompatActivity
         alertDialogBuilder.setView(promptsView);
         userPasswordConfirmed = (EditText) promptsView.findViewById(R.id.confirmPasswordPrompt);
 
-        switch(item.getItemId())
+        if(isNetworkAvailable())
         {
-            case R.id.action_settings:
+            switch (item.getItemId())
             {
-                alertDialogBuilder.setMessage("Open Settings Screen")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                case R.id.action_settings:
                 {
-                    public void onClick(DialogInterface dialog, int id)
-                    {
-                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
-                        {
-                            @Override
-                            public void onAuthenticated(AuthData authData)
+                    alertDialogBuilder.setMessage("Open Settings Screen")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener()
                             {
-                                startActivity(new Intent(OptionsScreen.this, SettingsActivity.class));
-                            }
-
-                            @Override
-                            public void onAuthenticationError(FirebaseError firebaseError)
-                            {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-
-                        });
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-                {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                        dialog.cancel();
-                    }
-                });
-
-                alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-                return true;
-            }
-            case R.id.action_changePassword:
-            {
-                // Check if train data exists for the current user
-                Firebase trainDataRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
-                trainDataRef.addListenerForSingleValueEvent(new ValueEventListener()
-                {
-
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot)
-                    {
-                        loadingPanel.setVisibility(View.GONE);
-                        if (dataSnapshot.getValue() == null)
-                        {
-                            Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
-                            toast.show();
-                        } else
-                        {
-                            // check if test data for password Change exist
-                            Firebase testDataRef = new Firebase("https://fyp-max.firebaseio.com/testDataForPasswordChange/" + userID);
-                            testDataRef.addListenerForSingleValueEvent(new ValueEventListener()
-                            {
-
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot)
+                                public void onClick(DialogInterface dialog, int id)
                                 {
-                                    loadingPanel.setVisibility(View.GONE);
-                                    System.out.println("dataSnapshot: ");
-
-                                    if (dataSnapshot.getValue() == null)
+                                    ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
                                     {
-                                        Toast toast = Toast.makeText(getApplicationContext(), "Please use the app for a while before changing the password." +
-                                                " Password can not be changed if the application is not used. \n\n" +
-                                                "Please play Country List game or Use Stack Overflow for couple of minutes.", Toast.LENGTH_LONG);
-                                        toast.show();
-                                    } else
-                                    {
-                                        DataSnapshot dpScroll = dataSnapshot.child("scrollFling");
-
-                                        if (dpScroll.getChildrenCount() <= numberInteractionsNeededToChangePassword)
+                                        @Override
+                                        public void onAuthenticated(AuthData authData)
                                         {
-                                            Toast toast = Toast.makeText(getApplicationContext(), "Please use the app a little longer." +
-                                                    "\n\nMore interactions needed to change password.", Toast.LENGTH_LONG);
+                                            startActivity(new Intent(OptionsScreen.this, SettingsActivity.class));
+                                        }
+
+                                        @Override
+                                        public void onAuthenticationError(FirebaseError firebaseError)
+                                        {
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                            toast.show();
+                                        }
+
+                                    });
+                                }
+                            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                    {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            dialog.cancel();
+                        }
+                    });
+
+                    alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                    return true;
+                }
+                case R.id.action_changePassword:
+                {
+                    // Check if train data exists for the current user
+                    Firebase trainDataRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
+                    trainDataRef.addListenerForSingleValueEvent(new ValueEventListener()
+                    {
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot)
+                        {
+                            loadingPanel.setVisibility(View.GONE);
+                            if (dataSnapshot.getValue() == null)
+                            {
+                                Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided. Please train the system first.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            } else
+                            {
+                                // check if test data for password Change exist
+                                Firebase testDataRef = new Firebase("https://fyp-max.firebaseio.com/testDataForPasswordChange/" + userID);
+                                testDataRef.addListenerForSingleValueEvent(new ValueEventListener()
+                                {
+
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot)
+                                    {
+                                        loadingPanel.setVisibility(View.GONE);
+                                        System.out.println("dataSnapshot: ");
+
+                                        if (dataSnapshot.getValue() == null)
+                                        {
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Please use the app for a while before changing the password." +
+                                                    " Password can not be changed if the application is not used. \n\n" +
+                                                    "Please play Country List game or Use Stack Overflow for couple of minutes.", Toast.LENGTH_LONG);
                                             toast.show();
                                         } else
                                         {
-                                            Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
-                                            startActivity(trainIntent);
+                                            DataSnapshot dpScroll = dataSnapshot.child("scrollFling");
+
+                                            if (dpScroll.getChildrenCount() <= numberInteractionsNeededToChangePassword)
+                                            {
+                                                Toast toast = Toast.makeText(getApplicationContext(), "Please use the app a little longer." +
+                                                        "\n\nMore interactions needed to change password.", Toast.LENGTH_LONG);
+                                                toast.show();
+                                            } else
+                                            {
+                                                Intent trainIntent = new Intent(OptionsScreen.this, ChangePassword.class);
+                                                startActivity(trainIntent);
+                                            }
                                         }
                                     }
-                                }
 
-                                @Override
-                                public void onCancelled(FirebaseError firebaseError)
-                                {
+                                    @Override
+                                    public void onCancelled(FirebaseError firebaseError)
+                                    {
 
-                                }
-                            });
+                                    }
+                                });
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError)
-                    {
-
-                    }
-                });
-
-                return true;
-            }
-            case R.id.action_lockOption:
-            {
-                alertDialogBuilder.setMessage("View Lock Options")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int id)
-                    {
-                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError)
                         {
-                            @Override
-                            public void onAuthenticated(AuthData authData)
-                            {
-                                startActivity(new Intent(OptionsScreen.this, MyLockScreenActivity.class));
-                            }
 
-                            @Override
-                            public void onAuthenticationError(FirebaseError firebaseError)
-                            {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
+                        }
+                    });
 
-                        });
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                    return true;
+                }
+                case R.id.action_lockOption:
                 {
+                    alertDialogBuilder.setMessage("View Lock Options")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                                    {
+                                        @Override
+                                        public void onAuthenticated(AuthData authData)
+                                        {
+                                            startActivity(new Intent(OptionsScreen.this, MyLockScreenActivity.class));
+                                        }
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                        dialog.cancel();
-                    }
-                });
-                alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
+                                        @Override
+                                        public void onAuthenticationError(FirebaseError firebaseError)
+                                        {
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                            toast.show();
+                                        }
 
-                return true;
-            }
-            case R.id.action_trainSystem:
-            {
-                alertDialogBuilder
-                .setCancelable(false).setMessage("Re-Train System")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int id)
+                                    });
+                                }
+                            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                     {
-                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
                         {
-                            @Override
-                            public void onAuthenticated(AuthData authData)
-                            {
-                                startActivity(new Intent(OptionsScreen.this, CountryListGameTrain.class));
-                            }
+                            dialog.dismiss();
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
 
-                            @Override
-                            public void onAuthenticationError(FirebaseError firebaseError)
-                            {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-
-                        });
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                    return true;
+                }
+                case R.id.action_trainSystem:
                 {
+                    alertDialogBuilder
+                            .setCancelable(false).setMessage("Re-Train System")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                                    {
+                                        @Override
+                                        public void onAuthenticated(AuthData authData)
+                                        {
+                                            startActivity(new Intent(OptionsScreen.this, CountryListGameTrain.class));
+                                        }
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
+                                        @Override
+                                        public void onAuthenticationError(FirebaseError firebaseError)
+                                        {
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                            toast.show();
+                                        }
+
+                                    });
+                                }
+                            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                     {
-                        dialog.dismiss();
-                        dialog.cancel();
-                    }
-                });
 
-                alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-
-                return true;
-            }
-            case R.id.action_viewRecommendedValues:
-            {
-                startActivity(new Intent(this, ViewRecomendedValues.class));
-                return true;
-            }
-            case R.id.action_deleteTestData:
-            {
-                alertDialogBuilder
-                .setCancelable(false).setMessage("Delete Test Data")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int id)
-                    {
-                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
                         {
-                            @Override
-                            public void onAuthenticated(AuthData authData)
-                            {
-                                Firebase removeDataRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
-                                removeDataRef.removeValue();
-                                Toast toast = Toast.makeText(getApplicationContext(), "Test Data Successfully deleted.", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
+                            dialog.dismiss();
+                            dialog.cancel();
+                        }
+                    });
 
-                            @Override
-                            public void onAuthenticationError(FirebaseError firebaseError)
-                            {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
+                    alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
 
-                        });
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                    return true;
+                }
+                case R.id.action_viewRecommendedValues:
                 {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                        dialog.cancel();
-                    }
-                });
-
-                alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-                return true;
-            }
-            case R.id.action_deleteTrainData:
-            {
-                alertDialogBuilder
-                .setCancelable(false).setMessage("Delete Train Data")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                    startActivity(new Intent(this, ViewRecomendedValues.class));
+                    return true;
+                }
+                case R.id.action_deleteTestData:
                 {
-                    public void onClick(DialogInterface dialog, int id)
+                    alertDialogBuilder
+                            .setCancelable(false).setMessage("Delete Test Data")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                                    {
+                                        @Override
+                                        public void onAuthenticated(AuthData authData)
+                                        {
+                                            Firebase removeDataRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
+                                            removeDataRef.removeValue();
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Test Data Successfully deleted.", Toast.LENGTH_SHORT);
+                                            toast.show();
+                                        }
+
+                                        @Override
+                                        public void onAuthenticationError(FirebaseError firebaseError)
+                                        {
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                            toast.show();
+                                        }
+
+                                    });
+                                }
+                            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                     {
-                        ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
                         {
-                            @Override
-                            public void onAuthenticated(AuthData authData)
-                            {
-                                Firebase removeDataRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
-                                removeDataRef.removeValue();
-                                Toast toast = Toast.makeText(getApplicationContext(), "Train Data Successfully deleted.", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
+                            dialog.dismiss();
+                            dialog.cancel();
+                        }
+                    });
 
-                            @Override
-                            public void onAuthenticationError(FirebaseError firebaseError)
-                            {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-
-                        });
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                    alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                    return true;
+                }
+                case R.id.action_deleteTrainData:
                 {
+                    alertDialogBuilder
+                            .setCancelable(false).setMessage("Delete Train Data")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    ref.authWithPassword(userEmail, userPasswordConfirmed.getText().toString(), new Firebase.AuthResultHandler()
+                                    {
+                                        @Override
+                                        public void onAuthenticated(AuthData authData)
+                                        {
+                                            Firebase removeDataRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + userID);
+                                            removeDataRef.removeValue();
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Train Data Successfully deleted.", Toast.LENGTH_SHORT);
+                                            toast.show();
+                                        }
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
+                                        @Override
+                                        public void onAuthenticationError(FirebaseError firebaseError)
+                                        {
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Wrong Password", Toast.LENGTH_SHORT);
+                                            toast.show();
+                                        }
+
+                                    });
+                                }
+                            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                     {
-                        dialog.dismiss();
-                        dialog.cancel();
-                    }
-                });
 
-                alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-                return true;
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            dialog.cancel();
+                        }
+                    });
+
+                    alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                    return true;
+                }
+                case R.id.action_evaluation:
+                {
+                    startActivity(new Intent(this, UserValidationDifferentClassifiers.class));
+                    return true;
+                }
+                default:
+                    super.onOptionsItemSelected(item);
             }
-            case R.id.action_evaluation:
-            {
-                startActivity(new Intent(this, UserValidationDifferentClassifiers.class));
-                return true;
-            }
-            default:
-                super.onOptionsItemSelected(item);
+        }
+        else
+        {
+            Toast toast = Toast.makeText(getApplicationContext(), "No Internet Connection Available.\n\nPlease Connect to Internet and try again.", Toast.LENGTH_SHORT);
+            toast.show();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }

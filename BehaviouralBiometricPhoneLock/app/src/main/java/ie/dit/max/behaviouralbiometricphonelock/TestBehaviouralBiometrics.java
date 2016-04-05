@@ -180,9 +180,10 @@ public class TestBehaviouralBiometrics extends Activity implements
                             scrollFling.setDirectEndToEndDistance(scrollFling.calculateDirectEndToEndDistance());
                             scrollFling.setAngleBetweenStartAndEndVectorsInRad(scrollFling.calculateAngleBetweenStartAndEndVectorsInRad());
 
-                            //Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
+                            Log.i(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
                             tempObs.setTouch(scrollFling);
-                        } else
+                        }
+                        else
                         {
                             //touch = tap
                             Tap tap = new Tap();
@@ -193,7 +194,7 @@ public class TestBehaviouralBiometrics extends Activity implements
 
                             tap.setMidStrokeAreaCovered(tap.calculateMidStrokeAreaCovered());
 
-                            //Log.d(DEBUG_TAG, "Tap: " + tap.toString());
+                            Log.i(DEBUG_TAG, "Tap: " + tap.toString());
                             tempObs.setTouch(tap);
 
                         }

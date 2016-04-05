@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -58,68 +60,77 @@ public class LogIn extends Activity
                 String emailStr = email.getText().toString();
                 String passStr = password.getText().toString();
 
-                ref.authWithPassword(emailStr, passStr, new Firebase.AuthResultHandler() {
-                    @Override
-                    public void onAuthenticated(AuthData authData)
+                if (isNetworkAvailable())
+                {
+                    ref.authWithPassword(emailStr, passStr, new Firebase.AuthResultHandler()
                     {
-                        System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
-
-                        Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users/" + authData.getUid());
-
-                        userRef.addListenerForSingleValueEvent(new ValueEventListener()
+                        @Override
+                        public void onAuthenticated(AuthData authData)
                         {
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot)
+                            System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+
+                            Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users/" + authData.getUid());
+
+                            userRef.addListenerForSingleValueEvent(new ValueEventListener()
                             {
-                                User usrObj = snapshot.getValue(User.class);
-                                System.out.println(usrObj.getUserID() + " - " + usrObj.getEmail());
-
-                                SharedPreferences.Editor editor = sharedpreferences.edit();
-                                editor.putString("UserID", usrObj.getUserID());
-                                editor.putString("UserEmail", usrObj.getEmail());
-                                editor.apply();
-
-                                Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID() + "/scrollFling");
-                                scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot)
                                 {
+                                    User usrObj = snapshot.getValue(User.class);
+                                    System.out.println(usrObj.getUserID() + " - " + usrObj.getEmail());
 
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot)
+                                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                                    editor.putString("UserID", usrObj.getUserID());
+                                    editor.putString("UserEmail", usrObj.getEmail());
+                                    editor.apply();
+
+                                    Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID() + "/scrollFling");
+                                    scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                                     {
-                                        if (dataSnapshot.getValue() == null)
+
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot)
                                         {
-                                            Intent trainIntent = new Intent(LogIn.this, CountryListGameTrain.class);
-                                            startActivity(trainIntent);
-                                        } else
-                                        {
-                                            Intent trainIntent = new Intent(LogIn.this, OptionsScreen.class);
-                                            startActivity(trainIntent);
+                                            if (dataSnapshot.getValue() == null)
+                                            {
+                                                Intent trainIntent = new Intent(LogIn.this, CountryListGameTrain.class);
+                                                startActivity(trainIntent);
+                                            } else
+                                            {
+                                                Intent trainIntent = new Intent(LogIn.this, OptionsScreen.class);
+                                                startActivity(trainIntent);
+                                            }
                                         }
-                                    }
 
-                                    @Override
-                                    public void onCancelled(FirebaseError firebaseError)
-                                    {
-                                        System.out.println("The read failed: " + firebaseError.getMessage());
-                                    }
-                                });
-                            }
+                                        @Override
+                                        public void onCancelled(FirebaseError firebaseError)
+                                        {
+                                            System.out.println("The read failed: " + firebaseError.getMessage());
+                                        }
+                                    });
+                                }
 
-                            @Override
-                            public void onCancelled(FirebaseError firebaseError)
-                            {
-                                System.out.println("The read failed: " + firebaseError.getMessage());
-                            }
-                        });
-                    }
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError)
+                                {
+                                    System.out.println("The read failed: " + firebaseError.getMessage());
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onAuthenticationError(FirebaseError firebaseError)
-                    {
-                        Toast toast = Toast.makeText(getApplicationContext(), "User Credentials does not exist or incorrect", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                });
+                        @Override
+                        public void onAuthenticationError(FirebaseError firebaseError)
+                        {
+                            Toast toast = Toast.makeText(getApplicationContext(), "User Credentials does not exist or incorrect", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
+                }
+                else
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(), "No Internet Connection Available.\n\nPlease Connect to Internet and try again.", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
 
             }
         });
@@ -133,6 +144,12 @@ public class LogIn extends Activity
                 startActivity(trainIntent);
             }
         });
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override
