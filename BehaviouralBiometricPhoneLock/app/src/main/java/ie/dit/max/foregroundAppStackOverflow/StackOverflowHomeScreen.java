@@ -1,9 +1,3 @@
-/*
-* Reference: http://developer.android.com/intl/ja/training/basics/network-ops/connecting.html
-*
-*
-*
-* */
 package ie.dit.max.foregroundAppStackOverflow;
 
 import android.content.Context;
@@ -28,14 +22,19 @@ import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
 
+/**
+ * This activity is used to display Questions in a list, all returned from Stack Exchange API
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 30/01/2016
+ */
+
 public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
 {
     private static final String DEBUG_TAG = "ForegroundApp - StackOverflowHomeScreen";
-
-    ListView questionsListView;
-    QuestionListAdapter questionsListAdapter;
-    SearchView searchView;
-    ArrayList<Question> questionsList;
+    private ListView questionsListView;
+    private ArrayList<Question> questionsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -43,15 +42,16 @@ public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stackoverflow_home);
 
+        // get the last modified questions from StackExchange API using Asynchronous task
         startConnection("https://api.stackexchange.com/2.2/questions?pagesize=100&order=desc&sort=activity&site=stackoverflow&filter=!9YdnSIN18");
 
-        searchView = (SearchView) findViewById(R.id.searchView);
+        SearchView searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
             public boolean onQueryTextSubmit(String query)
             {
-
+                // check if query to use is unsafe and make it safe
                 String safeQuery = URLParamEncoder.encode(query);
 
                 String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&intitle=" + safeQuery + "&site=stackoverflow&filter=!9YdnSIN18";
@@ -69,6 +69,7 @@ public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
         });
 
         questionsListView = (ListView) findViewById(android.R.id.list);
+        // add gesture listener to the ListView. This is used to get Touch and Reaction features for each interaction
         questionsListView.setOnTouchListener(gestureListener);
         questionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -97,7 +98,11 @@ public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
         startActivity(goToAnswersIntent);
     }
 
-
+    /**
+     * Start Asynchronous connection to get questions from the API based on the URL
+     *
+     * @param stringUrl String
+     */
     private void startConnection(String stringUrl)
     {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -106,15 +111,21 @@ public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
         if (networkInfo != null && networkInfo.isConnected()) {
             new DownloadWebpageTask().execute(stringUrl);
         } else {
-            System.out.println(DEBUG_TAG + " No internet connection available.");
+            System.out.println(DEBUG_TAG + "No internet connection available.");
         }
     }
 
-    // Uses AsyncTask to create a task away from the main UI thread. This task takes a
-    // URL string and uses it to create an HttpUrlConnection. Once the connection
-    // has been established, the AsyncTask downloads the contents of the webpage as
-    // an InputStream. Finally, the InputStream is converted into a string, which is
-    // displayed in the UI by the AsyncTask's onPostExecute method.
+    /**
+     * Uses AsyncTask to create a task away from the main UI thread. This task takes a
+     * URL string and uses it to create an HttpUrlConnection. Once the connection
+     * has been established, the AsyncTask downloads the contents of the webpage as
+     * an InputStream. Finally, the InputStream is converted into a string, which is
+     * displayed in the UI by the AsyncTask's onPostExecute method.
+     *
+     * Reference: http://developer.android.com/training/basics/network-ops/connecting.html
+     *
+     * The code has been changed to meet the needs of this app
+     */
     private class DownloadWebpageTask extends AsyncTask<String, Void, String>
     {
         @Override
@@ -134,20 +145,21 @@ public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
         {
             try
             {
+                // get the result and place it into a JSON object.
                 JSONObject json = new JSONObject(result);
-
+                // create JSONArray to store all items returned
                 JSONArray items = json.getJSONArray("items");
-
                 questionsList = new ArrayList<>();
 
+                // for every item in the JSONArray, create a Question Object and add it to an ArrayList of Questions
                 for(int i=0; i < items.length(); i++)
                 {
                     JSONObject item = items.getJSONObject(i);
-                    //System.out.println("Question ID: " + item.get("question_id") + "\nTitle: " + item.get("title"));
-
                     JSONObject ownerJson = item.getJSONObject("owner");
-
                     Owner questionOwner;
+
+                    // there are 2 types of users in the API, registered and unregistered.
+                    // for registered users, display mode details
                     if(ownerJson.getString("user_type").equals("registered"))
                     {
                         questionOwner = new Owner(ownerJson.getInt("reputation"), ownerJson.getLong("user_id"), ownerJson.getString("display_name"));
@@ -158,15 +170,17 @@ public class StackOverflowHomeScreen extends TestBehaviouralBiometrics
                         questionOwner.setDisplay_name(ownerJson.getString("display_name"));
                     }
 
+                    // create Question object and add it to arrayList
                     Question question = new Question( item.getLong("question_id"), item.getInt("answer_count"), item.getLong("creation_date"), item.getString("title"), questionOwner, item.getString("body"));
-
                     questionsList.add(question);
                 }
 
-                questionsListAdapter = new QuestionListAdapter(getApplicationContext(), questionsList);
+                // initialise the Array adapter that is used to Populate lte List View with the Questions stored in the questions Array List
+                QuestionListAdapter questionsListAdapter = new QuestionListAdapter(getApplicationContext(), questionsList);
                 questionsListView.setEmptyView(findViewById(android.R.id.empty));
                 questionsListView.setAdapter(questionsListAdapter);
 
+                // check if the Training data has been loaded for the current user before the list is displayed.
                 if (!TestBehaviouralBiometrics.trainDataLoaded)
                 {
                     System.out.println("Waiting " + TestBehaviouralBiometrics.trainDataLoaded);

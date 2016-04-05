@@ -3,8 +3,6 @@ package ie.dit.max.foregroundAppStackOverflow;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
@@ -12,14 +10,17 @@ import android.widget.TextView;
 
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
-import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
+/**
+ * This activity is used to display Question Body of a question from Stack Exchange
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 30/01/2016
+ */
 public class QuestionBodyScreen extends TestBehaviouralBiometrics
 {
-
-    Question questionSelected;
-    Button goToAnswers;
-    Button backHomeScreen;
+    private Question questionSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,10 +28,12 @@ public class QuestionBodyScreen extends TestBehaviouralBiometrics
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_body_screen);
 
+        // get Question Object for the question selected in previous screen
         Bundle bundle = getIntent().getExtras();
         questionSelected = (Question) bundle.getSerializable("questionSelected");
 
         ScrollView Sv = (ScrollView)findViewById(R.id.questionBodyScrollViewID);
+        // add gesture listener to the ScrollView. This is used to get Touch and Reaction features for each interaction
         Sv.setOnTouchListener(gestureListener);
 
         TextView questionTitle = (TextView)findViewById(R.id.bodyScreenTitle);
@@ -42,9 +45,10 @@ public class QuestionBodyScreen extends TestBehaviouralBiometrics
         TextView questionOwner = (TextView)findViewById(R.id.questionBodyOwner);
         questionOwner.setText("asked: " + questionSelected.getCreation_date() + "\nBy: " + questionSelected.getOwner().getDisplay_name());
 
-        goToAnswers = (Button) findViewById(R.id.goToAnswers);
-        backHomeScreen = (Button) findViewById(R.id.backHomeScreen);
+        Button goToAnswers = (Button) findViewById(R.id.goToAnswers);
+        Button backHomeScreen = (Button) findViewById(R.id.backHomeScreen);
 
+        // set the name of the button to view Answers. This shows how many answers are available for the question selected.
         if (questionSelected.getAnswer_count() == 1) goToAnswers.setText("View " + questionSelected.getAnswer_count() + " Answer");
         else goToAnswers.setText("View " + questionSelected.getAnswer_count() + " Answers");
 

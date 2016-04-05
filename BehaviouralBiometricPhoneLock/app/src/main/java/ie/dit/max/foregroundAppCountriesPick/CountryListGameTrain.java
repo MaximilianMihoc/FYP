@@ -20,32 +20,44 @@ import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
+/**
+ *
+ *  This activity extends the Train activity and it has been used to collect the train data from the users.
+ *  In this activity, a game called Country-List game has been created.
+ *
+ *  The game consists in finding a country that is Not European, from a list of countries.
+ *      Only one country from outside Europe is displayed in the list at a time.
+ *      When the correct country has been found, the list of countries gets regenerated and a new NON european
+ *      country, randomly chosen from a list of non european countries is added.
+ *
+ *  This game makes the user interacts with the system a lot and that is what is needed for this project.
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ *
+ */
 public class CountryListGameTrain extends TrainActivity
 {
+    private RelativeLayout trainLayout;
+    private Button startButton;
+    private Button OKbutton;
+    private Button exitButton;
+    private TextView trainActivityTitle;
+    private TextView centerText;
+    private TextView centerText2;
+    private ImageView correctImage;
+    private ImageView wrongImage;
+    private ListView listViewTrainScreen;
 
+    private String[] europeCountries;
+    private String[] newArray;
+    private String[] nonEuropeCountries;
     private int count;
-    Button startButton;
-    Button OKbutton;
-    Button exitButton;
-    Button helpButton;
 
-    RelativeLayout trainLayout;
-    TextView trainActivityTitle;
-    TextView centerText;
-    TextView centerText2;
-
-    ImageView correctImage;
-    ImageView wrongImage;
-
-    String[] europeCountries;
-    String[] newArray;
-    String[] nonEuropeCountries;
-
-    ListView listViewTrainScreen;
-    ArrayAdapter<String> adapter;
-    String correctValue;
-    int trainIterations, attempts, goodAttempts, badAttempts;
-    boolean endTraining;
+    private ArrayAdapter<String> adapter;
+    private String correctValue;
+    private int trainIterations, attempts, goodAttempts, badAttempts;
+    private boolean endTraining;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,21 +65,24 @@ public class CountryListGameTrain extends TrainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_train_country_game);
 
+        // get a list of European countries from Resources
         europeCountries = getResources().getStringArray(R.array.europeanCountries);
+        // get a list of NON European countries from Resources
         nonEuropeCountries = getResources().getStringArray(R.array.nonEuropeCountries);
-        trainIterations = 10; attempts = 10; goodAttempts = 0; badAttempts = 0;
+
+        //initialise variables
+        trainIterations = 10;
+        attempts = 10;
+        goodAttempts = 0;
+        badAttempts = 0;
         endTraining = false;
 
         centerText2 = (TextView)findViewById(R.id.textInCenter2);
-
-        helpButton = (Button)findViewById(R.id.helpButton);
-
+        Button helpButton = (Button)findViewById(R.id.helpButton);
         OKbutton = (Button)findViewById(R.id.OKbutton);
         OKbutton.setOnTouchListener(gestureListener);
-
         exitButton = (Button)findViewById(R.id.exitButton);
         exitButton.setOnTouchListener(gestureListener);
-
         correctImage = (ImageView) findViewById(R.id.correctImage);
         wrongImage = (ImageView) findViewById(R.id.wrongImage);
 
@@ -78,7 +93,6 @@ public class CountryListGameTrain extends TrainActivity
         //
 
         listViewTrainScreen = (ListView) findViewById(android.R.id.list);
-        //trainLayout.removeView(listViewTrainScreen);
 
         trainLayout = (RelativeLayout)findViewById(R.id.relativeLayoutTraiFirstScreenID);
         trainActivityTitle = (TextView)findViewById(R.id.trainActivityTitle);
@@ -103,6 +117,7 @@ public class CountryListGameTrain extends TrainActivity
             @Override
             public void onClick(View v)
             {
+                //count number of taps
                 count -= 1;
                 if (!endTraining)
                 {
@@ -110,11 +125,13 @@ public class CountryListGameTrain extends TrainActivity
                     {
                         startButton.setText("Tap me " + count + " times!");
                         centerText.setText("" + count);
-                    } else if (count == 1)
+                    }
+                    else if (count == 1)
                     {
                         startButton.setText("Tap me one more time Please!");
                         centerText.setText("" + count);
-                    } else
+                    }
+                    else
                     {
                         trainLayout.removeView(centerText);
                         trainLayout.removeView(OKbutton);
@@ -126,7 +143,8 @@ public class CountryListGameTrain extends TrainActivity
                         trainLayout.addView(OKbutton);
                         trainLayout.addView(exitButton);
                     }
-                } else
+                }
+                else
                 {
                     //exit
                     Intent trainIntent = new Intent(CountryListGameTrain.this, OptionsScreen.class);
@@ -137,6 +155,7 @@ public class CountryListGameTrain extends TrainActivity
             }
         });
 
+        // When this button is clicked, the game options are displayed.
         OKbutton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -182,6 +201,7 @@ public class CountryListGameTrain extends TrainActivity
             }
         });
 
+        // hidden help button to find the correct straight away
         helpButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -192,16 +212,16 @@ public class CountryListGameTrain extends TrainActivity
             }
         });
 
+        // gesture listener used to get touch details from every interaction
         listViewTrainScreen.setOnTouchListener(gestureListener);
         listViewTrainScreen.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-
                 if (trainIterations > 0)
                 {
-                    if(correctValue == newArray[position])
+                    if(correctValue.equals(newArray[position]))
                     {
                         correctImage.setVisibility(View.VISIBLE);
                         Timer timer = new Timer();
@@ -255,7 +275,16 @@ public class CountryListGameTrain extends TrainActivity
 
     }
 
-    // include a non european country in array at a random position
+    /**
+     * Method addNonEuropeanCountry
+     * This method is used to include a non european country in array at a random position
+     *
+     * Gets the European country list in and adds in a non european country
+     *
+     * @param array String[]
+     * @param element String
+     * @return String[]
+     */
     private String[] addNonEuropeanCountry(String[] array, String element)
     {
         String[] newArray = new String[array.length + 1];
@@ -271,7 +300,17 @@ public class CountryListGameTrain extends TrainActivity
         return newArray;
     }
 
-    // Reference: http://superuser.com/questions/687119/random-shuffling-of-string-array
+    /**
+     * Method Randomize
+     * This method gets an array and it randomises the elements. This is used every time after a user finds
+     *      the correct country in order to display the countries again in different order.
+     *
+     * This process makes sure that the countries will be displayed in different order every time.
+     *
+     * Reference: http://superuser.com/questions/687119/random-shuffling-of-string-array
+     * @param arr
+     * @return
+     */
     private String[] Randomize(String[] arr) {
         String[] randomizedArray = new String[arr.length];
         System.arraycopy(arr, 0, randomizedArray, 0, arr.length);
@@ -288,6 +327,14 @@ public class CountryListGameTrain extends TrainActivity
     }
     // End Reference
 
+    /**
+     * Method getRandomValue
+     *
+     * This method teruns a random number between 0 and value +1
+     *
+     * @param value int
+     * @return int
+     */
     private int getRandomNumber(int value)
     {
         Random rand = new Random();
@@ -296,6 +343,11 @@ public class CountryListGameTrain extends TrainActivity
         return r;
     }
 
+    /**
+     * This method is used to create a timer task.
+     * Used to set the time that the images displayed for Correct or Wrong are shown for
+     *
+     */
     private class MyTimerTask extends TimerTask
     {
         private ImageView correctImage;

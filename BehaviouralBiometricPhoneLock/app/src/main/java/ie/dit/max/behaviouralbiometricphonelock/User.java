@@ -1,9 +1,11 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
-import java.io.Serializable;
-
 /**
- * Created by Maximilian on 22/01/2016.
+ * This class is used to save User data
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 22nd January 2016
  */
 public class User
 {
@@ -11,10 +13,22 @@ public class User
     private String userID;
     private String email;
 
+    /**
+     * User Constructor with no parameters
+     * Mostly used to instantiate user objects with information from the database.
+     */
     public User()
     {
+
     }
 
+    /**
+     * User Constructor with 3 parameters
+     *
+     * @param userName String
+     * @param email String
+     * @param userID String
+     */
     public User(String userName, String email, String userID)
     {
         this.userName = userName;
@@ -22,6 +36,7 @@ public class User
         this.userID = userID;
     }
 
+    //getters and setters
     public String getUserName()
     {
         return userName;

@@ -8,8 +8,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,35 +21,46 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import ie.dit.max.foregroundAppCountriesPick.CountryListGameTrain;
-import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
 
+/**
+ * This Activity is user for User Log In
+ * In this activity, after the user enters its email and password and clicks the Log in button
+ *  the application checks if internet connections is enabled, is the user credentials exists in the database
+ *  and logs user in if the conditions are met. User details are saved in Shared preferences for later usage
+ *
+ * Error messages are displayed to the user every time when something goes wrong.
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ *
+ */
 public class LogIn extends Activity
 {
-
-    Firebase ref;
-
-    EditText email;
-    EditText password;
-    Button logInButton;
-    TextView goToRegistrationScreen;
-
-    SharedPreferences sharedpreferences;
+    private static final String DEBUG_TAG = "Log In Activity";
+    private Firebase ref;
+    private EditText email;
+    private EditText password;
+    private SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+        // set Android Context to be used by Firebase database
         Firebase.setAndroidContext(this);
+        // create reference to the database
+        ref = new Firebase(DBVar.mainURL);
 
-        ref = new Firebase("https://fyp-max.firebaseio.com");
+        //initialise the shared preferences in order to save user details
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
         email = (EditText) findViewById(R.id.emailLogin);
         password = (EditText) findViewById(R.id.passwordLogin);
-        logInButton = (Button) findViewById(R.id.logInButton);
-        goToRegistrationScreen = (TextView) findViewById(R.id.goToRegistrationScreen);
+        Button logInButton = (Button) findViewById(R.id.logInButton);
+        TextView goToRegistrationScreen = (TextView) findViewById(R.id.goToRegistrationScreen);
 
+        //on click listener "LogIn" button
         logInButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -60,17 +69,19 @@ public class LogIn extends Activity
                 String emailStr = email.getText().toString();
                 String passStr = password.getText().toString();
 
+                // check network connection
                 if (isNetworkAvailable())
                 {
+                    // authenticate user with email and password
                     ref.authWithPassword(emailStr, passStr, new Firebase.AuthResultHandler()
                     {
                         @Override
                         public void onAuthenticated(AuthData authData)
                         {
-                            System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+                            Log.i(DEBUG_TAG ,"User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
 
-                            Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users/" + authData.getUid());
-
+                            //Once the user gets authenticated, get his/hers details and save the userId and email to Shared Preferences.
+                            Firebase userRef = new Firebase(DBVar.mainURL + "/users/" + authData.getUid());
                             userRef.addListenerForSingleValueEvent(new ValueEventListener()
                             {
                                 @Override
@@ -79,12 +90,16 @@ public class LogIn extends Activity
                                     User usrObj = snapshot.getValue(User.class);
                                     System.out.println(usrObj.getUserID() + " - " + usrObj.getEmail());
 
+                                    //save user data to Shared preferences
                                     SharedPreferences.Editor editor = sharedpreferences.edit();
                                     editor.putString("UserID", usrObj.getUserID());
                                     editor.putString("UserEmail", usrObj.getEmail());
                                     editor.apply();
 
-                                    Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID() + "/scrollFling");
+                                    // check to see if the user has training data in the database
+                                    // if training data exists, redirect user to Options Activity
+                                    // if training data does not exist, redirect user to train Activity
+                                    Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/trainData/" + usrObj.getUserID() + "/scrollFling");
                                     scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                                     {
 
@@ -97,15 +112,15 @@ public class LogIn extends Activity
                                                 startActivity(trainIntent);
                                             } else
                                             {
-                                                Intent trainIntent = new Intent(LogIn.this, OptionsScreen.class);
-                                                startActivity(trainIntent);
+                                                Intent intent = new Intent(LogIn.this, OptionsScreen.class);
+                                                startActivity(intent);
                                             }
                                         }
 
                                         @Override
                                         public void onCancelled(FirebaseError firebaseError)
                                         {
-                                            System.out.println("The read failed: " + firebaseError.getMessage());
+                                            Log.i(DEBUG_TAG, "The read failed: " + firebaseError.getMessage());
                                         }
                                     });
                                 }
@@ -113,7 +128,7 @@ public class LogIn extends Activity
                                 @Override
                                 public void onCancelled(FirebaseError firebaseError)
                                 {
-                                    System.out.println("The read failed: " + firebaseError.getMessage());
+                                    Log.i(DEBUG_TAG, "The read failed: " + firebaseError.getMessage());
                                 }
                             });
                         }
@@ -135,6 +150,7 @@ public class LogIn extends Activity
             }
         });
 
+        // On click listener for "Registration" button. Redirect user to Registration Screen
         goToRegistrationScreen.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -146,6 +162,13 @@ public class LogIn extends Activity
         });
     }
 
+    /**
+     * Method isNetworkAvailable
+     * check if there is a connection to the internet
+     * Reference: http://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android
+     *
+     * @return boolean connected
+     */
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -155,6 +178,9 @@ public class LogIn extends Activity
     @Override
     public void onBackPressed ()
     {
+        // force app to close when the back button is clicked
+        // Without this, after the user gets logged out, pressing the back button would redirect him back in the application
+        //   and that should not happen.
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

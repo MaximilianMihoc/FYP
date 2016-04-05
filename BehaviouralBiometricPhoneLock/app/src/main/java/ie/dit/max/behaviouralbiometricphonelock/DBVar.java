@@ -1,7 +1,8 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
 /**
- * This class contains the classifiers initialisations and common methods used by each classifier
+ * This class contains the main URL used to connect to Firebase
+ * This url needs to be changed if the database application changes
  *
  * @author Maximilian Mihoc.
  * @version 1.0

@@ -5,8 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,20 +22,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ie.dit.max.foregroundAppCountriesPick.CountryListGameTrain;
-import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
+
+/**
+ * This activity is used for user Registration. An account gets created for an user using this activity
+ * Error checking are made for each field and warnings are displayed to the user if something is wrong
+ * After an account has been created, user gets logged in and is redirected to train the system in the Train Activity
+ * User details are saved in Shared preferences.
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ */
 
 public class RegisterUser extends AppCompatActivity
 {
-
-    Firebase ref;
-
-    EditText userName;
-    EditText email;
-    EditText confirmEmail;
-    EditText password;
-    EditText confirmPassword;
-    Button registerButton;
-    SharedPreferences sharedpreferences;
+    private static final String DEBUG_TAG = "Register Activity";
+    private Firebase ref;
+    private EditText userName;
+    private EditText email;
+    private EditText confirmEmail;
+    private EditText password;
+    private EditText confirmPassword;
+    private SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,18 +50,16 @@ public class RegisterUser extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_user);
         Firebase.setAndroidContext(this);
-
-        ref = new Firebase("https://fyp-max.firebaseio.com");
+        ref = new Firebase(DBVar.mainURL);
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
+        // widgets references
         userName = (EditText) findViewById(R.id.userNameRegister);
         email = (EditText) findViewById(R.id.emailRegister);
         confirmEmail = (EditText) findViewById(R.id.confirmEmail);
         password = (EditText) findViewById(R.id.passwordRegister);
         confirmPassword = (EditText) findViewById(R.id.confirmPassword);
-        registerButton = (Button) findViewById(R.id.registerButton);
-
-        /* checks for confirm fields and error checking to be made later*/
+        Button registerButton = (Button) findViewById(R.id.registerButton);
 
         // register new user
         registerButton.setOnClickListener(new View.OnClickListener()
@@ -85,18 +89,17 @@ public class RegisterUser extends AppCompatActivity
                 }
                 else
                 {
+                    // create user with the details entered in the registration form.
                     ref.createUser(email.getText().toString(), password.getText().toString(), new Firebase.ValueResultHandler<Map<String, Object>>()
                     {
                         @Override
                         public void onSuccess(Map<String, Object> result)
                         {
-                            System.out.println("Successfully created user account with uid: " + result.get("uid"));
-
+                            // save user details in the database under "users" object
                             Firebase newUserRef = ref.child("users").child(result.get("uid").toString());
-
                             User newUser = new User(userName.getText().toString(), email.getText().toString(), result.get("uid").toString());
-
                             newUserRef.setValue(newUser);
+                            Log.i(DEBUG_TAG, "Successfully created user account with uid: " + result.get("uid"));
 
                             // log in the new user in the new created account.
                             ref.authWithPassword(email.getText().toString(), password.getText().toString(), new Firebase.AuthResultHandler()
@@ -104,10 +107,8 @@ public class RegisterUser extends AppCompatActivity
                                 @Override
                                 public void onAuthenticated(AuthData authData)
                                 {
-                                    System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
-
-                                    Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users/" + authData.getUid());
-
+                                    Log.i(DEBUG_TAG, "User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+                                    Firebase userRef = new Firebase(DBVar.mainURL + "/users/" + authData.getUid());
                                     userRef.addListenerForSingleValueEvent(new ValueEventListener()
                                     {
                                         @Override
@@ -116,13 +117,14 @@ public class RegisterUser extends AppCompatActivity
                                             User usrObj = snapshot.getValue(User.class);
                                             System.out.println(usrObj.getUserID() + " - " + usrObj.getEmail());
 
+                                            //save user data to shared preferences
                                             SharedPreferences.Editor editor = sharedpreferences.edit();
                                             editor.putString("UserID", usrObj.getUserID());
                                             editor.putString("UserEmail", usrObj.getEmail());
                                             editor.apply();
 
-                                            // check if train data exist
-                                            Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData/" + usrObj.getUserID() + "/scrollFling");
+                                            // check if train data exist and redirect user to different activities if data exists of not
+                                            Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/trainData/" + usrObj.getUserID() + "/scrollFling");
                                             scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
                                             {
 
@@ -136,15 +138,15 @@ public class RegisterUser extends AppCompatActivity
                                                     }
                                                     else
                                                     {
-                                                        Intent trainIntent = new Intent(RegisterUser.this, OptionsScreen.class);
-                                                        startActivity(trainIntent);
+                                                        Intent intent = new Intent(RegisterUser.this, OptionsScreen.class);
+                                                        startActivity(intent);
                                                     }
                                                 }
 
                                                 @Override
                                                 public void onCancelled(FirebaseError firebaseError)
                                                 {
-                                                    System.out.println("The read failed: " + firebaseError.getMessage());
+                                                    Log.i(DEBUG_TAG, "The read failed: " + firebaseError.getMessage());
                                                 }
                                             });
 
@@ -153,7 +155,7 @@ public class RegisterUser extends AppCompatActivity
                                         @Override
                                         public void onCancelled(FirebaseError firebaseError)
                                         {
-                                            System.out.println("The read failed: " + firebaseError.getMessage());
+                                            Log.i(DEBUG_TAG, "The read failed: " + firebaseError.getMessage());
                                         }
                                     });
                                 }
@@ -170,7 +172,7 @@ public class RegisterUser extends AppCompatActivity
                         @Override
                         public void onError(FirebaseError firebaseError)
                         {
-                            System.out.println("Error on Register Activity -> Create user");
+                            Log.i(DEBUG_TAG, "Error on Register Activity -> Create user");
                         }
                     });
 
@@ -182,7 +184,13 @@ public class RegisterUser extends AppCompatActivity
 
     }
 
-    //Reference: http://howtodoinjava.com/regex/java-regex-validate-email-address/
+    /**
+     * Method to check for valid Email address format
+     * Reference: http://howtodoinjava.com/regex/java-regex-validate-email-address/
+     *
+     * @param enteredEmail String
+     * @return boolean validEmail
+     */
     private boolean isEmailValid(String enteredEmail){
         String regex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
         Pattern pattern = Pattern.compile(regex);

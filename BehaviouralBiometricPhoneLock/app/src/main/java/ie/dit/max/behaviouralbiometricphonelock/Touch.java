@@ -5,7 +5,12 @@ import org.opencv.core.Point;
 import java.util.ArrayList;
 
 /**
- * Created by Maximilian on 31/10/2015.
+ * This class is used to save touch data of one interaction and calculate common features of Scroll/Fling and Tap
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 31st October 2015
+ *
  */
 public class Touch
 {
@@ -21,6 +26,9 @@ public class Touch
     protected Double directEndToEndDistance;
     protected Double angleBetweenStartAndEndVectorsInRad;
 
+    /**
+     *  Constructor used to instantiate the Object
+     */
     public Touch()
     {
         startPoint = new Point();
@@ -32,10 +40,16 @@ public class Touch
         scaledDuration = 0;
     }
 
+    /**
+     * Method getScaledStartPoint
+     * This method returns the StartPoint of the touch action, normalised between 0 and 1
+     * The normalisation had been made using the magnitude of the vector
+     *
+     * @return Point
+     */
     public Point getScaledStartPoint()
     {
         // unit length for my vector is 1
-        //scale data for Start Vector
         double magnitudeStartVector = Math.sqrt(startPoint.x * startPoint.x + startPoint.y * startPoint.y);
         scaledStartPoint.x = startPoint.x / magnitudeStartVector;
         scaledStartPoint.y = startPoint.y / magnitudeStartVector;
@@ -43,6 +57,13 @@ public class Touch
         return scaledStartPoint;
     }
 
+    /**
+     * Method getScaledEndPoint
+     * This method returns the EndPoint of the touch action, normalised between 0 and 1
+     * The normalisation had been made using the magnitude of the vector
+     *
+     * @return Point
+     */
     public Point getScaledEndPoint()
     {
         //scale data for end Vector
@@ -53,20 +74,29 @@ public class Touch
         return scaledEndPoint;
     }
 
+    /**
+     * Method getScaledDuration
+     * Scale duration and save it into scaledDuration variable
+     * To scale duration, transform it from milliseconds to seconds.
+     * Touch actions usually do not take more than a second and scaling this to seconds would
+     * keep data normalised between 0 and 1
+     *
+     * @return double duration
+     */
     public double getScaledDuration()
     {
-        /*
-        * Scale duration and save it into scaledDuration variable
-        * To scale duration, transform it from milliseconds to seconds.
-        * Touch actions usually do not take more than a second and scaling this to seconds would
-        * keep data close to my other features data
-        * */
         scaledDuration = duration / 1000;
-
         return scaledDuration;
     }
 
-    // This method will create a list with all the points on the stroke, including start and end points
+    /**
+     * Method normalizeStrokePoints
+     * This method will create a list with all the points of the stroke, including start and end points
+     * The returned list contains all the stroke points normalized
+     * Magnitude vector has been used for each point in order to be normalized
+     *
+     * @return ArrayList of Points
+     */
     public ArrayList<Point> normalizeStrokePoints()
     {
         ArrayList<Point> scaledPoints = new ArrayList<>();
@@ -91,11 +121,16 @@ public class Touch
         // Add start point to the end of the list in order to apply Shoelace formula easier to find the area.
         scaledPoints.add(getScaledStartPoint());
 
-        //System.out.println("Points in scroll/field: " + scaledPoints.toString());
-
         return scaledPoints;
     }
 
+    /**
+     * Method calculateMidStrokeAreaCovered
+     * Using the normalised version of a stroke, Mid stroke area covered feature is calculated.
+     * The area is calculated using Shoelace formula
+     *
+     * @return double midStrokeArea
+     */
     public double calculateMidStrokeAreaCovered()
     {
         ArrayList<Point> strokePoints = normalizeStrokePoints();
@@ -119,12 +154,10 @@ public class Touch
 
         midStrokeArea = sum / 2;
 
-        //scale value in order to be between 0 and 1
-        //if(midStrokeArea != 0) midStrokeArea = 1/midStrokeArea;
-
         return midStrokeArea;
     }
 
+    //getters and setters to return and set protected variables in other objects
     public Double getMidStrokeAreaCovered()
     {
         return midStrokeAreaCovered;

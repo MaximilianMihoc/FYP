@@ -4,7 +4,11 @@ import java.io.Serializable;
 import java.text.DateFormat;
 
 /**
- * Created by Maximilian on 30/01/2016.
+ * Class used to store Question Details from Stack Exchange API
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 30/01/2016
  */
 public class Question implements Serializable
 {
@@ -15,7 +19,16 @@ public class Question implements Serializable
     private Owner owner;
     private String body;
 
-
+    /**
+     * Question Constructor with 6 parameters
+     *
+     * @param question_id long
+     * @param answer_count int
+     * @param creation_date long
+     * @param title String
+     * @param owner Owner
+     * @param body String
+     */
     public Question(long question_id, int answer_count, long creation_date, String title, Owner owner, String body)
     {
         this.question_id = question_id;
@@ -26,10 +39,14 @@ public class Question implements Serializable
         this.body = body;
     }
 
+    /**
+     * Question Constructor with no parameters
+     */
     public Question()
     {
     }
 
+    // getters and setters
     public Owner getOwner()
     {
         return owner;
@@ -62,6 +79,7 @@ public class Question implements Serializable
 
     public String getCreation_date() // return Date in Date Format
     {
+        // convert date to different date format
         return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(creation_date * 1000);
     }
 

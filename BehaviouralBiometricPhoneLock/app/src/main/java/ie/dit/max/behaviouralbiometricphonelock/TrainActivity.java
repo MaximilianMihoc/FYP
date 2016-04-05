@@ -2,7 +2,6 @@ package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,15 +9,10 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.os.Bundle;
-import android.support.v4.view.MotionEventCompat;
-import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
 
 import com.firebase.client.Firebase;
 
@@ -26,53 +20,57 @@ import org.opencv.core.Point;
 
 import java.util.ArrayList;
 
+/**
+ * This activity represents the Train Phase of the application and needs to be used as extended activity
+ *      for all the places where the interactions of the users should be stored as train data.
+ *
+ * Gesture detectors and Sensors events are used here to gather all the data necessary for an observation.
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ *
+ */
 public class TrainActivity extends Activity implements
         GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener,
         SensorEventListener
 {
-
-    Firebase ref;
-
     private static final String DEBUG_TAG = "Train Activity";
+    private Firebase ref;
     private GestureDetectorCompat mDetector;
 
-    //to be used for assigning listener to different views.
+    // used for assigning listener to different views.
     public OnTouchListener gestureListener;
 
-    Point startPoint, endPoint;
-    ArrayList<Point> points = new ArrayList<>();
-
+    private Point startPoint, endPoint;
+    private ArrayList<Point> points = new ArrayList<>();
     private ArrayList<Float> linearAccelerations;
     private ArrayList<Float> angularVelocities;
-
-
-    boolean isScroll = false;
-    boolean isFling = false;
+    private boolean isScroll = false;
+    private boolean isFling = false;
+    private String userID;
+    private Float linearAcceleration;
+    private Float angularVelocity;
 
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     private Sensor senGyroscope;
 
-    private Float linearAcceleration;
-    private Float angularVelocity;
-
-    SharedPreferences sharedpreferences;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Firebase.setAndroidContext(this);
-        ref = new Firebase("https://fyp-max.firebaseio.com");
-        sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
+        Firebase.setAndroidContext(this);
+        ref = new Firebase(DBVar.mainURL);
+
+        // get User details
+        SharedPreferences sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        if(sharedpreferences.contains("UserID"))  userID = sharedpreferences.getString("UserID", "");
+
+        // instantiate gesture detector
         mDetector = new GestureDetectorCompat(this, this);
         mDetector.setOnDoubleTapListener(this);
-
-        linearAcceleration = 0.0f;
-        angularVelocity = 0.0f;
-
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         // Accelerometer declarations
@@ -86,6 +84,8 @@ public class TrainActivity extends Activity implements
         points = new ArrayList<>();
         linearAccelerations = new ArrayList<>();
         angularVelocities = new ArrayList<>();
+        linearAcceleration = 0.0f;
+        angularVelocity = 0.0f;
 
         gestureListener = new OnTouchListener()
         {
@@ -94,7 +94,6 @@ public class TrainActivity extends Activity implements
                 // need to call the gesture detector first so that the strokes can be differentiated from taps
                 mDetector.onTouchEvent(event);
 
-                //assignValuesToObservations(event);
                 //add linear Acceleration and angular Velocity to list
                 linearAccelerations.add(linearAcceleration);
                 angularVelocities.add(angularVelocity);
@@ -102,6 +101,8 @@ public class TrainActivity extends Activity implements
                 double duration;
 
                 int action = event.getAction();
+                // save details of the interaction in the Observation and Touch objects.
+                // Event action checked to find when the interaction starts and finishes.
                 switch (action)
                 {
                     case (MotionEvent.ACTION_DOWN):
@@ -123,7 +124,7 @@ public class TrainActivity extends Activity implements
 
                         if(isFling || isScroll)
                         {
-                            //touch = scrollFling
+                            //save all the necessary details of scrollFling actions and calculate some of the features
                             ScrollFling scrollFling = new ScrollFling();
                             scrollFling.setStartPoint(startPoint);
                             scrollFling.setEndPoint(endPoint);
@@ -135,13 +136,12 @@ public class TrainActivity extends Activity implements
                             scrollFling.setDirectEndToEndDistance(scrollFling.calculateDirectEndToEndDistance());
                             scrollFling.setAngleBetweenStartAndEndVectorsInRad(scrollFling.calculateAngleBetweenStartAndEndVectorsInRad());
 
-                            //Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
-                            //tempObs.setScrollFling(scrollFling);
+                            //save ScrollFling as Touch object
                             tempObs.setTouch(scrollFling);
                         }
                         else
                         {
-                            //touch = tap
+                            // save all the necessary details of tap actions and calculate some of the features
                             Tap tap = new Tap();
                             tap.setStartPoint(startPoint);
                             tap.setEndPoint(endPoint);
@@ -150,8 +150,7 @@ public class TrainActivity extends Activity implements
 
                             tap.setMidStrokeAreaCovered(tap.calculateMidStrokeAreaCovered());
 
-                            //Log.d(DEBUG_TAG, "Tap: " + tap.toString());
-                            //tempObs.setTap(tap);
+                            // save Tap as Touch Object
                             tempObs.setTouch(tap);
 
                         }
@@ -160,19 +159,19 @@ public class TrainActivity extends Activity implements
                         tempObs.setAverageAngularVelocity(Observation.calculateAVGAngularVelocity(angularVelocities));
                         tempObs.setAverageLinearAcceleration(Observation.calculateAVGLinearAcc(linearAccelerations));
 
-                        //all Observations from Training are owner observations
+                        //all Observations from Training are owner observations and the Judgement is set to 1
                         tempObs.setJudgement(1);
 
-                        // add Observation to the List of training observations. Separate list of obs for tap gesture.
-                        // get User details
-                        String userID = sharedpreferences.getString("UserID", "");
+                        // save each training observation in the database
                         if(!isFling && !isScroll)
                         {
+                            //save tap data
                             Firebase newUserRef = ref.child("trainData").child(userID).child("tap");
                             newUserRef.push().setValue(tempObs);
                         }
                         else
                         {
+                            // save ScrollFling data
                             Firebase newUserRef = ref.child("trainData").child(userID).child("scrollFling");
                             newUserRef.push().setValue(tempObs);
                         }
@@ -222,7 +221,6 @@ public class TrainActivity extends Activity implements
     @Override
     public void onShowPress(MotionEvent e)
     {
-        //Log.d(DEBUG_TAG, "onShowPress: " + e.toString());
     }
 
     @Override
@@ -249,7 +247,6 @@ public class TrainActivity extends Activity implements
     @Override
     public void onLongPress(MotionEvent e)
     {
-        //Log.d(DEBUG_TAG, "onLongPress: " + e.toString());
     }
 
     @Override
@@ -266,6 +263,8 @@ public class TrainActivity extends Activity implements
     @Override
     public void onSensorChanged(SensorEvent sensorEvent)
     {
+        // calculate the angular velocity and linear acceleration every time the sensor state changes.
+
         Sensor mySensor = sensorEvent.sensor;
 
         if (mySensor.getType() == Sensor.TYPE_GYROSCOPE)

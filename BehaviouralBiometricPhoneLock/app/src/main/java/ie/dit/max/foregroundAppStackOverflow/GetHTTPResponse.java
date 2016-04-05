@@ -9,9 +9,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-
 /**
- * Created by Maximilian on 29/01/2016.
+ * Class used to get the HTTP Responses from the API
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 29/01/2016
  */
 public class GetHTTPResponse
 {
@@ -22,9 +25,17 @@ public class GetHTTPResponse
 
     }
 
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the web page content as a InputStream, which it returns as
-    // a string.
+    /**
+     * Given a URL, establishes an HttpUrlConnection and retrieves
+     * the web page content as a InputStream, which it returns as
+     * a string.
+     *
+     * Reference: http://developer.android.com/training/basics/network-ops/connecting.html
+     *
+     * @param myurl String
+     * @return String
+     * @throws IOException
+     */
     public static String downloadUrl(String myurl) throws IOException {
         InputStream is = null;
 
@@ -54,7 +65,15 @@ public class GetHTTPResponse
         }
     }
 
-    // Reference: http://hmkcode.com/android-parsing-json-data/
+    /**
+     * Method user to convert the input stream to a String
+     *
+     * Reference: http://hmkcode.com/android-parsing-json-data/
+     *
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
     private static String convertInputStreamToString(InputStream inputStream) throws IOException{
         BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
         String line;

@@ -1,7 +1,11 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
 /**
- * Created by Maximilian on 28/03/2016.
+ * This class is used to save User Settings data
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 28th March 2016
  */
 public class UserSettings
 {
@@ -9,12 +13,21 @@ public class UserSettings
     private int nrObsFromAnotherUser;
     private boolean saveTestData;
 
-
-
+    /**
+     * User Constructor with no parameters
+     * Mostly used to instantiate user objects with information from the database.
+     */
     public UserSettings()
     {
     }
 
+    /**
+     * UserSettings Constructor with 3 parameters
+     *
+     * @param threshold int
+     * @param nrObsFromAnotherUser int
+     * @param saveTestData boolean
+     */
     public UserSettings(int threshold, int nrObsFromAnotherUser, boolean saveTestData)
     {
         this.threshold = threshold;
@@ -22,6 +35,7 @@ public class UserSettings
         this.saveTestData = saveTestData;
     }
 
+    //getters and setters
     public int getThreshold()
     {
         return threshold;

@@ -20,28 +20,45 @@ import ie.dit.max.behaviouralbiometricphonelock.OptionsScreen;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
 
+/**
+ *
+ *  This activity extends the Test activity and it has been used to collect the test data from the users.
+ *  For this activity, a game called Country-List game has been created.
+ *
+ *  The game consists in finding a country that is Not European, from a list of countries.
+ *      Only one country from outside Europe is displayed in the list at a time.
+ *      When the correct country has been found, the list of countries gets regenerated and a new NON european
+ *      country, randomly chosen from a list of non european countries is added.
+ *
+ *  This game makes the user interacts with the system a lot and that is what is needed for this project.
+ *
+ *  This game has been included in the test phase so that users that test the application without looking at StackOverflow,
+ *      they can test it playing this game.
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ *
+ */
 public class CountryListGameTest extends TestBehaviouralBiometrics
 {
-    Button endButton;
-    Button OKbutton;
-    Button exitButton;
-    Button helpButton;
+    private Button endButton;
+    private Button OKbutton;
+    private Button exitButton;
 
-    RelativeLayout trainLayout;
-    TextView activityTitle;
-    TextView centerText;
-    String[] europeCountries;
-    String[] newArray;
-    String[] nonEuropeCountries;
+    private RelativeLayout trainLayout;
+    private TextView activityTitle;
+    private TextView centerText;
+    private String[] europeCountries;
+    private String[] newArray;
+    private String[] nonEuropeCountries;
 
-    ListView listViewCountryList;
-    ArrayAdapter<String> adapter;
-    String correctValue;
-    int iterations, attempts, goodAttempts, badAttempts;
-    boolean endTraining;
+    private ListView listViewCountryList;
+    private ArrayAdapter<String> adapter;
+    private String correctValue;
+    private int iterations, attempts, goodAttempts, badAttempts;
 
-    ImageView correctImage;
-    ImageView wrongImage;
+    private ImageView correctImage;
+    private ImageView wrongImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,7 +69,6 @@ public class CountryListGameTest extends TestBehaviouralBiometrics
         europeCountries = getResources().getStringArray(R.array.europeanCountries);
         nonEuropeCountries = getResources().getStringArray(R.array.nonEuropeCountries);
         iterations = 10; attempts = 10; goodAttempts = 0; badAttempts = 0;
-        endTraining = false;
 
         // initialise the widgets
         trainLayout = (RelativeLayout)findViewById(R.id.relativeLayoutTraiFirstScreenID);
@@ -63,7 +79,7 @@ public class CountryListGameTest extends TestBehaviouralBiometrics
         OKbutton = (Button)findViewById(R.id.OKbutton);
         OKbutton.setOnTouchListener(gestureListener);
 
-        helpButton = (Button)findViewById(R.id.helpButton);
+        Button helpButton = (Button)findViewById(R.id.helpButton);
 
         exitButton = (Button)findViewById(R.id.exitButton);
         exitButton.setOnTouchListener(gestureListener);
@@ -240,7 +256,16 @@ public class CountryListGameTest extends TestBehaviouralBiometrics
 
     }
 
-    // include a non european country in array at a random position
+    /**
+     * Method addNonEuropeanCountry
+     * This method is used to include a non european country in array at a random position
+     *
+     * Gets the European country list in and adds in a non european country
+     *
+     * @param array String[]
+     * @param element String
+     * @return String[]
+     */
     private String[] addNonEuropeanCountry(String[] array, String element)
     {
         String[] newArray = new String[array.length + 1];
@@ -257,7 +282,18 @@ public class CountryListGameTest extends TestBehaviouralBiometrics
     }
 
 
-    // Reference: http://superuser.com/questions/687119/random-shuffling-of-string-array
+    /**
+     * Method Randomize
+     * This method gets an array and it randomises the elements. This is used every time after a user finds
+     *      the correct country in order to display the countries again in different order.
+     *
+     * This process makes sure that the countries will be displayed in different order every time.
+     *
+     * Reference: http://superuser.com/questions/687119/random-shuffling-of-string-array
+     *
+     * @param arr
+     * @return
+     */
     private String[] Randomize(String[] arr) {
         String[] randomizedArray = new String[arr.length];
         System.arraycopy(arr, 0, randomizedArray, 0, arr.length);
@@ -274,6 +310,14 @@ public class CountryListGameTest extends TestBehaviouralBiometrics
     }
     // End Reference
 
+    /**
+     * Method getRandomValue
+     *
+     * This method teruns a random number between 0 and value +1
+     *
+     * @param value int
+     * @return int
+     */
     private int getRandomNumber(int value)
     {
         Random rand = new Random();
@@ -282,6 +326,11 @@ public class CountryListGameTest extends TestBehaviouralBiometrics
         return r;
     }
 
+    /**
+     * This method is used to create a timer task.
+     * Used to set the time that the images displayed for Correct or Wrong are shown for
+     *
+     */
     private class MyTimerTask extends TimerTask
     {
         private ImageView correctImage;

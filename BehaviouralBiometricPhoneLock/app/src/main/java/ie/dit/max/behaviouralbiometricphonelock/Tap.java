@@ -1,28 +1,32 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
-import android.util.Log;
-
-import org.opencv.core.Point;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Created by Maximilian on 31/10/2015.
+ * This class is used to save Tap data and calculate the features used for this action
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 31st October 2015
  */
 public class Tap extends Touch
 {
+    //static variable used to define the number of features of a Tap Object
     public static final int numberOfFeatures = 8;
 
+    /**
+     * Tap Constructor with no parameter
+     */
     public Tap()
     {
         super();
     }
 
+    /**
+     * Constructor with one parameter
+     * When data is coming from the database, it is coming as a touch object.
+     * This constructor is used to create a Tap object from the touch object
+     *
+     * @param t Touch
+     */
     public Tap(Touch t)
     {
         super();
@@ -40,10 +44,8 @@ public class Tap extends Touch
     {
         return "Tap{" +
                 "startPoint= " + startPoint +
-                ", points= " + points +
                 ", endPoint= " + endPoint +
                 ", duration= " + duration +
-                ", fingerArea= " + midStrokeAreaCovered +
                 '}';
     }
 }

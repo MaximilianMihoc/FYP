@@ -2,17 +2,10 @@ package ie.dit.max.evaluationClasses;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,27 +16,31 @@ import com.firebase.client.ValueEventListener;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.TermCriteria;
-import org.opencv.ml.KNearest;
-import org.opencv.ml.Ml;
-import org.opencv.ml.RTrees;
 import org.opencv.ml.SVM;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import ie.dit.max.behaviouralbiometricphonelock.Classifier;
+import ie.dit.max.behaviouralbiometricphonelock.DBVar;
 import ie.dit.max.behaviouralbiometricphonelock.Observation;
 import ie.dit.max.behaviouralbiometricphonelock.R;
-import ie.dit.max.behaviouralbiometricphonelock.ScrollFling;
 import ie.dit.max.behaviouralbiometricphonelock.User;
 import ie.dit.max.behaviouralbiometricphonelock.UserSettings;
 
+/**
+ * this activity, has been used to evaluate different classifiers and to find the parameters that
+ *  fit the best as default parameters for the system. Using this activity, optimal parameters have been found for SVM
+ *  classifier and Confusin Matrix has been created.
+ *
+ *  This activity has been used for Evaluation purposes and does not have to be used by other users.
+ *  It has been left here for demonstration purpose.
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ *
+ */
 public class AllUsersValidation extends AppCompatActivity
 {
     private final class ReturnValues
@@ -52,38 +49,32 @@ public class AllUsersValidation extends AppCompatActivity
         float ownerPercent;
     }
 
-    private Firebase ref;
-    private static final String DEBUG_TAG = "Classifiers";
-
+    private static final String DEBUG_TAG = "AllUsersValidation Activity";
     private HashMap<String, ArrayList<Observation>> trainDataMapScrollFling;
     private Map<String, ArrayList<Observation>> testDataMapScrollFling;
-
     private String userID;
     private String userName;
-
     private String[] userKeys;
     private String[] userNames;
-
     private TextView validationText;
     private TextView displayMinMaxValues;
-    private Button buttonChange;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_users_validation);
-        Firebase.setAndroidContext(this);
-        ref = new Firebase("https://fyp-max.firebaseio.com");
 
+        Firebase.setAndroidContext(this);
+
+        // get User Details
         SharedPreferences sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         if(sharedpreferences.contains("ValidateDataForUserID")) userID = sharedpreferences.getString("ValidateDataForUserID", "");
         if(sharedpreferences.contains("ValidateDataForUserName")) userName = sharedpreferences.getString("ValidateDataForUserName", "");
 
         validationText = (TextView) findViewById(R.id.validationText);
         displayMinMaxValues = (TextView) findViewById(R.id.displayMinMaxValues);
-        buttonChange = (Button) findViewById(R.id.buttonChange);
+        Button buttonChange = (Button) findViewById(R.id.buttonChange);
 
         trainDataMapScrollFling = new HashMap<>();
         testDataMapScrollFling = new HashMap<>();
@@ -118,7 +109,7 @@ public class AllUsersValidation extends AppCompatActivity
                     @Override
                     public void onCancelled(FirebaseError firebaseError)
                     {
-
+                        System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
                     }
                 });
             }
@@ -126,10 +117,14 @@ public class AllUsersValidation extends AppCompatActivity
 
     }
 
+    /**
+     * Method populateUserArrays
+     * Gets all the users from the database and populates 2 arrays.
+     * One array contains userIDs and the other contains UserNames
+     **/
     private void populateUserArrays()
     {
-        Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users");
-
+        Firebase userRef = new Firebase(DBVar.mainURL + "/users");
         userRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -144,22 +139,25 @@ public class AllUsersValidation extends AppCompatActivity
                     userKeys[i] = u.getUserID();
                     userNames[i++] = u.getUserName(); //"User " + i; //
                 }
-
                 getTrainDataFromUsersFirebase();
-
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }
 
+    /**
+     * Method getTrainDataFromFirebase
+     * This method returns the train data from database and it creates the training Model to be used by the Classifier
+     *
+     */
     private void getTrainDataFromUsersFirebase()
     {
-        final Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData");
+        final Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/trainData");
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -167,16 +165,14 @@ public class AllUsersValidation extends AppCompatActivity
             {
                 if (snapshot.getValue() == null)
                 {
-                    System.out.println("No data available for this user. ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Train data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                } else
+                }
+                else
                 {
                     for (DataSnapshot usrSnapshot : snapshot.getChildren())
                     {
-
                         ArrayList<Observation> tempArrayObs = new ArrayList<>();
-                        // Scroll/Fling:
                         DataSnapshot dpScroll = usrSnapshot.child("scrollFling");
                         for (DataSnapshot obsSnapshot : dpScroll.getChildren())
                         {
@@ -185,27 +181,29 @@ public class AllUsersValidation extends AppCompatActivity
                         }
                         //add train data to HashMap
                         trainDataMapScrollFling.put(usrSnapshot.getKey(), tempArrayObs);
-
                     }
-
                     /* Get test data from firebase and return predictions. */
                     getTestDataFromFirebaseAndTestSystem();
-
                 }
             }
-
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }
 
-    // get all train data from Firebase
+    /**
+     *
+     * Method getTestDataFromFirebaseAndTestSystem
+     * This method gets the test data collected, for the user selected in UserValidationDifferentClassifiers Screen, from the database
+     *      and displays the predictions in text view that can be seen on screen.
+     *
+     */
     private void getTestDataFromFirebaseAndTestSystem()
     {
-        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/testData");
+        Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/testData");
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -238,7 +236,6 @@ public class AllUsersValidation extends AppCompatActivity
                     int bestValueForObsNumbers = 1;
                     int nrObsAtMaxOwnerPercent = 1;
 
-
                     ReturnValues retValuesValidation;
 
                     for (int i = 10; i <= 100; i++)
@@ -259,7 +256,6 @@ public class AllUsersValidation extends AppCompatActivity
                             nrObsAtMaxOwnerPercent = i;
                         }
                     }
-
                     // calculate the average for the max Owner Percent
                     ReturnValues tempRV = computeValidationForOneUserAgainstAllOthers(userID, userName, nrObsAtMaxOwnerPercent, false);
 
@@ -283,7 +279,11 @@ public class AllUsersValidation extends AppCompatActivity
         });
     }
 
-    // this method builds a confidence matrix and displays it on console
+    /**
+     *
+     * This method builds a confidence matrix and displays it on console
+     *
+     */
     private void buildAndDisplayConfidenceMatrix()
     {
         for(int i = 0; i < userKeys.length; i++)
@@ -293,10 +293,22 @@ public class AllUsersValidation extends AppCompatActivity
 
     }
 
+    /**
+     * Method computeValidationForOneUserAgainstAllOthers
+     * This method is used to create train models for the user specified in the forUserID parameter using the number of observations
+     *      specified by the numberObsNeededFromOtherUsers parameter for getting data from other users.
+     *
+     * For each user in the database, the test data is checked against the train model and error and prediction values are returned.
+     *
+     * @param forUserID String
+     * @param forUserName String
+     * @param numberObsNeededFromOtherUsers int
+     * @param displayOutput boolean
+     * @return Return Values
+     */
     private ReturnValues computeValidationForOneUserAgainstAllOthers(String forUserID, String forUserName, int numberObsNeededFromOtherUsers, boolean displayOutput)
     {
         ArrayList<Observation> trainScrollFlingDataForUserID = new ArrayList<>();
-
         // Build the train data for the user with userId = forUserID
         for( HashMap.Entry<String, ArrayList<Observation>> trainDataEntry : trainDataMapScrollFling.entrySet())
         {
@@ -310,8 +322,6 @@ public class AllUsersValidation extends AppCompatActivity
                 ArrayList<Observation> tempList = Classifier.changeJudgements(trainDataEntry.getValue(), 0);
                 if(tempList.size() > 0)
                 {
-                    //trainScrollFlingDataForUserID.addAll(tempList);
-                    // add 10 observations from each other user in the train list
                     for (int i = 0; i < tempList.size(); i++)
                     {
                         if (i < numberObsNeededFromOtherUsers)
@@ -333,7 +343,7 @@ public class AllUsersValidation extends AppCompatActivity
         ReturnValues rV = new ReturnValues();
 
         String output = "For " + forUserName + "\n # of Observations From Other users needed: " + (numberObsNeededFromOtherUsers + 1) +"\n";
-        String confusionMatrixRow = "For usr: ";
+        //String confusionMatrixRow = "For usr: ";
 
         // test the new SVM model with the test data
         for(int i = 0; i < userKeys.length; i++)
@@ -361,10 +371,11 @@ public class AllUsersValidation extends AppCompatActivity
                     }
                 }
 
-                if (i < userKeys.length - 1)
+                // the next if statement had been used to create the Confusion Matrix
+                /*if (i < userKeys.length - 1)
                     confusionMatrixRow += counter + ",";
                 else
-                    confusionMatrixRow += counter + "";
+                    confusionMatrixRow += counter + "";*/
 
                 if(displayOutput)
                     output += (i+1) + ". " + userNames[i] + ": SVM Scroll/Fling -> " + counter + " / " + testData.size() + " -> " + Math.round((counter * 100) / testData.size()) + "%\n";

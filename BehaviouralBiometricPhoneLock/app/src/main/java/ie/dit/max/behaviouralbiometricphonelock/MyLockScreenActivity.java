@@ -5,16 +5,21 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 /**
+ * This activity was built in order to let the user choose if the device will lock of not when an intruder is found to be using the device.
+ *
  * Reference: http://karanbalkar.com/2014/01/tutorial-71-implement-lock-screen-in-android
+ * Small changes have been made
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 25th March 2016
+ *
  * */
 public class MyLockScreenActivity extends Activity implements View.OnClickListener
 {
@@ -24,12 +29,14 @@ public class MyLockScreenActivity extends Activity implements View.OnClickListen
     private ComponentName mComponentName;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock);
-        mDevicePolicyManager = (DevicePolicyManager)getSystemService(
-                Context.DEVICE_POLICY_SERVICE);
+
+        mDevicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
         mComponentName = new ComponentName(this, MyAdminReceiver.class);
+
         Button btnEnableAdmin = (Button) findViewById(R.id.btnEnable);
         Button btnDisableAdmin = (Button) findViewById(R.id.btnDisable);
         btnEnableAdmin.setOnClickListener(this);
@@ -37,8 +44,10 @@ public class MyLockScreenActivity extends Activity implements View.OnClickListen
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
+    public void onClick(View v)
+    {
+        switch (v.getId())
+        {
             case R.id.btnEnable:
                 Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
                 intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mComponentName);
@@ -54,11 +63,16 @@ public class MyLockScreenActivity extends Activity implements View.OnClickListen
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADMIN_INTENT) {
-            if (resultCode == RESULT_OK) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == ADMIN_INTENT)
+        {
+            if (resultCode == RESULT_OK)
+            {
                 Toast.makeText(getApplicationContext(), "Registered As Admin", Toast.LENGTH_SHORT).show();
-            }else{
+            }
+            else
+            {
                 Toast.makeText(getApplicationContext(), "Failed to register as Admin", Toast.LENGTH_SHORT).show();
             }
         }

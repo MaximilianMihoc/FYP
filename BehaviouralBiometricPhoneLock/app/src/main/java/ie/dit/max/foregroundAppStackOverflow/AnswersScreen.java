@@ -8,8 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -22,20 +20,24 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import ie.dit.max.behaviouralbiometricphonelock.LogIn;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.TestBehaviouralBiometrics;
-import ie.dit.max.behaviouralbiometricphonelock.TrainActivity;
 
+/**
+ * This activity is used to display answers of a question from StackExchange
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 30/01/2016
+ */
 public class AnswersScreen extends TestBehaviouralBiometrics
 {
-    private static final String DEBUG_TAG = "AnswersScreen";
+    private static final String DEBUG_TAG = "Answers Screen";
+    private ListView answersListView;
+    private AnswerListAdapter answerListAdapter;
+    private Question questionSelected;
 
-    ListView answersListView;
-    AnswerListAdapter answerListAdapter;
-    Question questionSelected;
-
-    Button backToQuestionBody;
+    private Button backToQuestionBody;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,11 +46,14 @@ public class AnswersScreen extends TestBehaviouralBiometrics
         setContentView(R.layout.activity_answers_screen);
 
         answersListView = (ListView) findViewById(android.R.id.list);
+        // add gesture listener to the ListView. This is used to get Touch and Reaction features for each interaction
         answersListView.setOnTouchListener(gestureListener);
 
+        // get the selected question from previous activity. In this case the previous activity is QuestionBodyScreen
         Bundle bundle = getIntent().getExtras();
         questionSelected = (Question) bundle.getSerializable("selectedQuestion");
 
+        // go back to questionBody Screen
         backToQuestionBody = (Button) findViewById(R.id.backToQuestionBody);
         backToQuestionBody.setOnClickListener(new View.OnClickListener()
         {
@@ -68,10 +73,16 @@ public class AnswersScreen extends TestBehaviouralBiometrics
         TextView questionTitle = (TextView)findViewById(R.id.questionBody);
         questionTitle.setText(Html.fromHtml("<b>" + questionSelected.getTitle() + "</b>"));
 
+        // get the answers from StackExchange API using Asynchronous task
         startConnection("https://api.stackexchange.com/2.2/questions/" + questionSelected.getQuestion_id() + "/answers?order=desc&sort=activity&site=stackoverflow&filter=!3yXvhCikopVa8vWh*");
 
     }
 
+    /**
+     * Start Asynchronous connection where the answers of a question are retrieved from the API
+     *
+     * @param stringUrl String
+     */
     private void startConnection(String stringUrl)
     {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -84,6 +95,17 @@ public class AnswersScreen extends TestBehaviouralBiometrics
         }
     }
 
+    /**
+     *Uses AsyncTask to create a task away from the main UI thread. This task takes a
+     * URL string and uses it to create an HttpUrlConnection. Once the connection
+     * has been established, the AsyncTask downloads the contents of the webpage as
+     * an InputStream. Finally, the InputStream is converted into a string, which is
+     * displayed in the UI by the AsyncTask's onPostExecute method.
+     *
+     * Reference: http://developer.android.com/training/basics/network-ops/connecting.html
+     *
+     * The code has been changed to meet the needs of this app
+     */
     private class DownloadWebpageTask extends AsyncTask<String, Void, String>
     {
         @Override
@@ -103,18 +125,21 @@ public class AnswersScreen extends TestBehaviouralBiometrics
         {
             try
             {
+                // get the answer retrieved by the API and save it in a JSON object
                 JSONObject json = new JSONObject(result);
-
+                // get Json array items
                 JSONArray items = json.getJSONArray("items");
-
                 ArrayList<Answer> answersList = new ArrayList<>();
 
+                // for each answer in the itemsArray, get the details and create an Answer and Owner objects
                 for(int i=0; i < items.length(); i++)
                 {
                     JSONObject item = items.getJSONObject(i);
-
                     JSONObject ownerJson = item.getJSONObject("owner");
                     Owner answerOwner;
+
+                    // there are 2 types of users in the API, registered and unregistered.
+                    // for registered users, display mode details
                     if(ownerJson.getString("user_type").equals("registered"))
                     {
                         answerOwner = new Owner(ownerJson.getInt("reputation"), ownerJson.getLong("user_id"), ownerJson.getString("display_name"));
@@ -135,15 +160,20 @@ public class AnswersScreen extends TestBehaviouralBiometrics
                             item.getLong("creation_date"),
                             item.getString("body"));
 
+                    // check if the answer has comments associated.
+                    // Create Comments list with and place it in the Answer object
                     if(item.getInt("comment_count") > 0)
                     {
                         ArrayList<Comment> commentsList = new ArrayList<>();
                         JSONArray commentsJson = item.getJSONArray("comments");
+
+                        //for each comment det details and place them in Comment object
                         for(int j=0; j < commentsJson.length(); j++)
                         {
                             JSONObject comment = commentsJson.getJSONObject(j);
                             JSONObject ownerCommentJson = comment.getJSONObject("owner");
                             Owner commentOwner;
+
                             if(ownerJson.getString("user_type").equals("registered"))
                             {
                                 commentOwner = new Owner(ownerCommentJson.getInt("reputation"), ownerCommentJson.getLong("user_id"), ownerCommentJson.getString("display_name"));
@@ -153,9 +183,10 @@ public class AnswersScreen extends TestBehaviouralBiometrics
                                 commentOwner = new Owner();
                                 commentOwner.setDisplay_name(ownerCommentJson.getString("display_name"));
                             }
-                            //Comment(boolean edited, int score, long creation_date, String body, Owner owner)
-                            Comment commentObject = new Comment(comment.getBoolean("edited"), comment.getInt("score"), comment.getLong("creation_date"), comment.getString("body"), commentOwner);
 
+                            //Comment(boolean edited, int score, long creation_date, String body, Owner owner)
+                            // Create comment object and add it to the list of comments.
+                            Comment commentObject = new Comment(comment.getBoolean("edited"), comment.getInt("score"), comment.getLong("creation_date"), comment.getString("body"), commentOwner);
                             commentsList.add(commentObject);
                         }
                         answer.setComments(commentsList);
@@ -165,7 +196,6 @@ public class AnswersScreen extends TestBehaviouralBiometrics
                 }
 
                 answerListAdapter = new AnswerListAdapter(getApplicationContext(), answersList);
-                //queionsList.setEmptyView(findViewById(android.R.id.empty));
                 answersListView.setAdapter(answerListAdapter);
 
 

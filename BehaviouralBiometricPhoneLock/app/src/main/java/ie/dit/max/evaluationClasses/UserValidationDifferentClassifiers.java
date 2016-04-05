@@ -28,10 +28,26 @@ import org.opencv.ml.SVM;
 import java.util.ArrayList;
 
 import ie.dit.max.behaviouralbiometricphonelock.Classifier;
+import ie.dit.max.behaviouralbiometricphonelock.DBVar;
 import ie.dit.max.behaviouralbiometricphonelock.Observation;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.User;
 
+/**
+ *  This activity has been used for Evaluation purposes and it has been left in the application for demonstration purpose.
+ *
+ *  In this activity, 2 spinners are populated with all users names. One spinner is used to select the name of the user
+ *      for the train data and the other is used to select the name of the user for the test data.
+ *
+ *  Based on the information from spinners, train and test data are downloaded from the database and
+ *      the system checks data with 3 different classifiers and display the predictions in progress bars.
+ *
+ *  Having this activity it was easy to observe the differences between classifiers.
+ *
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ */
 public class UserValidationDifferentClassifiers extends AppCompatActivity
 {
     private static final String DEBUG_TAG = "Classifiers";
@@ -136,7 +152,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             @Override
             public void onNothingSelected(AdapterView<?> parent)
             {
-
+                //do nothing
             }
         });
 
@@ -195,7 +211,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
     private void populateSpinners()
     {
-        Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users");
+        Firebase userRef = new Firebase(DBVar.mainURL + "/users");
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -221,14 +237,14 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }
 
     private void getTrainDataFromUsersFirebase()
     {
-        final Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData");
+        final Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/trainData");
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -236,7 +252,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             {
                 if (snapshot.getValue() == null)
                 {
-                    System.out.println("No data available for this user. ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Train data Provided", Toast.LENGTH_SHORT);
                     toast.show();
                 }
@@ -246,10 +261,8 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     {
                         if (!usrSnapshot.getKey().equals(userID))
                         {
-                            //System.out.println("usrSnapshot: " + usrSnapshot.child("scrollFling"));
-
                             int i = 0;
-                            // Scroll/Fling:
+                            // Scroll/Fling
                             DataSnapshot dpScroll = usrSnapshot.child("scrollFling");
                             for (DataSnapshot obsSnapshot : dpScroll.getChildren())
                             {
@@ -260,7 +273,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                             }
 
                             i = 0;
-                            // Taps:
+                            // Taps
                             DataSnapshot dpTap = usrSnapshot.child("tap");
                             for (DataSnapshot obsSnapshot : dpTap.getChildren())
                             {
@@ -273,15 +286,11 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         else // Current user Data
                         {
                             DataSnapshot scrollSnapshot = usrSnapshot.child("scrollFling");
-                            int trainObsOwnerCount = 0;
                             for (DataSnapshot obsSnapshot : scrollSnapshot.getChildren())
                             {
-                                //System.out.println("data: " + obsSnapshot.toString());
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 trainScrollFlingObservations.add(obs);
-                                trainObsOwnerCount ++;
                             }
-                            System.out.println("Number Of Train Observations - Owner: " + trainObsOwnerCount);
 
                             // Tap Information
                             DataSnapshot tapSnapshot = usrSnapshot.child("tap");
@@ -293,7 +302,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         }
                     }
 
-                    // Built the SVM model for Scroll/Fling Observations if training data exists.
+                    // Built the classifiers models for Scroll/Fling Observations if training data exists.
                     if (trainScrollFlingObservations.size() > 0)
                     {
                         scrollFlingSVM = Classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
@@ -301,17 +310,15 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         scrollKNN = Classifier.createAndTrainScrollFlingKNNClassifier(trainScrollFlingObservations);
 
                         scrollRTree = Classifier.createAndTrainScrollFlingRTreeClassifier(trainScrollFlingObservations);
-
                     }
                     else
                     {
-                        System.out.println("No Scroll Fling data available. ");
                         // display a Toast letting the user know that there is no training data available.
                         Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided", Toast.LENGTH_SHORT);
                         toast.show();
                     }
 
-                    // Built the SVM model for Tap Observations if training data exists.
+                    // Built the classifiers models for Tap Observations if training data exists.
                     if (trainTapOnlyObservations.size() > 0)
                     {
                         tapSVM = Classifier.createAndTrainTapSVMClassifier(trainTapOnlyObservations);
@@ -322,7 +329,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                     }
                     else
                     {
-                        System.out.println("No Tap data available. ");
                         // display a Toast letting the user know that there is no training data available.
                         Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided for Taps", Toast.LENGTH_SHORT);
                         toast.show();
@@ -330,14 +336,13 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
 
                     /* Get test data from firebase and return predictions. */
                     getTestDataFromFirebaseAndTestSystem(userID);
-
                 }
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }
@@ -345,7 +350,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
     private void getTestDataFromFirebaseAndTestSystem(String userID)
     {
         //get Scroll Fling Observations from Firebase
-        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
+        Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/testData/" + userID);
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -353,16 +358,15 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             {
                 if (snapshot.getValue() == null)
                 {
-                    System.out.println("No data available for this User ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                } else
+                }
+                else
                 {
                     // Scroll Fling Test Data
                     DataSnapshot dpScroll = snapshot.child("scrollFling");
                     for (DataSnapshot obsSnapshot : dpScroll.getChildren())
                     {
-                        //System.out.println("data: " + obsSnapshot.toString());
                         Observation obs = obsSnapshot.getValue(Observation.class);
                         scrollFlingObservations.add(obs);
                     }
@@ -372,9 +376,6 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         //create train and test Martices
                         Mat testDataMat = Classifier.buildTrainOrTestMatForScrollFling(scrollFlingObservations);
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
-
-                        System.out.println("Scroll Fling Test Data Mat: ");
-                        //displayMatrix(buildTrainOrTestMatForScrollFling(scrollFlingObservations));
 
                         // SVM
                         scrollFlingSVM.predict(testDataMat, resultMat, 0);
@@ -402,13 +403,13 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
                         progressBarScrollRTree.setMax(scrollFlingObservations.size());
                         progressBarScrollRTree.setProgress(counter);
 
-                    } else
+                    }
+                    else
                     {
                         System.out.println("No Scroll Fling data available. ");
                         Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided for Scroll/Fling", Toast.LENGTH_SHORT);
                         toast.show();
                     }
-
 
                     //Tap Test Data
                     DataSnapshot dpTap = snapshot.child("tap");
@@ -461,7 +462,7 @@ public class UserValidationDifferentClassifiers extends AppCompatActivity
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }

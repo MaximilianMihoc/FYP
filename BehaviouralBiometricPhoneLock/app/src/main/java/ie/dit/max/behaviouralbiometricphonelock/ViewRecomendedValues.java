@@ -21,29 +21,40 @@ import org.opencv.ml.SVM;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * In this activity, the user can see the performance of the classification model
+ *  and it can see different values recommended by the system for the threshold and nr of observations
+ *  from other users used in the train model.
+ *
+ *  The values calculated and displayed to the user includes the accuracy of the model for his/hers data (interactions)
+ *  and the errors calculated when the system was tested with data from other users.
+ *
+ *  Smaller average Error, make the system recognise intruders faster.
+ *  Greater Accuracy, makes the system recognise owner's interactions better.
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 22th March 2016
+ *
+ */
 public class ViewRecomendedValues extends AppCompatActivity
 {
-    Firebase ref;
-    ArrayList<Observation> trainScrollFlingObservations;
-    ArrayList<Observation> scrollFlingObservations;
+    private static final String DEBUG_TAG = "View Recommended Values Activity";
 
-    HashMap<String, ArrayList<Observation>> trainDataMapScrollFling;
-    HashMap<String, ArrayList<Observation>> testDataMapScrollFling;
-
+    private ArrayList<Observation> trainScrollFlingObservations;
+    private ArrayList<Observation> scrollFlingObservations;
+    private HashMap<String, ArrayList<Observation>> trainDataMapScrollFling;
+    private HashMap<String, ArrayList<Observation>> testDataMapScrollFling;
     private String userID;
     private SVM scrollFlingSVM;
+    private String[] userKeys;
+    private String[] userNames;
+    private TextView scrollSVMTextView;
+    private TextView displayMinMaxValues;
+    private TextView currentUserSettings;
+    private ProgressBar progressBarScrollSVM;
+    private ProgressBar loadingPanel;
 
-    String[] userKeys;
-    String[] userNames;
-
-    TextView scrollSVMTextView;
-    TextView displayMinMaxValues;
-    TextView currentUserSettings;
-
-    ProgressBar progressBarScrollSVM;
-    ProgressBar loadingPanel;
-
-    SharedPreferences sharedpreferences;
     private UserSettings userSettings;
 
     @Override
@@ -51,10 +62,11 @@ public class ViewRecomendedValues extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_recomended_values);
-        Firebase.setAndroidContext(this);
-        ref = new Firebase("https://fyp-max.firebaseio.com");
 
-        sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        Firebase.setAndroidContext(this);
+
+        // get User details
+        SharedPreferences sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
 
         scrollFlingObservations = new ArrayList<>();
@@ -65,16 +77,21 @@ public class ViewRecomendedValues extends AppCompatActivity
         scrollSVMTextView = (TextView) findViewById(R.id.predictions);
         displayMinMaxValues = (TextView) findViewById(R.id.displayMinMaxValues);
         currentUserSettings = (TextView) findViewById(R.id.textView);
-
         progressBarScrollSVM = (ProgressBar) findViewById(R.id.progressBar);
         loadingPanel = (ProgressBar) findViewById(R.id.loadingPanel);
 
+        // populate users arrays from Database
         populateUserArrays();
     }
 
+    /**
+     * Method populateUserArrays
+     * Gets all the users from the database and populates 2 arrays.
+     * One array contains userIDs and the other contains UserNames
+     **/
     private void populateUserArrays()
     {
-        Firebase userRef = new Firebase("https://fyp-max.firebaseio.com/users");
+        Firebase userRef = new Firebase(DBVar.mainURL + "/users");
         userRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -89,20 +106,27 @@ public class ViewRecomendedValues extends AppCompatActivity
                     userKeys[i] = u.getUserID();
                     userNames[i++] = u.getUserName();
                 }
+                // get user settings for the current user
                 getUserSettings();
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }
 
+    /**
+     * Method getUserSettings
+     * This method is used to get the User Settings from the database if they are defined.
+     * If they are not defined, the application will use the default settings.
+     *
+     */
     private void getUserSettings()
     {
-        final Firebase settingsRef = new Firebase("https://fyp-max.firebaseio.com/settings/" + userID);
+        final Firebase settingsRef = new Firebase(DBVar.mainURL + "/settings/" + userID);
         settingsRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -121,23 +145,31 @@ public class ViewRecomendedValues extends AppCompatActivity
                     userSettings = dataSnapshot.getValue(UserSettings.class);
                 }
 
+                // display User Settings to screen so that they can be seen by the user
                 currentUserSettings.setText("Current Setting " +
                         "\nThreshold value: " + userSettings.getThreshold() +
                         "\nNumber Of Observations: " + userSettings.getNrObsFromAnotherUser());
+
+                // get train data for all users from database
                 getTrainDataFromUsersFirebase();
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }
 
+    /**
+     * Method getTrainDataFromFirebase
+     * This method returns the train data from database and it creates the training Model to be used by the Classifier
+     *
+     */
     private void getTrainDataFromUsersFirebase()
     {
-        final Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData");
+        final Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/trainData");
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -145,18 +177,25 @@ public class ViewRecomendedValues extends AppCompatActivity
             {
                 if (snapshot.getValue() == null)
                 {
-                    System.out.println("No data available for this user. ");
+                    System.out.println(DEBUG_TAG + "No data available for this user. ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Train data Provided", Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 else
                 {
+                    /*
+                    * Data is returned from the database in a Hash map.
+                    * The map contains the training data for all the user in a key value pair format.
+                    * The next loop will iterate through the map and check the keys.
+                    * When the key is Owner's key, train data is stored as owner's data and is stored as guest's data otherwise.
+                    *
+                    * */
                     for (DataSnapshot usrSnapshot : snapshot.getChildren())
                     {
                         if (!usrSnapshot.getKey().equals(userID))
                         {
                             int i = 0;
-                            // Scroll/Fling:
+                            // Guests data
                             DataSnapshot dpScroll = usrSnapshot.child("scrollFling");
                             for (DataSnapshot obsSnapshot : dpScroll.getChildren())
                             {
@@ -171,7 +210,6 @@ public class ViewRecomendedValues extends AppCompatActivity
                             DataSnapshot scrollSnapshot = usrSnapshot.child("scrollFling");
                             for (DataSnapshot obsSnapshot : scrollSnapshot.getChildren())
                             {
-                                //System.out.println("data: " + obsSnapshot.toString());
                                 Observation obs = obsSnapshot.getValue(Observation.class);
                                 trainScrollFlingObservations.add(obs);
                             }
@@ -185,12 +223,10 @@ public class ViewRecomendedValues extends AppCompatActivity
                     }
                     else
                     {
-                        System.out.println("No Scroll Fling data available. ");
                         // display a Toast letting the user know that there is no training data available.
                         Toast toast = Toast.makeText(getApplicationContext(), "No Training data Provided", Toast.LENGTH_SHORT);
                         toast.show();
                     }
-
 
                     /* Get test data from Firebase and display predictions. */
                     getTestDataFromFirebaseAndTestSystem(userID);
@@ -202,15 +238,23 @@ public class ViewRecomendedValues extends AppCompatActivity
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }
 
+    /**
+     *
+     * Method getTestDataFromFirebaseAndTestSystem
+     * This method gets the test data collected for current user in the database
+     *      and displays the predictions in a progress bar.
+     *
+     * @param userID String
+     */
     private void getTestDataFromFirebaseAndTestSystem(String userID)
     {
         //get Scroll Fling Observations from Firebase
-        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/testData/" + userID);
+        Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/testData/" + userID);
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -218,7 +262,6 @@ public class ViewRecomendedValues extends AppCompatActivity
             {
                 if (snapshot.getValue() == null)
                 {
-                    System.out.println("No data available for this User ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
                     toast.show();
                 }
@@ -228,7 +271,6 @@ public class ViewRecomendedValues extends AppCompatActivity
                     DataSnapshot dpScroll = snapshot.child("scrollFling");
                     for (DataSnapshot obsSnapshot : dpScroll.getChildren())
                     {
-                        //System.out.println("data: " + obsSnapshot.toString());
                         Observation obs = obsSnapshot.getValue(Observation.class);
                         scrollFlingObservations.add(obs);
                     }
@@ -255,11 +297,9 @@ public class ViewRecomendedValues extends AppCompatActivity
 
                         progressBarScrollSVM.setMax(scrollFlingObservations.size());
                         progressBarScrollSVM.setProgress(counter);
-
-
-                    } else
+                    }
+                    else
                     {
-                        System.out.println("No Scroll Fling data available. ");
                         Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided for Scroll/Fling", Toast.LENGTH_SHORT);
                         toast.show();
                     }
@@ -270,14 +310,22 @@ public class ViewRecomendedValues extends AppCompatActivity
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }
 
+    /**
+     * Method getTestDataForAllUsersFromFirebaseAndTestSystem
+     * This method gets the test data collected for all the users in the database
+     *
+     *  For each user, the test data is checked against the trained model for the current user
+     *      in order to calculate the errors and accuracy of the model with different parameters.
+     *
+     */
     private void getTestDataForAllUsersFromFirebaseAndTestSystem()
     {
-        Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/testData");
+        Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/testData");
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -287,13 +335,13 @@ public class ViewRecomendedValues extends AppCompatActivity
                 {
                     Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                } else
+                }
+                else
                 {
                     // Scroll Fling Test Data
                     for (DataSnapshot usrSnapshot : snapshot.getChildren())
                     {
                         ArrayList<Observation> tempArrayObs = new ArrayList<>();
-                        // Scroll/Fling:
                         DataSnapshot dpScroll = usrSnapshot.child("scrollFling");
                         for (DataSnapshot obsSnapshot : dpScroll.getChildren())
                         {
@@ -311,10 +359,13 @@ public class ViewRecomendedValues extends AppCompatActivity
 
                     ReturnValues retValuesValidation;
 
+                    // This loop builds the train model 90 times and checks the errors and average accuracy of the model each time.
+                    // Based on the calculated values, the parameters obtained when the minimum error happened and the parameters for the
+                    // maximum average returned for Owner predictions are saved. These values are then displayed to the user in order to be
+                    // used in the settings screen to create better classifiers for the system.
                     for (int i = 10; i <= 100; i++)
                     {
                         retValuesValidation = computeValidationForOneUserAgainstAllOthers(userID, i);
-                        //System.out.println("Average: " + retValuesValidation.average);
 
                         if (retValuesValidation.average < min)
                         {
@@ -354,15 +405,26 @@ public class ViewRecomendedValues extends AppCompatActivity
         });
     }
 
+    /**
+     * This class contains the values returned by the computeValidationForOneUserAgainstAllOthers method
+     * in order to calculate min and max values that will be returned to the screen.
+     *
+     */
     final class ReturnValues
     {
         float average;
         float ownerPercent;
     }
 
+    /**
+     * Method getTrainDataForAllUsersFromFirebase
+     *
+     * Get train data for all users from the database and place it into a HashMap
+     *
+     */
     private void getTrainDataForAllUsersFromFirebase()
     {
-        final Firebase scrollFlingRef = new Firebase("https://fyp-max.firebaseio.com/trainData");
+        final Firebase scrollFlingRef = new Firebase(DBVar.mainURL + "/trainData");
         scrollFlingRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -370,16 +432,14 @@ public class ViewRecomendedValues extends AppCompatActivity
             {
                 if (snapshot.getValue() == null)
                 {
-                    System.out.println("No data available for this user. ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Train data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                } else
+                }
+                else
                 {
                     for (DataSnapshot usrSnapshot : snapshot.getChildren())
                     {
-
                         ArrayList<Observation> tempArrayObs = new ArrayList<>();
-                        // Scroll/Fling:
                         DataSnapshot dpScroll = usrSnapshot.child("scrollFling");
                         for (DataSnapshot obsSnapshot : dpScroll.getChildren())
                         {
@@ -388,22 +448,30 @@ public class ViewRecomendedValues extends AppCompatActivity
                         }
                         //add train data to HashMap
                         trainDataMapScrollFling.put(usrSnapshot.getKey(), tempArrayObs);
-
                     }
-
                     getTestDataForAllUsersFromFirebaseAndTestSystem();
-
                 }
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }
 
+    /**
+     * Method computeValidationForOneUserAgainstAllOthers
+     * This method is used to create train models for the user specified in the forUserID parameter using the number of observations
+     *      specified by the numberObsNeededFromOtherUsers parameter for getting data from other users.
+     *
+     * For each user in the database, the test data is checked against the train model and error and prediction values are returned.
+     *
+     * @param forUserID String
+     * @param numberObsNeededFromOtherUsers int
+     * @return ReturnValues
+     */
     private ReturnValues computeValidationForOneUserAgainstAllOthers(String forUserID, int numberObsNeededFromOtherUsers)
     {
         ArrayList<Observation> trainScrollFlingDataForUserID = new ArrayList<>();

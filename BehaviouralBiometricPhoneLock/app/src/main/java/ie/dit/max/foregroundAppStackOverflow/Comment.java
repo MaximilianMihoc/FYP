@@ -3,7 +3,11 @@ package ie.dit.max.foregroundAppStackOverflow;
 import java.text.DateFormat;
 
 /**
- * Created by Maximilian on 30/01/2016.
+ * This class stores one Comment details returned From Stack Exchange API
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 30/01/2016
  */
 public class Comment
 {
@@ -13,6 +17,15 @@ public class Comment
     private String body;
     private Owner owner;
 
+    /**
+     * Comment constructor with 5 parameters
+     *
+     * @param edited boolean
+     * @param score int
+     * @param creation_date long
+     * @param body String
+     * @param owner Owner
+     */
     public Comment(boolean edited, int score, long creation_date, String body, Owner owner)
     {
         this.edited = edited;
@@ -22,6 +35,9 @@ public class Comment
         this.owner = owner;
     }
 
+    /**
+     * Comment Constructor, no parameters
+     */
     public Comment()
     {
     }
@@ -31,6 +47,7 @@ public class Comment
         return edited;
     }
 
+    // getters and setters
     public void setEdited(boolean edited)
     {
         this.edited = edited;
@@ -48,6 +65,7 @@ public class Comment
 
     public String getCreation_date()
     {
+        //change the date format of the date
         return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(creation_date * 1000);
     }
 

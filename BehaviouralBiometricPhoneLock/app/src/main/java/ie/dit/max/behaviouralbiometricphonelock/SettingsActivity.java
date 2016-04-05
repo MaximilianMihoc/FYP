@@ -1,12 +1,9 @@
 package ie.dit.max.behaviouralbiometricphonelock;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -19,37 +16,45 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-import ie.dit.max.foregroundAppStackOverflow.StackOverflowHomeScreen;
-
+/**
+ *  This activity lets the user change the values for the threshold and for the number of observations
+ *      used from other users in order to train the system. Default settings will be used if they are not updated by the user.
+ *
+ *  The "View Recommended Values" screen can be used here to set values for the settings.
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ *
+ */
 public class SettingsActivity extends AppCompatActivity
 {
-    TextView thresholdLabel;
-    TextView nrObsLabel;
-    SeekBar thresholdSeekBar;
-    SeekBar nrObsSeekBar;
-    Button saveSettings;
-    CheckBox saveDataCheckBox;
+    private static final String DEBUG_TAG = "Settings Activity";
+    private TextView thresholdLabel;
+    private TextView nrObsLabel;
+    private SeekBar thresholdSeekBar;
+    private SeekBar nrObsSeekBar;
+    private CheckBox saveDataCheckBox;
 
-    Firebase ref;
-    SharedPreferences sharedpreferences;
-    String userID;
+    private Firebase ref;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        Firebase.setAndroidContext(this);
 
-        ref = new Firebase("https://fyp-max.firebaseio.com");
-        sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        userID = sharedpreferences.getString("UserID", "");
+        Firebase.setAndroidContext(this);
+        ref = new Firebase(DBVar.mainURL);
+
+        SharedPreferences sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
 
         thresholdLabel = (TextView) findViewById(R.id.thresholdValue);
         nrObsLabel = (TextView) findViewById(R.id.nrObservations);
         thresholdSeekBar = (SeekBar) findViewById(R.id.thresholdSeekBar);
         nrObsSeekBar = (SeekBar) findViewById(R.id.nrObsSeekBar);
-        saveSettings = (Button) findViewById(R.id.saveSettingsButton);
+        Button saveSettings = (Button) findViewById(R.id.saveSettingsButton);
 
         saveDataCheckBox = (CheckBox) findViewById(R.id.saveDataCheckBox);
 
@@ -103,10 +108,9 @@ public class SettingsActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
+                // Save new values for User Settings in the database
                 Firebase newUserRef = ref.child("settings").child(userID);
-
                 UserSettings us = new UserSettings(thresholdSeekBar.getProgress(), nrObsSeekBar.getProgress(), saveDataCheckBox.isChecked());
-
                 newUserRef.setValue(us);
 
                 Toast toast = Toast.makeText(getApplicationContext(), "SAVED", Toast.LENGTH_SHORT);
@@ -116,12 +120,15 @@ public class SettingsActivity extends AppCompatActivity
 
     }
 
+    /**
+     * This methode is used to update the settings shown on the screen.
+     * It will display default settings or user settings from the database.
+     */
     private void showUserSettings()
     {
-        final Firebase settingsRef = new Firebase("https://fyp-max.firebaseio.com/settings/" + userID);
+        final Firebase settingsRef = new Firebase(DBVar.mainURL + "/settings/" + userID);
         settingsRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
@@ -153,7 +160,7 @@ public class SettingsActivity extends AppCompatActivity
             @Override
             public void onCancelled(FirebaseError firebaseError)
             {
-
+                System.out.println(DEBUG_TAG + "The read failed: " + firebaseError.getMessage());
             }
         });
     }

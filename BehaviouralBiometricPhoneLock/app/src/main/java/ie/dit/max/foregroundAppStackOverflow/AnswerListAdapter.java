@@ -14,7 +14,11 @@ import java.util.ArrayList;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 
 /**
- * Created by Maximilian on 30/01/2016.
+ * This is a custom array adapter used to populate the answers list from the Answers Screen
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 30/01/2016
  */
 public class AnswerListAdapter extends ArrayAdapter<Answer>
 {
@@ -23,6 +27,12 @@ public class AnswerListAdapter extends ArrayAdapter<Answer>
     private Context context;
     private LayoutInflater inflater;
 
+    /**
+     * Constructor AnswerListAdapter
+     *
+     * @param context Context
+     * @param items ArrayList of answers
+     */
     public AnswerListAdapter(Context context, ArrayList<Answer> items)
     {
         super(context, 0, items);
@@ -33,16 +43,19 @@ public class AnswerListAdapter extends ArrayAdapter<Answer>
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
+        /*
+        * This method is executed for each item in the list in order to populate it with related data.
+        * */
         View row = convertView;
         Answer answer = answers.get(position);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if(answer != null)
         {
             row = inflater.inflate(R.layout.answer_row, parent, false);
-
             TextView answerBody = (TextView) row.findViewById(R.id.answerBody);
 
             int colorPos = position % colors.length;
+            // The answer accepted as the Correct answer has a green background
             if(answer.is_accepted())
             {
                 row.setBackgroundColor(Color.parseColor("#59F059"));
@@ -54,13 +67,11 @@ public class AnswerListAdapter extends ArrayAdapter<Answer>
                 answerBody.setText(Html.fromHtml(answer.getBody()));
             }
 
-
-
-
-
             TextView answerOwner = (TextView) row.findViewById(R.id.answerBodyOwner);
             answerOwner.setText(Html.fromHtml("answered: " + answer.getCreation_date() + "<br/>By: " + answer.getOwner().getDisplay_name()));
 
+            // display comments related to each answer if they exist.
+            // In case they do not exist, hide the widgets used to display comments.
             if(answer.getComment_count() > 0)
             {
                 TextView comments = (TextView) row.findViewById(R.id.answerComments);

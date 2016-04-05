@@ -1,27 +1,13 @@
-/*
-*   This Activity is for Scroll/Fling interaction tests
-*
-* */
+
 package ie.dit.max.evaluationClasses;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MotionEventCompat;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,47 +17,37 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
 import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import ie.dit.max.behaviouralbiometricphonelock.Classifier;
 import ie.dit.max.behaviouralbiometricphonelock.Observation;
 import ie.dit.max.behaviouralbiometricphonelock.R;
-import ie.dit.max.behaviouralbiometricphonelock.ScrollFling;
-import ie.dit.max.behaviouralbiometricphonelock.Tap;
 import ie.dit.max.behaviouralbiometricphonelock.User;
 
+/**
+ *  This activity has been used for Evaluation purposes and it was created before the UserValidationDifferentClassifiers activity.
+ *  This activity is not used anywhere at the moment.
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ */
 public class CrossValidationActivity extends Activity
 {
-    private Firebase ref;
-
-    private static final String DEBUG_TAG = "Test Activity";
-
     private Spinner spinner;
-
     private ArrayList<Observation> trainScrollFlingObservations;
     private ArrayList<Observation> scrollFlingObservations;
     private ArrayList<Observation> tapOnlyObservations;
     private ArrayList<Observation> trainTapOnlyObservations;
-
     private String userID;
-
     private SVM scrollFlingSVM;
     private SVM tapSVM;
-
     private TextView outputData;
     private String out = "";
-
     private String[] userKeys;
     private String[] userNames;
 
@@ -82,7 +58,6 @@ public class CrossValidationActivity extends Activity
         setContentView(R.layout.activity_test);
 
         Firebase.setAndroidContext(this);
-        ref = new Firebase("https://fyp-max.firebaseio.com");
 
         SharedPreferences sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");

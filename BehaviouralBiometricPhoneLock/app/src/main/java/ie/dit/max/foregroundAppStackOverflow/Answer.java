@@ -4,7 +4,11 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 
 /**
- * Created by Maximilian on 30/01/2016.
+ * This class stores one answer details returned From Stack Exchange API
+ *
+ * @author Maximilian Mihoc.
+ * @version 1.0
+ * @since 30/01/2016
  */
 public class Answer
 {
@@ -18,6 +22,18 @@ public class Answer
     private String body;
     private ArrayList<Comment> comments;
 
+    /**
+     * Answer Constructor
+     *
+     * @param owner Owner
+     * @param comment_count int
+     * @param down_vote_count int
+     * @param up_vote_count int
+     * @param is_accepted boolean
+     * @param score int
+     * @param creation_date long
+     * @param body String
+     */
     public Answer(Owner owner, int comment_count, int down_vote_count, int up_vote_count, boolean is_accepted, int score, long creation_date, String body)
     {
         this.owner = owner;
@@ -30,10 +46,14 @@ public class Answer
         this.body = body;
     }
 
+    /**
+     * Answer Constructor with no parameters
+     */
     public Answer()
     {
     }
 
+    // getters and setters
     public Owner getOwner()
     {
         return owner;
@@ -122,5 +142,21 @@ public class Answer
     public void setComments(ArrayList<Comment> comments)
     {
         this.comments = comments;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Answer{" +
+                "owner=" + owner +
+                ", comment_count=" + comment_count +
+                ", down_vote_count=" + down_vote_count +
+                ", up_vote_count=" + up_vote_count +
+                ", is_accepted=" + is_accepted +
+                ", score=" + score +
+                ", creation_date=" + creation_date +
+                ", body='" + body + '\'' +
+                ", comments=" + comments +
+                '}';
     }
 }
