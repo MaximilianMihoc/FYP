@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import ie.dit.max.behaviouralbiometricphonelock.Classifier;
 import ie.dit.max.behaviouralbiometricphonelock.Observation;
 import ie.dit.max.behaviouralbiometricphonelock.R;
 import ie.dit.max.behaviouralbiometricphonelock.ScrollFling;
@@ -45,22 +46,29 @@ import ie.dit.max.behaviouralbiometricphonelock.UserSettings;
 
 public class AllUsersValidation extends AppCompatActivity
 {
+    private final class ReturnValues
+    {
+        float average;
+        float ownerPercent;
+    }
 
-    Firebase ref;
+    private Firebase ref;
     private static final String DEBUG_TAG = "Classifiers";
 
-    HashMap<String, ArrayList<Observation>> trainDataMapScrollFling;
-    Map<String, ArrayList<Observation>> testDataMapScrollFling;
+    private HashMap<String, ArrayList<Observation>> trainDataMapScrollFling;
+    private Map<String, ArrayList<Observation>> testDataMapScrollFling;
 
     private String userID;
     private String userName;
 
-    String[] userKeys;
-    String[] userNames;
+    private String[] userKeys;
+    private String[] userNames;
 
-    TextView validationText;
-    TextView displayMinMaxValues;
-    Button buttonChange;
+    private TextView validationText;
+    private TextView displayMinMaxValues;
+    private Button buttonChange;
+
+    private Classifier classifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,6 +82,7 @@ public class AllUsersValidation extends AppCompatActivity
         if(sharedpreferences.contains("ValidateDataForUserID")) userID = sharedpreferences.getString("ValidateDataForUserID", "");
         if(sharedpreferences.contains("ValidateDataForUserName")) userName = sharedpreferences.getString("ValidateDataForUserName", "");
 
+        classifier = new Classifier();
         validationText = (TextView) findViewById(R.id.validationText);
         displayMinMaxValues = (TextView) findViewById(R.id.displayMinMaxValues);
         buttonChange = (Button) findViewById(R.id.buttonChange);
@@ -105,9 +114,6 @@ public class AllUsersValidation extends AppCompatActivity
                             UserSettings userSettings = dataSnapshot.getValue(UserSettings.class);
                             computeValidationForOneUserAgainstAllOthers(userID, userName, userSettings.getNrObsFromAnotherUser(), true);
                         }
-
-                        // used to create confidence matrix
-                        // buildAndDisplayConfidenceMatrix();
 
                     }
 
@@ -279,12 +285,6 @@ public class AllUsersValidation extends AppCompatActivity
         });
     }
 
-    final class ReturnValues
-    {
-        float average;
-        float ownerPercent;
-    }
-
     // this method builds a confidence matrix and displays it on console
     private void buildAndDisplayConfidenceMatrix()
     {
@@ -295,7 +295,6 @@ public class AllUsersValidation extends AppCompatActivity
 
     }
 
-
     private ReturnValues computeValidationForOneUserAgainstAllOthers(String forUserID, String forUserName, int numberObsNeededFromOtherUsers, boolean displayOutput)
     {
         ArrayList<Observation> trainScrollFlingDataForUserID = new ArrayList<>();
@@ -305,12 +304,12 @@ public class AllUsersValidation extends AppCompatActivity
         {
             if(trainDataEntry.getKey().equals(forUserID))
             {
-                ArrayList<Observation> tempList = changeJudgements(trainDataEntry.getValue(), 1);
+                ArrayList<Observation> tempList = classifier.changeJudgements(trainDataEntry.getValue(), 1);
                 trainScrollFlingDataForUserID.addAll(tempList);
             }
             else
             {
-                ArrayList<Observation> tempList = changeJudgements(trainDataEntry.getValue(), 0);
+                ArrayList<Observation> tempList = classifier.changeJudgements(trainDataEntry.getValue(), 0);
                 if(tempList.size() > 0)
                 {
                     //trainScrollFlingDataForUserID.addAll(tempList);
@@ -327,13 +326,7 @@ public class AllUsersValidation extends AppCompatActivity
         }
 
         //create and train the SVM model
-        SVM tempScrollFlingSVM = createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
-
-        //create and train kNN model
-        //KNearest tempScrollFlingSVM = createAndTrainScrollFlingKNNClassifier(trainScrollFlingDataForUserID);
-
-        //create and train RTrees model
-        //RTrees tempScrollFlingSVM = createAndTrainScrollFlingrTreeClassifier(trainScrollFlingDataForUserID);
+        SVM tempScrollFlingSVM = classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
 
         int numberOfUsersWithTestData = 0;
         float sumOfPercentages = 0;
@@ -351,11 +344,11 @@ public class AllUsersValidation extends AppCompatActivity
 
             if(testData != null)
             {
-                Mat testDataMat = buildTrainOrTestMatForScrollFling(testData);
+                Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(testData);
                 Mat resultMat = new Mat(testData.size(), 1, CvType.CV_32S);
 
                 tempScrollFlingSVM.predict(testDataMat, resultMat, 0);
-                int counter = countOwnerResults(resultMat);
+                int counter = classifier.countOwnerResults(resultMat);
 
                 if(!userKeys[i].equals(forUserID))
                 {
@@ -370,11 +363,10 @@ public class AllUsersValidation extends AppCompatActivity
                     }
                 }
 
-                //System.out.println("Result Mat " + i + " Of " + forUserName  + ": ");
-                //displayMatrix(resultMat);
-
-                if (i < userKeys.length - 1) confusionMatrixRow += counter + ",";
-                else confusionMatrixRow += counter + "";
+                if (i < userKeys.length - 1)
+                    confusionMatrixRow += counter + ",";
+                else
+                    confusionMatrixRow += counter + "";
 
                 if(displayOutput)
                     output += (i+1) + ". " + userNames[i] + ": SVM Scroll/Fling -> " + counter + " / " + testData.size() + " -> " + Math.round((counter * 100) / testData.size()) + "%\n";
@@ -389,208 +381,5 @@ public class AllUsersValidation extends AppCompatActivity
         rV.ownerPercent = ownerPercent;
 
         return rV;
-    }
-
-    private ArrayList<Observation> changeJudgements(ArrayList<Observation> obsList, int judgementValue)
-    {
-        for(Observation obs : obsList)
-        {
-            obs.setJudgement(judgementValue);
-        }
-
-        return obsList;
-    }
-
-    private int countOwnerResults(Mat mat)
-    {
-        int counter = 0;
-        for (int i = 0; i < mat.rows(); i++)
-        {
-            if (mat.get(i, 0)[0] == 1) counter++;
-        }
-
-        return counter;
-    }
-
-    private RTrees createAndTrainScrollFlingrTreeClassifier(ArrayList<Observation> arrayListObservations)
-    {
-        RTrees rTree = RTrees.create();
-        Mat rTreeTrainMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
-        Mat rTreeLabelsMat = buildLabelsMat(arrayListObservations);
-
-        rTree.train(rTreeTrainMat, Ml.ROW_SAMPLE, rTreeLabelsMat);
-
-        return rTree;
-    }
-
-    private KNearest createAndTrainScrollFlingKNNClassifier(ArrayList<Observation> arrayListObservations)
-    {
-        KNearest kNN = KNearest.create();
-        System.out.println("K is: " + kNN.getDefaultK());
-
-        Mat kNNTrainMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
-        Mat kNNLabelsMat = buildLabelsMat(arrayListObservations);
-
-        kNN.train(kNNTrainMat, Ml.ROW_SAMPLE, kNNLabelsMat);
-
-        return kNN;
-    }
-
-    private SVM createAndTrainScrollFlingSVMClassifier(ArrayList<Observation> arrayListObservations)
-    {
-        SVM tempSVM = SVM.create();
-        //initialise scrollFlingSVM
-        tempSVM.setKernel(SVM.CHI2);
-
-        tempSVM.setType(SVM.C_SVC);
-        //tempSVM.setType(SVM.NU_SVC);
-
-        tempSVM.setC(10.55);
-        //tempSVM.setC(Math.pow(2,1.12));
-
-        tempSVM.setGamma(0.2);
-        //tempSVM.setGamma(Math.pow(2,8));
-
-        /*Mat weightsMat = new Mat(2, 1, CvType.CV_32FC1);
-        weightsMat.put(0, 0, 0.1 );
-        weightsMat.put(1, 0, 0.9 );
-        tempSVM.setClassWeights(weightsMat);*/
-
-        Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
-        Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
-
-        //System.out.println("Train Matrix is:\n");
-        //displayMatrix(trainScrollFlingMat);
-
-        /*System.out.println("Coef0: " + tempSVM.getCoef0() );
-        System.out.println("C: " + tempSVM.getC());
-        System.out.println("TermCriteria: " + tempSVM.getTermCriteria().toString());
-        System.out.println("Degree: " + tempSVM.getDegree());
-        System.out.println("Gamma: " + tempSVM.getGamma());
-        System.out.println("Nu: " + tempSVM.getNu());
-        System.out.println("P: " + tempSVM.getP());
-        System.out.println("Type: " + tempSVM.getType());
-        System.out.println("ClassWeights: " );
-        displayMatrix(tempSVM.getClassWeights());*/
-
-        tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
-
-        return tempSVM;
-    }
-
-    private Mat buildLabelsMat(ArrayList<Observation> listObservations)
-    {
-        Mat labelsTempMat = new Mat(listObservations.size(), 1, CvType.CV_32S);
-
-        for(int i = 0; i < listObservations.size(); i++)
-        {
-            labelsTempMat.put(i, 0, listObservations.get(i).getJudgement());
-        }
-
-        return labelsTempMat;
-    }
-
-    //function to display Mat on console
-    public void displayMatrix(Mat matrix)
-    {
-        for(int i=0; i<matrix.rows(); i++)
-        {
-            for (int j = 0; j < matrix.cols(); j++)
-            {
-                System.out.print("\t" + (float)matrix.get(i, j)[0]);
-            }
-            System.out.println("\n");
-        }
-    }
-
-    private Mat buildTrainOrTestMatForScrollFling(ArrayList<Observation> listObservations)
-    {
-        Mat tempMat = new Mat(listObservations.size(), ScrollFling.numberOfFeatures, CvType.CV_32FC1);
-
-        for(int i = 0; i < listObservations.size(); i++)
-        {
-            ScrollFling scrollFlingObs = new ScrollFling(listObservations.get(i).getTouch());
-            int j = 0;
-
-            // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
-
-            // angular Velocity are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageAngularVelocity());
-
-            tempMat.put(i, j++, scrollFlingObs.getMidStrokeAreaCovered());
-
-            // Angle between start and end vectors
-            tempMat.put(i, j++, scrollFlingObs.getAngleBetweenStartAndEndVectorsInRad());
-
-            tempMat.put(i, j++, scrollFlingObs.getDirectEndToEndDistance());
-
-            // Mean Direction
-            //tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
-
-            // Stop x
-            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
-
-            // Start x
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
-
-            // Stroke Duration
-            tempMat.put(i, j++, scrollFlingObs.getScaledDuration()/10);
-
-            // Start y
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
-
-            // Stop y
-            tempMat.put(i, j, scrollFlingObs.getScaledEndPoint().y);
-        }
-
-        return tempMat;
-    }
-
-    private Mat normalizeMat(Mat toNormalize)
-    {
-        Mat tempMat = toNormalize.clone();
-
-        for(int col = 0; col < toNormalize.cols(); col++)
-        {
-            // only normalize data from 2 features that are not properly normalised
-            if(col == 5 || col == 8)
-            {
-                double min = getMinValueOFColumn(toNormalize, col);
-                double max = getMaxValueOFColumn(toNormalize, col);
-
-                for (int row = 0; row < toNormalize.rows(); row++)
-                {
-                    double[] element = toNormalize.get(row, col);
-                    tempMat.put(row, col, (element[0] - min) / (max - min));
-                }
-            }
-        }
-
-        return tempMat;
-    }
-
-    private double getMinValueOFColumn(Mat mat, int col)
-    {
-        double min = Double.MAX_VALUE;
-        for(int i = 0; i < mat.rows(); i++)
-        {
-            double [] temp = mat.get(i,col);
-            if(temp[0] < min ) min = temp[0];
-        }
-
-        return min;
-    }
-
-    private double getMaxValueOFColumn(Mat mat, int col)
-    {
-        double max = Double.MIN_VALUE;
-        for(int i = 0; i < mat.rows(); i++)
-        {
-            double [] temp = mat.get(i,col);
-            if(temp[0] > max ) max = temp[0];
-        }
-
-        return max;
     }
 }

@@ -40,23 +40,15 @@ public class TestBehaviouralBiometrics extends Activity implements
 {
     private static final String DEBUG_TAG = "Test Activity";
 
-    // Check if OpenCV loads properly
-    static
-    {
-        if (!OpenCVLoader.initDebug())
-        {
-            Log.i(DEBUG_TAG, "OpenCV initialization failed");
-        }
-        else
-        {
-            Log.i(DEBUG_TAG, "OpenCV initialization successful");
-        }
-    }
-
+    //public variables
     public static boolean trainDataLoaded = false;
     public static double userTrust = 100;
-    private static UserSettings userSettings;
+    public View.OnTouchListener gestureListener;
 
+    //private variables
+    private static SVM scrollFlingSVM;
+    private Classifier classifier;
+    private static UserSettings userSettings;
     private DevicePolicyManager devicePolicyManager;
     private ComponentName componentName;
 
@@ -72,32 +64,36 @@ public class TestBehaviouralBiometrics extends Activity implements
 
     private GestureDetectorCompat mDetector;
 
-    //to be used for assigning listener to different views.
-    public View.OnTouchListener gestureListener;
-
-    Point startPoint, endPoint;
-    ArrayList<Point> points = new ArrayList<>();
-    ArrayList<Observation> trainScrollFlingObservations;
-
+    private Point startPoint, endPoint;
+    private ArrayList<Point> points = new ArrayList<>();
+    private ArrayList<Observation> trainScrollFlingObservations;
     private ArrayList<Float> linearAccelerations;
     private ArrayList<Float> angularVelocities;
 
-    boolean isScroll = false;
-    boolean isFling = false;
+    private boolean isScroll = false;
+    private boolean isFling = false;
 
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     private Sensor senGyroscope;
-
     private Float linearAcceleration;
     private Float angularVelocity;
-
-    SharedPreferences sharedpreferences;
     private String userID;
 
-    private static SVM scrollFlingSVM;
-
     private Firebase ref;
+
+    // Check if OpenCV loads properly
+    static
+    {
+        if (!OpenCVLoader.initDebug())
+        {
+            Log.i(DEBUG_TAG, "OpenCV initialization failed");
+        }
+        else
+        {
+            Log.i(DEBUG_TAG, "OpenCV initialization successful");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -105,17 +101,15 @@ public class TestBehaviouralBiometrics extends Activity implements
         super.onCreate(savedInstanceState);
         Firebase.setAndroidContext(this);
         ref = new Firebase("https://fyp-max.firebaseio.com");
-        sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        devicePolicyManager = (DevicePolicyManager)getSystemService(
-                Context.DEVICE_POLICY_SERVICE);
+        SharedPreferences sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        // get User details
+        if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
+
+        devicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
         componentName = new ComponentName(this, MyAdminReceiver.class);
 
         mDetector = new GestureDetectorCompat(this, this);
         mDetector.setOnDoubleTapListener(this);
-
-        linearAcceleration = 0.0f;
-        angularVelocity = 0.0f;
-
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         // Accelerometer declarations
@@ -126,13 +120,14 @@ public class TestBehaviouralBiometrics extends Activity implements
         senGyroscope = senSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         senSensorManager.registerListener(this, senGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
+        classifier = new Classifier();
         trainScrollFlingObservations = new ArrayList<>();
         points = new ArrayList<>();
         linearAccelerations = new ArrayList<>();
         angularVelocities = new ArrayList<>();
 
-        // get User details
-        userID = sharedpreferences.getString("UserID", "");
+        linearAcceleration = 0.0f;
+        angularVelocity = 0.0f;
 
         /* Get user Settings */
         getUserSettings();
@@ -186,7 +181,6 @@ public class TestBehaviouralBiometrics extends Activity implements
                             scrollFling.setAngleBetweenStartAndEndVectorsInRad(scrollFling.calculateAngleBetweenStartAndEndVectorsInRad());
 
                             //Log.d(DEBUG_TAG, "ScrollFling: " + scrollFling.toString());
-                            //tempObs.setScrollFling(scrollFling);
                             tempObs.setTouch(scrollFling);
                         } else
                         {
@@ -200,7 +194,6 @@ public class TestBehaviouralBiometrics extends Activity implements
                             tap.setMidStrokeAreaCovered(tap.calculateMidStrokeAreaCovered());
 
                             //Log.d(DEBUG_TAG, "Tap: " + tap.toString());
-                            //tempObs.setTap(tap);
                             tempObs.setTouch(tap);
 
                         }
@@ -212,8 +205,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                         //In this section check each observation
                         if(!isFling && !isScroll)
                         {
-                            //no predictions on taps, just store interactions
-
+                            // no predictions on taps, just store interactions
                             // add test data in Firebase if the check box for adding data is selected.
                             if(userSettings.getSaveTestData())
                             {
@@ -229,7 +221,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             ArrayList<Observation> testOneObservation = new ArrayList<>();
                             testOneObservation.add(tempObs);
 
-                            Mat testDataMat = buildTrainOrTestMatForScrollFling(testOneObservation);
+                            Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(testOneObservation);
                             Mat resultMat = new Mat(testOneObservation.size(), 1, CvType.CV_32S);
 
                             if (scrollFlingSVM.isTrained())
@@ -294,6 +286,10 @@ public class TestBehaviouralBiometrics extends Activity implements
                                 // Analyse Trust Values and lock phone if user not genuine
                                 if(userTrust < userSettings.getThreshold())
                                 {
+                                    // Delete data that would be used for changing password.
+                                    Firebase deleteTestDataForPasswordChange = new Firebase("https://fyp-max.firebaseio.com/testDataForPasswordChange/" + userID);
+                                    deleteTestDataForPasswordChange.removeValue();
+
                                     //log out user
                                     ref.unauth();
                                     Intent intent = new Intent(TestBehaviouralBiometrics.this, LogIn.class);
@@ -352,15 +348,37 @@ public class TestBehaviouralBiometrics extends Activity implements
         return ((value - min)/(max - min)) * (high - low) + low;
     }
 
-    private int countOwnerResults(Mat mat)
+    private void getUserSettings()
     {
-        int counter = 0;
-        for (int i = 0; i < mat.rows(); i++)
+        final Firebase settingsRef = new Firebase("https://fyp-max.firebaseio.com/settings/" + userID);
+        settingsRef.addListenerForSingleValueEvent(new ValueEventListener()
         {
-            if (mat.get(i, 0)[0] < 0) counter++;
-        }
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.getValue() == null)
+                {
+                    // Default values
+                    userSettings = new UserSettings();
+                    userSettings.setThreshold(70);
+                    userSettings.setNrObsFromAnotherUser(5);
+                    userSettings.setSaveTestData(true);
+                }
+                else
+                {
+                    userSettings = dataSnapshot.getValue(UserSettings.class);
+                }
 
-        return counter;
+                /* Get user training data from Firebase - Owner and Guest data */
+                getTrainDataFromFirebase();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError)
+            {
+
+            }
+        });
     }
 
     private void getTrainDataFromFirebase()
@@ -376,8 +394,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                     System.out.println("No Scroll Fling data available. ");
                     Toast toast = Toast.makeText(getApplicationContext(), "No Train data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                }
-                else
+                } else
                 {
                     for (DataSnapshot usrSnapshot : snapshot.getChildren())
                     {
@@ -397,8 +414,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                                 countGuestObs++;
                             }
 
-                        }
-                        else  // get data from the actual user
+                        } else  // get data from the actual user
                         {
                             DataSnapshot scrollSnapshot = usrSnapshot.child("scrollFling");
                             for (DataSnapshot obsSnapshot : scrollSnapshot.getChildren())
@@ -410,7 +426,7 @@ public class TestBehaviouralBiometrics extends Activity implements
                             // Built the SVM model for Scroll/Fling Observations if training data exists.
                             if (trainScrollFlingObservations.size() > 0)
                             {
-                                scrollFlingSVM = createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
+                                scrollFlingSVM = classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
 
                             } else
                             {
@@ -434,118 +450,6 @@ public class TestBehaviouralBiometrics extends Activity implements
         });
     }
 
-    private void getUserSettings()
-    {
-        final Firebase settingsRef = new Firebase("https://fyp-max.firebaseio.com/settings/" + userID);
-        settingsRef.addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                if (dataSnapshot.getValue() == null)
-                {
-                    // Default values
-                    userSettings = new UserSettings();
-                    userSettings.setThreshold(70);
-                    userSettings.setNrObsFromAnotherUser(5);
-                    userSettings.setSaveTestData(true);
-                }
-                else
-                {
-                    userSettings = dataSnapshot.getValue(UserSettings.class);
-                }
-
-
-
-                /* Get user training data from Firebase - Owner and Guest data */
-                getTrainDataFromFirebase();
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError)
-            {
-
-            }
-        });
-    }
-
-    private SVM createAndTrainScrollFlingSVMClassifier(ArrayList<Observation> arrayListObservations)
-    {
-        //initialise scrollFlingSVM
-        SVM tempSVM = SVM.create();
-        tempSVM.setKernel(SVM.CHI2);
-
-        tempSVM.setType(SVM.C_SVC);
-        tempSVM.setC(10.55);
-        tempSVM.setGamma(0.15);
-
-        Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
-        Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
-
-        //System.out.println("Train Matrix is:\n");
-        //displayMatrix(trainScrollFlingMat);
-
-        tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
-
-        return tempSVM;
-    }
-
-    private Mat buildLabelsMat(ArrayList<Observation> listObservations)
-    {
-        Mat labelsTempMat = new Mat(listObservations.size(), 1, CvType.CV_32S);
-
-        for(int i = 0; i < listObservations.size(); i++)
-        {
-            labelsTempMat.put(i, 0, listObservations.get(i).getJudgement());
-        }
-
-        return labelsTempMat;
-    }
-
-    private Mat buildTrainOrTestMatForScrollFling(ArrayList<Observation> listObservations)
-    {
-        Mat tempMat = new Mat(listObservations.size(), ScrollFling.numberOfFeatures, CvType.CV_32FC1);
-
-        for(int i = 0; i < listObservations.size(); i++)
-        {
-            ScrollFling scrollFlingObs = new ScrollFling(listObservations.get(i).getTouch());
-            int j = 0;
-
-            // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
-
-            // angular Velocity are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageAngularVelocity());
-
-            tempMat.put(i, j++, scrollFlingObs.getMidStrokeAreaCovered());
-
-            // Angle between start and end vectors
-            tempMat.put(i, j++, scrollFlingObs.getAngleBetweenStartAndEndVectorsInRad());
-
-            tempMat.put(i, j++, scrollFlingObs.getDirectEndToEndDistance());
-
-            // Mean Direction
-            //tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
-
-            // Stop x
-            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
-
-            // Start x
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
-
-            // Stroke Duration
-            tempMat.put(i, j++, scrollFlingObs.getScaledDuration()/10);
-
-            // Start y
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
-
-            // Stop y
-            tempMat.put(i, j, scrollFlingObs.getScaledEndPoint().y);
-        }
-        return tempMat;
-
-    }
-
     @Override
     public boolean onDown(MotionEvent e)
     {
@@ -554,19 +458,6 @@ public class TestBehaviouralBiometrics extends Activity implements
         angularVelocities.add(angularVelocity);
 
         return false;
-    }
-
-    //function to display Mat on console
-    public void displayMatrix(Mat matrix)
-    {
-        for(int i=0; i<matrix.rows(); i++)
-        {
-            for (int j = 0; j < matrix.cols(); j++)
-            {
-                System.out.print("\t" + (float)matrix.get(i, j)[0]);
-            }
-            System.out.println("\n");
-        }
     }
 
     @Override

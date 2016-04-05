@@ -4,10 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,12 +16,10 @@ import com.firebase.client.ValueEventListener;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.ml.Ml;
 import org.opencv.ml.SVM;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ViewRecomendedValues extends AppCompatActivity
 {
@@ -36,7 +31,6 @@ public class ViewRecomendedValues extends AppCompatActivity
     HashMap<String, ArrayList<Observation>> testDataMapScrollFling;
 
     private String userID;
-    private String userName;
     private SVM scrollFlingSVM;
 
     String[] userKeys;
@@ -51,6 +45,7 @@ public class ViewRecomendedValues extends AppCompatActivity
 
     SharedPreferences sharedpreferences;
     private UserSettings userSettings;
+    private Classifier classifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -62,8 +57,8 @@ public class ViewRecomendedValues extends AppCompatActivity
 
         sharedpreferences = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         if(sharedpreferences.contains("UserID")) userID = sharedpreferences.getString("UserID", "");
-        if(sharedpreferences.contains("ValidateDataForUserName")) userName = sharedpreferences.getString("ValidateDataForUserName", "");
 
+        classifier = new Classifier();
         scrollFlingObservations = new ArrayList<>();
         trainScrollFlingObservations = new ArrayList<>();
         trainDataMapScrollFling = new HashMap<>();
@@ -188,7 +183,7 @@ public class ViewRecomendedValues extends AppCompatActivity
                     // Built the SVM model for Scroll/Fling Observations if training data exists.
                     if (trainScrollFlingObservations.size() > 0)
                     {
-                        scrollFlingSVM = createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
+                        scrollFlingSVM = classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingObservations);
                     }
                     else
                     {
@@ -243,12 +238,12 @@ public class ViewRecomendedValues extends AppCompatActivity
                     if (scrollFlingObservations.size() > 0)
                     {
                         //create train and test Martices
-                        Mat testDataMat = buildTrainOrTestMatForScrollFling(scrollFlingObservations);
+                        Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(scrollFlingObservations);
                         Mat resultMat = new Mat(scrollFlingObservations.size(), 1, CvType.CV_32S);
 
                         // SVM
                         scrollFlingSVM.predict(testDataMat, resultMat, 0);
-                        int counter = countOwnerResults(resultMat);
+                        int counter = classifier.countOwnerResults(resultMat);
 
                         if(Math.round((counter * 100) / scrollFlingObservations.size()) < 50)
                             scrollSVMTextView.setText("Test Data Validation for current Settings\n" + counter + " / " + scrollFlingObservations.size()
@@ -294,8 +289,7 @@ public class ViewRecomendedValues extends AppCompatActivity
                 {
                     Toast toast = Toast.makeText(getApplicationContext(), "No Test data Provided", Toast.LENGTH_SHORT);
                     toast.show();
-                }
-                else
+                } else
                 {
                     // Scroll Fling Test Data
                     for (DataSnapshot usrSnapshot : snapshot.getChildren())
@@ -321,7 +315,7 @@ public class ViewRecomendedValues extends AppCompatActivity
 
                     for (int i = 10; i <= 100; i++)
                     {
-                        retValuesValidation = computeValidationForOneUserAgainstAllOthers(userID, userName, i);
+                        retValuesValidation = computeValidationForOneUserAgainstAllOthers(userID, i);
                         //System.out.println("Average: " + retValuesValidation.average);
 
                         if (retValuesValidation.average < min)
@@ -339,14 +333,14 @@ public class ViewRecomendedValues extends AppCompatActivity
                     }
 
                     // calculate the average for the max Owner Percent
-                    ReturnValues tempRV = computeValidationForOneUserAgainstAllOthers(userID, userName, nrObsAtMaxOwnerPercent);
+                    ReturnValues tempRV = computeValidationForOneUserAgainstAllOthers(userID, nrObsAtMaxOwnerPercent);
 
                     String minMaxValues = "\n\n";
-                    minMaxValues += "For " + bestValueForObsNumbers + " observations, the Minimum Average Error " + min +  " was computed, with a Percent accuracy of " + percentOnMinAvg + "%";
-                    minMaxValues += "\n\nFor " + nrObsAtMaxOwnerPercent +  " observations, the Average error is " + tempRV.average + "  with a Percent accuracy of " + tempRV.ownerPercent + "%";
+                    minMaxValues += "For " + bestValueForObsNumbers + " observations, the Minimum Average Error " + min + " was computed, with a Percent accuracy of " + percentOnMinAvg + "%";
+                    minMaxValues += "\n\nFor " + nrObsAtMaxOwnerPercent + " observations, the Average error is " + tempRV.average + "  with a Percent accuracy of " + tempRV.ownerPercent + "%";
 
                     // display results for current values
-                    ReturnValues rvCurrent = computeValidationForOneUserAgainstAllOthers(userID, userName, userSettings.getNrObsFromAnotherUser());
+                    ReturnValues rvCurrent = computeValidationForOneUserAgainstAllOthers(userID, userSettings.getNrObsFromAnotherUser());
                     minMaxValues += "\n\nCurrent Settings\n" + "For " + userSettings.getNrObsFromAnotherUser() + " observations, Average Error is " + rvCurrent.average;
 
                     displayMinMaxValues.setText(minMaxValues);
@@ -412,7 +406,7 @@ public class ViewRecomendedValues extends AppCompatActivity
         });
     }
 
-    private ReturnValues computeValidationForOneUserAgainstAllOthers(String forUserID, String forUserName, int numberObsNeededFromOtherUsers)
+    private ReturnValues computeValidationForOneUserAgainstAllOthers(String forUserID, int numberObsNeededFromOtherUsers)
     {
         ArrayList<Observation> trainScrollFlingDataForUserID = new ArrayList<>();
 
@@ -421,12 +415,12 @@ public class ViewRecomendedValues extends AppCompatActivity
         {
             if(trainDataEntry.getKey().equals(forUserID))
             {
-                ArrayList<Observation> tempList = changeJudgements(trainDataEntry.getValue(), 1);
+                ArrayList<Observation> tempList = classifier.changeJudgements(trainDataEntry.getValue(), 1);
                 trainScrollFlingDataForUserID.addAll(tempList);
             }
             else
             {
-                ArrayList<Observation> tempList = changeJudgements(trainDataEntry.getValue(), 0);
+                ArrayList<Observation> tempList = classifier.changeJudgements(trainDataEntry.getValue(), 0);
                 if(tempList.size() > 0)
                 {
                     for (int i = 0; i < tempList.size(); i++)
@@ -441,7 +435,7 @@ public class ViewRecomendedValues extends AppCompatActivity
         }
 
         //create and train the SVM model
-        SVM tempScrollFlingSVM = createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
+        SVM tempScrollFlingSVM = classifier.createAndTrainScrollFlingSVMClassifier(trainScrollFlingDataForUserID);
 
         int numberOfUsersWithTestData = 0;
         float sumOfPercentages = 0;
@@ -456,11 +450,11 @@ public class ViewRecomendedValues extends AppCompatActivity
 
             if(testData != null)
             {
-                Mat testDataMat = buildTrainOrTestMatForScrollFling(testData);
+                Mat testDataMat = classifier.buildTrainOrTestMatForScrollFling(testData);
                 Mat resultMat = new Mat(testData.size(), 1, CvType.CV_32S);
 
                 tempScrollFlingSVM.predict(testDataMat, resultMat, 0);
-                int counter = countOwnerResults(resultMat);
+                int counter = classifier.countOwnerResults(resultMat);
 
                 if(!userKeys[i].equals(forUserID))
                 {
@@ -482,102 +476,6 @@ public class ViewRecomendedValues extends AppCompatActivity
         rV.ownerPercent = ownerPercent;
 
         return rV;
-    }
-
-    private int countOwnerResults(Mat mat)
-    {
-        int counter = 0;
-        for (int i = 0; i < mat.rows(); i++)
-        {
-            if (mat.get(i, 0)[0] == 1) counter++;
-        }
-
-        return counter;
-    }
-
-    private ArrayList<Observation> changeJudgements(ArrayList<Observation> obsList, int judgementValue)
-    {
-        for(Observation obs : obsList)
-        {
-            obs.setJudgement(judgementValue);
-        }
-
-        return obsList;
-    }
-
-    private SVM createAndTrainScrollFlingSVMClassifier(ArrayList<Observation> arrayListObservations)
-    {
-        SVM tempSVM = SVM.create();
-        //initialise scrollFlingSVM
-
-        tempSVM.setKernel(SVM.CHI2);
-
-        tempSVM.setType(SVM.C_SVC);
-        tempSVM.setC(10.55);
-        tempSVM.setGamma(0.2);
-
-        Mat trainScrollFlingMat = buildTrainOrTestMatForScrollFling(arrayListObservations);
-        Mat labelsScrollFlingMat = buildLabelsMat(arrayListObservations);
-
-        tempSVM.train(trainScrollFlingMat, Ml.ROW_SAMPLE, labelsScrollFlingMat);
-
-        return tempSVM;
-    }
-
-    private Mat buildLabelsMat(ArrayList<Observation> listObservations)
-    {
-        Mat labelsTempMat = new Mat(listObservations.size(), 1, CvType.CV_32S);
-
-        for(int i = 0; i < listObservations.size(); i++)
-        {
-            labelsTempMat.put(i, 0, listObservations.get(i).getJudgement());
-        }
-
-        return labelsTempMat;
-    }
-
-    private Mat buildTrainOrTestMatForScrollFling(ArrayList<Observation> listObservations)
-    {
-        Mat tempMat = new Mat(listObservations.size(), ScrollFling.numberOfFeatures, CvType.CV_32FC1);
-
-        for(int i = 0; i < listObservations.size(); i++)
-        {
-            ScrollFling scrollFlingObs = new ScrollFling(listObservations.get(i).getTouch());
-            int j = 0;
-
-            // linear accelerations are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageLinearAcceleration());
-
-            // angular Velocity are part of the observation - get average
-            tempMat.put(i, j++, listObservations.get(i).getAverageAngularVelocity());
-
-            tempMat.put(i, j++, scrollFlingObs.getMidStrokeAreaCovered());
-
-            // Angle between start and end vectors
-            tempMat.put(i, j++, scrollFlingObs.getAngleBetweenStartAndEndVectorsInRad());
-
-            tempMat.put(i, j++, scrollFlingObs.getDirectEndToEndDistance());
-
-            // Mean Direction
-            //tempMat.put(i, j++, scrollFlingObs.getMeanDirectionOfStroke());
-
-            // Stop x
-            tempMat.put(i, j++, scrollFlingObs.getScaledEndPoint().x);
-
-            // Start x
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().x);
-
-            // Stroke Duration
-            tempMat.put(i, j++, scrollFlingObs.getScaledDuration()/10);
-
-            // Start y
-            tempMat.put(i, j++, scrollFlingObs.getScaledStartPoint().y);
-
-            // Stop y
-            tempMat.put(i, j, scrollFlingObs.getScaledEndPoint().y);
-        }
-
-        return tempMat;
     }
 
 }
