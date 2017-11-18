@@ -10,7 +10,7 @@ package ie.dit.max.behaviouralbiometricphonelock;
  */
 public class DBVar
 {
-    public static String mainURL = "https://fyp-max.firebaseio.com";
+    public static String mainURL = "https://bbpl-deefa.firebaseio.com";  //"https://fyp-max.firebaseio.com";
 
     public DBVar()
     {

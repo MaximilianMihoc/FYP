@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "988052856209",
+    "firebase_url": "https://bbpl-deefa.firebaseio.com",
+    "project_id": "bbpl-deefa",
+    "storage_bucket": "bbpl-deefa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988052856209:android:d6c2ba2b83d23920",
+        "android_client_info": {
+          "package_name": "ie.dit.max.behaviouralbiometricphonelock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "988052856209-7bpbi4l9icift3sb34b5qclpod5ve1kn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcTU_zD7nCBaXgtt4pK5IyzTvWjq_tjKc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
